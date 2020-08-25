@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
-title: study
+title: Study
 slug: study
 category: book
-menu: false
+menu: true
 order: 1
 ---
