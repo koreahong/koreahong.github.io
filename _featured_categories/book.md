@@ -1,10 +1,10 @@
 ---
 layout: list
-title: Essay
-slug: essay
+title: Book
+slug: Book
 menu: true
 submenu: false
 order: 4
 description: >
-  이런저런 생각들
+  공부, 양식의 기록
 ---
