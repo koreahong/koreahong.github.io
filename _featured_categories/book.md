@@ -1,10 +1,10 @@
 ---
 layout: list
 title: Book
-slug: Book
+slug: book
 menu: true
-submenu: false
-order: 4
+submenu: true
+order: 1
 description: >
   공부, 양식의 기록
 ---
