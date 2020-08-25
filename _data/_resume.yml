@@ -1,6 +1,7 @@
 # If you don't have a JSON Resume you can edit this YAML file instead.
 # To use this file, rename it to `resume.yml` and delete `resume.json`.
 ---
+#수정예정입니다
   basics:
     name: "Richard Hendricks"
     label: "Programmer"
