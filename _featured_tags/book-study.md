@@ -1,9 +1,8 @@
 ---
 layout: tag-blog
-title: Book
-slug: Book
+title: study
+slug: study
 category: book
 menu: false
 order: 1
-header-img: "/img/book.jpg"
 ---
