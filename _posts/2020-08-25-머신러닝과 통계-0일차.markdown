@@ -1,7 +1,7 @@
 ---
 layout: post
-title: '[책공부]머신러닝과 통계'
-subtitle: '파이썬과 R로 배우는 머신러닝'
+title: '[0일차]머신러닝과 통계'
+subtitle: '[0일차]머신러닝과 통계 공부시작'
 categories: book
 tags : study
 comments: False
