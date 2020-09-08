@@ -2,7 +2,7 @@
 layout: post
 title: '주간 분석 시작!'
 subtitle: '주간 분석 시작'
-categories: Anaysis
+categories: Analysis
 #tags : 
 comments: False
 ---
