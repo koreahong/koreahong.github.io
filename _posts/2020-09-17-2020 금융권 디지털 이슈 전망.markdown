@@ -26,6 +26,8 @@ comments: False
 + 클라우드 적용방식  
 ![cloud_method](https://user-images.githubusercontent.com/51938331/93410397-e4490500-f8d3-11ea-98d1-80f16b6a7750.PNG)  
 
+
+
 + 편익 및 리스크
 ![benefit_rist](https://user-images.githubusercontent.com/51938331/93410418-ed39d680-f8d3-11ea-972b-cda20c5ef7fd.PNG)  
 
