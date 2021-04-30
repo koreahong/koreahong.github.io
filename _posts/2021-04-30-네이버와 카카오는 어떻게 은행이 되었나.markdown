@@ -3,7 +3,7 @@ layout: post
 title: '네이버와 카카오는 어떻게 은행이 되었나'
 subtitle: '데이터의 최종 목적지 금융서비스'
 categories: book
-tags : study
+tags : nonstudy
 comments: False
 ---
 
