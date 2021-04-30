@@ -1,9 +1,9 @@
 ---
 layout: post
-title: '[0일차]머신러닝과 통계'
-subtitle: '[0일차]머신러닝과 통계 공부시작'
+title: '트렌드 읽는 습관'
+subtitle: '내 생활이 달라지는 습관'
 categories: book
-tags : study
+tags : nonstudy
 comments: False
 ---
 
