@@ -1,7 +1,7 @@
 ---
 layout: tag-blog
-title: Study
-slug: study
+title: NonStudy
+slug: nonstudy
 category: book
 menu: false
 order: 2
