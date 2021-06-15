@@ -1,0 +1,25 @@
+---
+layout: post
+title: '빅분기 실기 예제 풀기'
+subtitle: '분류 알고리즘'
+categories: book
+tags : study
+comments: False
+---
+
+>수집부터 모델평가까지
+
+[분석코드 정리](https://colab.research.google.com/drive/186ZFW2Xz7OQF_BRQMxZHussxbZaefVNv?usp=sharing)
+
+#1. 데이터수집
+
+#2. 데이터전처리
+	- 환불금액 -> 환불여부
+	- 주구매지역 삭제 or 원핫인코딩
+	- 이상치 삭제
+
+#3. 모델링
+	- 랜덤포레스트, 로지스틱 회귀
+	- 그리드서치 알고리즘사용
+
+#4. 모델평가 
