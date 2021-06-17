@@ -3,6 +3,6 @@ layout: tag-blog
 title: practice
 slug: practice
 category: SQL
-menu: false
+menu: True
 order: 1
 ---
