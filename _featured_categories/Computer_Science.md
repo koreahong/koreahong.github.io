@@ -1,10 +1,10 @@
 ---
 layout: list
-title: Devlog
-slug: devlog
+title: Computer_Science
+slug: Computer_Science
 menu: true
 submenu: true
 order: 8
 description: >
-  개발관련 정보
+  CS공부
 ---
