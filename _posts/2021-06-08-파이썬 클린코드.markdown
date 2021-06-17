@@ -2,8 +2,8 @@
 layout: post
 title: '파이썬 클린코드'
 subtitle: '구조화된 코드는 어떤 거인가'
-categories: book
-tags : study
+categories: Computer_Science
+tags : software
 comments: False
 ---
 
@@ -37,4 +37,3 @@ comments: False
 			arg3 처럼 string 형태로도 작성 가능하다. 
 			또한, function 의 return 값에 대해서는 -> expression 형태로 사용한다. 
 			return 또한 매개변수와 사용 방법은 동일하다.
-			출처: https://bluese05.tistory.com/78 [ㅍㅍㅋㄷ]

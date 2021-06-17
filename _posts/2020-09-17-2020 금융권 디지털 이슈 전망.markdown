@@ -2,8 +2,8 @@
 layout: post
 title: '2020 금융권 디지털 이슈 전망'
 subtitle: '클라우드, 오픈뱅킹 등'
-categories: tech
-#tags : 
+categories: News
+tags : enterprise
 comments: False
 ---
 > 2020 디지털금융 이슈 전망 요약

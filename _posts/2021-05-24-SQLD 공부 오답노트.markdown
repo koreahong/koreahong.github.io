@@ -2,8 +2,8 @@
 layout: post
 title:  "SQLD 오답노트"
 subtitle:   "1~150문제 오답노트"
-categories: book
-tags: study
+categories: SQL
+tags: certification
 comments: true
 ---
 

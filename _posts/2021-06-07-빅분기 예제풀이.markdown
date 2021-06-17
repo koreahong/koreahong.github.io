@@ -2,8 +2,8 @@
 layout: post
 title: '빅분기 실기 예제 풀기'
 subtitle: '분류 알고리즘'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : certification
 comments: False
 ---
 

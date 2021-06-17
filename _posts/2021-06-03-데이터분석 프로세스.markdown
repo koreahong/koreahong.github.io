@@ -2,8 +2,8 @@
 layout: post
 title: '데이터분석 프로세스'
 subtitle: '파이썬 머신러닝 완벽 가이드 발췌'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : theory
 comments: False
 ---
 

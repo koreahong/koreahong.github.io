@@ -2,8 +2,8 @@
 layout: post
 title: '그리디 알고리즘(이취코다)'
 #subtitle: '그리디 알고리즘'
-categories: devlog
-tags : algorithm
+categories: algorithm
+tags : greedy
 comments: False
 ---
 > 그리디 알고리즘

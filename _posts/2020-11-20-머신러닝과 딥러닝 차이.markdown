@@ -1,9 +1,9 @@
 ---
 layout: post
 title: '머신러닝과 딥러닝의 차이'
-#subtitle: '디지털 3법이 추후 기업에 미치는 영향'
-categories: tech
-#tags : 
+#subtitle: ''
+categories: Data_Analysis
+tags : theory
 comments: False
 ---
 > 머신러닝과 딥러닝 무엇이 다른가

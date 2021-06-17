@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
-title: NonStudy
-slug: nonstudy
+title: IT
+slug: IT
 category: book
 menu: false
-order: 2
+order: 1
 ---

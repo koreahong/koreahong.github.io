@@ -2,8 +2,8 @@
 layout: post
 title: '디지털 3법이 머길래'
 subtitle: '디지털 3법이 추후 기업에 미치는 영향'
-categories: tech
-#tags : 
+categories: News
+tags :IT 
 comments: False
 ---
 > 디지털 3법 요약
