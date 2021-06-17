@@ -1,7 +1,7 @@
 ---
 layout: tag-blog
-title: IT
-slug: IT
+title: Economy
+slug: Economy
 category: book
 menu: false
 order: 1

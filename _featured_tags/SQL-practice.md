@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
-title: Certification
-slug: Certification
-category: Data_Analysis
+title: practice
+slug: practice
+category: SQL
 menu: false
 order: 1
 ---

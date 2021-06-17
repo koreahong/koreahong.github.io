@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
-title: IT
-slug: IT
-category: book
+title: Enterprise
+slug: Enterprise
+category: News
 menu: false
 order: 1
 ---

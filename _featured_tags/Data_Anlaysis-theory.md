@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
-title: IT
-slug: IT
-category: book
+title: theory
+slug: theory
+category: Data_Analysis
 menu: false
 order: 1
 ---
