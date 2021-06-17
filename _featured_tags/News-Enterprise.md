@@ -1,7 +1,7 @@
 ---
 layout: tag-blog
-title: Enterprise
-slug: Enterprise
+title: enterprise
+slug: enterprise
 category: News
 menu: false
 order: 1

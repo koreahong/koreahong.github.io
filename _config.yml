@@ -2,8 +2,7 @@
 #  User configuration
 # -----------------------------------------------------------------------------
 
-title:               HONGStory
-
+title:               To Be Data Analysist
 # The unique resource location of your page.
 # Set to `https://<username>.github.io` when hosting on GitHub Pages
 url:                 https://koreahong.github.io
@@ -13,13 +12,12 @@ url:                 https://koreahong.github.io
 baseurl:             ""
 
 # A very short description of your page
-tagline:             주체적인 인생을 살자
+tagline:             Data Analysist가 되기 위한 여정
 
 # A short description of the page, used in the sidebar and as fallback for the meta description tag.
 # Markdown enabled, but don't use more than one paragraph (enforced by `>`)
 description:         >
-  주체적으로 살려면 선택을 해야하고 선택에
-  대한 책임감이 있어야 한다.
+  Crazy to Data, love Data
 
 # This should be the same author as first entry in `_data/authors.yml`
 author:
