@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
-title: Certification
-slug: Certification
+title: certification
+slug: certification
 category: Data_Analysis
 menu: false
-order: 1
+order: 3
 ---
