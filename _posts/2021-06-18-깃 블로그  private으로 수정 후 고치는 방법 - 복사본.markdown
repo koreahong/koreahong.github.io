@@ -1,0 +1,35 @@
+---
+layout: post
+title: 'SQL 문제풀이'
+subtitle: '해커랭크'
+categories: SQL
+tags : practice
+comments: False
+---
+
+> Revising the Select Query I 부터 ~ 까지 
+
+
+-------------------------------------------------------------------------------
+
+#Revising the Select Query I
+
+```sql
+select *
+from CITY
+where COUNTRYCODE = 'USA' and POPULATION >= 100000
+```
+
+#Revising the Select Query II
+```sql
+select NAME
+from CITY
+where POPULATION >= 120000 and COUNTRYCODE = 'USA'
+```
+
+#Select All
+
+```sql
+select *
+from CITY
+```

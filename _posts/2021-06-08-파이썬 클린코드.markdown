@@ -27,7 +27,7 @@ comments: False
 	- 문서화 : 어노테이션 명시, docstring 작성
 		- docstring : 컴포넌트(모듈,클래스, 매서드 또는 함수)에 대한 문서화, 가능한 많은 docstring을 추가하는 것이 좋음
 		- 어노테이션 : 코드사용자에게 함수인자에 대한 힌트를 주는 것 
-			``` python
+			```python
 			      Fuctnion annotation
 			      def func(arg1: str, arg2: 1+2, arg3: 'this is annotation') -> bool
     			```
