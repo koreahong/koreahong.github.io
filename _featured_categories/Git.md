@@ -3,7 +3,7 @@ layout: list
 title: Git
 slug: git
 menu: true
-submenu: true
+submenu: false
 order: 3
 description: >
   git

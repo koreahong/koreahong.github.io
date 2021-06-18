@@ -2,8 +2,8 @@
 layout: post
 title: 'private에서 public으로 돌아온 깃 블로그 보이게 하기'
 subtitle: '블로그 안보여 ㅠㅠ'
-categories: Computer_Science
-tags : software
+categories: git
+#tags : software
 comments: True
 ---
 
