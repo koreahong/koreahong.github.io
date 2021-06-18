@@ -2,8 +2,8 @@
 layout: post
 title: 'SQL 해커랭크 문제풀이'
 subtitle: '해커랭크'
-categories : SQL
-tags : practice
+categories: SQL
+tags: practice
 comments: False
 ---
 
