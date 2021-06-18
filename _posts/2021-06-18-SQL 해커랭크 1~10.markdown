@@ -1,18 +1,18 @@
 ---
 layout: post
-title: 'SQL 해커랭크 문제풀이'
+title: 'SQL 해커랭크 문제풀이 1~10'
 subtitle: '해커랭크'
 categories: sql
 tags: practice
-comments: False
+comments: True
 ---
 
-> Revising the Select Query I 부터 ~ 까지 
+> Revising the Select Query I 부터 ~ Weather Observation Station 5까지 
 
 
 -------------------------------------------------------------------------------
 
-#Revising the Select Query I
+# Revising the Select Query I
 
 ```sql
 select *
@@ -20,16 +20,70 @@ from CITY
 where COUNTRYCODE = 'USA' and POPULATION >= 100000
 ```
 
-#Revising the Select Query II
+# Revising the Select Query II
 ```sql
 select NAME
 from CITY
 where POPULATION >= 120000 and COUNTRYCODE = 'USA'
 ```
 
-#Select All
-
+# Select All
 ```sql
 select *
 from CITY
 ```
+# Select By ID
+```sql
+select *
+from CITY
+where ID = 1661
+```
+
+# Japanese Cities' Attributes
+
+```sql
+select *
+from CITY
+where COUNTRYCODE = 'JPN'
+```
+
+# Japanese Cities' Names
+
+```sql
+select NAME
+from CITY
+where COUNTRYCODE = 'JPN'
+```
+
+# Weather Observation Station 1
+
+```sql
+SELECT CITY , STATE
+FROM STATION
+```
+
+# Weather Observation Station 3
+
+```sql
+select distinct(CITY)
+from STATION
+where ID % 2 = 0
+```
+
+# Weather Observation Station 4
+
+```sql
+select count(CITY)-count(distinct(CITY))
+from STATION
+```
+
+# Weather Observation Station 5
+
+```sql
+(select CITY, length(CITY) from STATION order by length(CITY), CITY limit 1)
+UNION
+(select CITY, length(CITY) from STATION order by length(CITY) DESC, CITY limit 1)
+```
+- *max, min으로 구할필요없이 순서를 길이순, 알파벳순으로 나열하고 하나씩 뽑으면 됨
+- *limit은 mysql만 가능
+- offset과 같이 쓰이며 offset은 시작행을 지정한다. 시작은 0부터
