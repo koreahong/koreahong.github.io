@@ -8,6 +8,16 @@ comments: False
 ---
 > dfs&bfs
 
+1. 확인해볼 사항
+빠르게 주변과 비교를 해야함
+- bfs가 적절
+
+2. 방법
+- 방문리스트, 컬러리스트, 그래프 생성
+- for문 -> 노드탐방
+	- if문 방문한 노드(next)와 연결된 노드(x) 컬러 확인 -> 방문리스트, 컬러리스트 필요
+		- 색이 같으면 false 리턴
+
 ```python
 
 from collections import deque
@@ -66,8 +76,6 @@ for _ in range(K):
 
     else: print("NO")
   ```
-
-
 
 
 
