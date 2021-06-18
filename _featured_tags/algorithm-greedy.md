@@ -2,7 +2,7 @@
 layout: tag-blog
 title: greedy
 slug: greedy
-category: algorithm
+category: Algorithm
 menu: false
 order: 4
 ---
