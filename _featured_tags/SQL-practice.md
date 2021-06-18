@@ -2,7 +2,7 @@
 layout: tag-blog
 title: practice
 slug: practice
-category: SQL
+category: sql
 menu: false
 order: 1
 ---

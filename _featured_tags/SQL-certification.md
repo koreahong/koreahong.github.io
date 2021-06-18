@@ -2,7 +2,7 @@
 layout: tag-blog
 title: certification
 slug: certification
-category: SQL
+category: sql
 menu: false
 order: 2
 ---
