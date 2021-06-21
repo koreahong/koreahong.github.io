@@ -1,9 +1,9 @@
 ---
 layout: post
 title: '백준1707 이분탐색'
-#subtitle: 'dfs&bfs'
+#subtitle: 'bfs&dfs'
 categories: algorithm
-tags : dfs&bfs
+tags : bfs&dfs
 comments: False
 ---
 > dfs&bfs
