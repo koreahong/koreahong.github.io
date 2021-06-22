@@ -7,7 +7,7 @@ tags: practice
 comments: True
 ---
 
-> Weather Observation Station 6 부터 ~ Weather Observation Station 5까지 
+> Weather Observation Station 6 부터 ~ Employee Salaries까지 
 
 
 -------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ from Employee
 order by NAME
 ```
 
-# Weather Observation Station 5
+# Employee Salaries
 
 ```sql
 SELECT NAME

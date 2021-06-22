@@ -1,0 +1,181 @@
+---
+layout: post
+title: 'SQL 해커랭크 문제풀이 21~30'
+subtitle: '해커랭크'
+categories: sql
+tags: practice
+comments: True
+---
+
+> Type of Triangle 부터 ~ Weather Observation Station 5까지 
+
+
+-------------------------------------------------------------------------------
+
+# Type of Triangle
+
+```sql
+Select IF ( A+B >C and A+C >B and B+C>A,
+          IF (A=B and A=C and B=C,'Equilateral ',
+          IF (A=B OR B=C or A=C,'Isosceles ', 'Scalene ' )
+             )
+           ,'Not A Triangle')
+From Triangles 
+```
+혹은
+
+```sql
+select
+CASE 
+when A + B <= C OR A + C <= B OR B + C <= A THEN "Not A Triangle"
+when A = B AND B=C THEN "Equilateral" 
+when A = B OR B = C or A=C then "Isosceles"
+else "Scalene" 
+end 
+from Triangles;
+```
+-  select 안에 case문
+
+# Occupations
+```sql
+select  
+    max(case when occupation = 'Doctor' then name end) 'Doctor',
+    max(case when occupation = 'Professor' then name end) 'Professor',
+    max(case when occupation = 'Singer' then name end) 'Singer',
+    max(case when occupation = 'Actor' then name end) 'Actor'
+from (
+  select *, row_number() over (partition by occupation order by name) rownum
+  from occupations
+) new_table
+group by rownum
+```
+- row_number()는 중복을 허용하지 않고 순서를 매김
+  
+- `partition by를 활용하여 부분적으로 그룹을 나눔`
+- 메인쿼리에 max는 groub by를 활용하기 위함
+
+
+```
+-- 각 직업별 Index를 세기 위한 변수 설정
+SET @D=0, @P=0, @S=0, @A=0;
+
+-- min은 groub by를 화용하기 위함
+SELECT MIN(Doctor), MIN(Professor), MIN(Singer), MIN(Actor)
+FROM (SELECT CASE WHEN Occupation = 'Doctor' THEN Name END AS Doctor,
+             CASE WHEN Occupation = 'Professor' THEN Name END AS Professor,
+             CASE WHEN Occupation = 'Singer' THEN Name END AS Singer,
+             CASE WHEN Occupation = 'Actor' THEN Name END AS Actor,
+             CASE
+             WHEN Occupation = 'Doctor' THEN (@D:=@D+1)
+             WHEN Occupation = 'Professor' THEN (@P:=@P+1)
+             WHEN Occupation = 'Singer' THEN (@S:=@S+1)
+             WHEN Occupation = 'Actor' THEN (@A:=@A+1)
+             END AS RowNumber
+       FROM Occupations
+       ORDER BY Name) sub
+GROUP BY RowNumber
+```
+- 인라인뷰에서 생성되는 컬럼은 D~, P~, S~, A~, RowNumer 임
+- 행번호를 활용하여 grouby로 묶을 수 있음
+- `grouby로 묶으면 해당하지 않는 부분은 자동 null처리됨`
+
+# Binary Tree Nodes
+```sql
+SELECT
+N,
+CASE WHEN ISNULL(P) THEN 'Root'
+WHEN (SELECT COUNT(T.N) FROM BST T WHERE T.P=TT.N) > 0 THEN 'Inner'
+ELSE 'Leaf' END
+FROM
+BST TT
+ORDER BY N
+```
+- 선언된 from 테이블끼리 위치에 상관없이 비교가능 : BST/T, BST/TT
+
+```sql
+select N, 
+       (case when isnull(P) then 'Root' 
+       when N not in (select distinct P from BST where P is not null) then 'Leaf' 
+       else 'Inner' end ) as nodeType 
+from BST 
+order by N
+```
+
+# New Companies
+```sql
+SELECT c.company_code, c.founder,
+       COUNT(DISTINCT(l.lead_manager_code)), COUNT(DISTINCT(s.senior_manager_code)),
+       COUNT(DISTINCT(m.manager_code)), COUNT(DISTINCT(e.employee_code))
+FROM company c, lead_manager l, senior_manager s, manager m, employee e
+WHERE c.company_code = l.company_code AND
+      l.lead_manager_code = s.lead_manager_code AND
+      s.senior_manager_code = m.senior_manager_code AND
+      m.manager_code = e.manager_code
+GROUP BY c.company_code, c.founder 
+ORDER BY c.company_code
+```
+
+```sql
+SELECT company.company_code, company.founder, lead.lead_count, senior.senior_count,
+       manager.manager_count, employee.employee_count
+FROM company
+ INNER JOIN (SELECT company_code, COUNT(DISTINCT(lead_manager_code)) AS lead_count
+             FROM lead_manager
+             GROUP BY company_code) lead ON company.company_code = lead.company_code
+ INNER JOIN (SELECT company_code, COUNT(DISTINCT(senior_manager_code)) AS senior_count
+             FROM senior_manager
+             GROUP BY company_code) senior ON company.company_code = senior.company_code
+ INNER JOIN (SELECT company_code, COUNT(DISTINCT(manager_code)) AS manager_count
+             FROM manager
+             GROUP BY company_code) manager ON company.company_code = manager.company_code
+ INNER JOIN (SELECT company_code, COUNT(DISTINCT(employee_code)) AS employee_count
+             FROM employee
+             GROUP BY company_code) employee ON company.company_code = employee.company_code
+ORDER BY company.company_code
+```
+# evising Aggregations - The Count Function
+
+```sql
+select count(*)
+from CITY
+where POPULATION >= 100000
+```
+# Revising Aggregations - The Sum Function
+
+```sql
+select sum(POPULATION)
+from CITY
+where DISTRICT = 'california'
+```
+
+# Average Population
+
+```sql
+SELECT ROUND(AVG(POPULATION))
+FROM CITY
+```
+
+# Japan Population
+
+```sql
+SELECT SUM(POPULATION)
+FROM CITY
+WHERE COUNTRYCODE = 'JPN'
+```
+
+
+# Population Density Difference
+
+```sql
+SELECT MAX(POPULATION)-MIN(POPULATION)
+FROM CITY
+```
+
+# The Blunder
+
+```sql
+select ceil((sum(Salary)-sum(replace(cast(Salary as char), '0', '')))/count(*)) 
+from Employees
+```
+- cast : 형변환
+- replace : 값대체 문자열이어야 가능
