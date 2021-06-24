@@ -7,7 +7,7 @@ tags: practice
 comments: True
 ---
 
-> Type of Triangle 부터 ~ Weather Observation Station 5까지 
+> Type of Triangle 부터 ~ The Blunder까지 
 
 
 -------------------------------------------------------------------------------
