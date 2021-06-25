@@ -7,12 +7,12 @@ tags: practice
 comments: True
 ---
 
-> Symmetric Pairs 부터 ~ Weather Observation Station 5까지 
+> Symmetric Pairs 부터 ~ Placements까지 
 
 
 -------------------------------------------------------------------------------
 
-# Population Census
+# Symmetric Pairs
 
 ```sql
 SELECT if(X <= Y, X, Y) , if (x <= y, Y, X)
