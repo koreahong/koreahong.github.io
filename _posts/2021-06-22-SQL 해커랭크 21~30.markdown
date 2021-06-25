@@ -35,6 +35,41 @@ end
 from Triangles;
 ```
 -  select 안에 case문
+# The PADS
+
+```sql
+-- 조건 1
+SELECT
+    CONCAT (
+        name
+        , '(' 
+        , SUBSTR(occupation, 1, 1)
+        , ')'
+    )
+FROM
+    occupations
+ORDER BY
+    name;
+
+-- 조건 2
+SELECT
+    CONCAT(
+        'There are a total of '
+        , COUNT(occupation)
+        , ' '
+        , LOWER(occupation)
+        , 's.'
+    )
+FROM
+    occupations
+GROUP BY
+    occupation
+ORDER BY 
+    COUNT(occupation)
+    , occupation
+```
+
+- concat으로 연결, substr로 추출 숙지
 
 # Occupations
 ```sql
