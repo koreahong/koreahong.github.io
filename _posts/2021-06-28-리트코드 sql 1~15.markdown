@@ -223,12 +223,12 @@ FROM   weather
 - 차이가 1나는 식으로도 조인이 가능하다. -> 사칙연산으로 조인가능 [해커랭크참고](https://www.hackerrank.com/challenges/the-report/problem)
 
 # 197. Rising Temperature
-```sql = 'Completed' THEN 1
-                       ELSE 0
-                     end), 2) 
+```sql
 SELECT t.request_at           AS 'Day',
        Round(1 - Avg(CASE
-                       WHEN statusAS 'Cancellation Rate'
+                       WHEN status = 'Completed' THEN 1
+                       ELSE 0
+                     end), 2) AS 'Cancellation Rate'
 FROM   trips t
        INNER JOIN users u1
                ON t.client_id = u1.users_id
