@@ -1,0 +1,255 @@
+---
+layout: post
+title: '리트코드 sql 1~15'
+subtitle: '리트코드'
+categories: sql
+tags: practice
+comments: True
+---
+
+> 175 ~ Placements까지 
+
+
+-------------------------------------------------------------------------------
+
+# 175. Combine Two Tables
+
+```sql
+select p.firstname, p.lastname, a.city, a.state
+from person p left join address a on p.personid = a.personid
+```
+
+# 176. Second Highest Salary
+
+```sql
+select max(em_rk.salary)  as SecondHighestSalary
+from (select salary, (rank() over (order by salary desc)) rk
+        from employee) as em_rk
+where em_rk.rk = 2
+```
+- `max같은 집계함수로 산출할때 존재하지 않으면 자동 null로 출력됨`
+
+
+# 177. Nth Highest Salary
+
+```sql
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+      select max(em_rk.salary)  as SecondHighestSalary
+      from (select salary, (dense_rank() over (order by salary desc)) rk
+            from employee) as em_rk
+      where em_rk.rk = N  
+  );
+END
+```
+- 
+
+# 178. Rank Scores
+
+```sql
+select score, (dense_rank() over (order by score desc)) as `Rank`
+from scores
+```
+- Rank와 같이 컬럼명이 함수명과 동일할 경우에는 "``"를 붙여줘야 함 
+
+# 180. Consecutive Numbers
+
+```sql
+SELECT DISTINCT
+    l1.Num AS ConsecutiveNums
+FROM
+    Logs l1,
+    Logs l2,
+    Logs l3
+WHERE
+    l1.Id = l2.Id - 1
+    AND l2.Id = l3.Id - 1
+    AND l1.Num = l2.Num
+    AND l2.Num = l3.Num
+;
+```
+- 조인을 이용해서 연결하는 방법이다
+- 연속된 세개의 아이디에서 num이 같으면 출력
+- 대부분 이런 문제는 조인을 해서 푸는거 같다. 혹은 변수생성해서 만들거나
+
+# 181. Employees Earning More Than Their Managers
+
+```sql
+select e1.name as Employee
+from employee e1 
+     inner join employee e2 
+             on e1.managerid = e2.id
+where e1.salary > e2.salary
+
+```
+
+# 182. Duplicate Emails
+
+- 내풀이
+```sql
+SELECT DISTINCT( email )
+FROM   (SELECT email,
+               ( Row_number()
+                   OVER (
+                     partition BY email) ) AS rn
+        FROM   person) prt
+WHERE  rn > 1 
+```
+```sql
+SELECT Email
+FROM PERSON
+GROUP BY Email
+HAVING COUNT(1) > 1;
+```
+- 기본기 탄탄.... row_number 남발하지말자
+
+# 183. Customers Who Never Order
+
+```sql
+select c.name as Customers
+from customers c 
+     left join orders o
+            on c.id = o.customerid
+where isnull(o.customerid)
+```
+
+# 184. Department Highest Salary
+
+- 내풀이
+```sql
+SELECT     d.name `department`,
+           e.name   AS `employee`,
+           e.salary AS salary
+FROM       (
+                    SELECT   *,
+                             (Rank() over (partition BY departmentid ORDER BY salary DESC)) AS rk
+                    FROM     employee) e
+INNER JOIN department d
+ON         e.departmentid = d.id
+WHERE      e.rk = 1
+```
+
+- solution
+```sql
+SELECT department.name AS 'Department',
+       employee.name   AS 'Employee',
+       salary
+FROM   employee
+       INNER JOIN department
+         ON employee.departmentid = department.id
+WHERE  ( employee.departmentid, salary ) IN (SELECT departmentid,
+                                                    Max(salary)
+                                             FROM   employee
+                                             GROUP  BY departmentid); 
+```
+- solution은 굉장히 교과서 탄탄방법이다.
+
+# 185. Department Top Three Salaries
+
+- 내풀이 
+```sql
+SELECT     d.name 'Department',
+           e_rk.name `employee`,
+           e_rk.salary 'Salary'
+FROM       (
+                    SELECT   *,
+                             (dense_rank() over (partition BY departmentid ORDER BY salary DESC)) rk
+                    FROM     employee) e_rk
+INNER JOIN department d
+ON         e_rk.departmentid = d.id
+WHERE      e_rk.rk <= 3
+```
+- solution
+
+```sql
+SELECT d.name  AS 'Department',
+       e1.name AS 'Employee',
+       e1.salary
+FROM   employee e1
+       JOIN department d
+         ON e1.departmentid = d.id
+WHERE  3 > (SELECT Count(DISTINCT e2.salary)
+            FROM   employee e2
+            WHERE  e2.salary > e1.salary
+                   AND e1.departmentid = e2.departmentid); 
+```
+- 순차적으로 조인을 시도하여 최종적으로 비교를 하면 됨
+- 첫번째 방법보다는 편하지만 좋은 방법인지는 의문..
+
+# 196. Delete Duplicate Emails
+```sql
+delete
+from person
+where id not in ( select * from (select min(id)
+                                from person
+                                group by email) as p);
+```
+
+- update, delete 등 from절에 쓰인 table을 바로 삭제할 수 없다
+- 임시 테이블을 만들어서 삭제해야함
+- [관련도큐먼트mysql](https://dev.mysql.com/doc/refman/5.6/en/update.html)
+
+# 197. Rising Temperature
+
+- 내풀이
+```sql
+FROM   weather w1
+       INNER JOIN weather w2
+               ON Date_add(w1.recorddate, INTERVAL 1 day) = w2.recorddate
+WHERE  w1.temperature < w2.temperature 
+```
+- 날짜 더하기 date_add(더할날짜, interval 1 month, second, etc)
+- 위 식을 아래와 같이 쓸 수 있다
+- from 절에서 바로 조건식을 달 수 있음
+
+```sql
+select w2.id
+from weather w1
+        inner join weather w2
+                on DATE_ADD(w1.recorddate, INTERVAL 1 day) = w2.recorddate
+                   and w1.temperature < w2.temperature
+```
+
+- solution
+```sql
+SELECT weather.id AS 'Id'
+FROM   weather
+       INNER JOIN weather w
+               ON Datediff(weather.recorddate, w.recorddate) = 1
+                  AND weather.temperature > w.temperature; 
+;
+```
+- 차이가 1나는 식으로도 조인이 가능하다. -> 사칙연산으로 조인가능 [해커랭크참고](https://www.hackerrank.com/challenges/the-report/problem)
+
+# 197. Rising Temperature
+```sql = 'Completed' THEN 1
+                       ELSE 0
+                     end), 2) 
+SELECT t.request_at           AS 'Day',
+       Round(1 - Avg(CASE
+                       WHEN statusAS 'Cancellation Rate'
+FROM   trips t
+       INNER JOIN users u1
+               ON t.client_id = u1.users_id
+                  AND u1.banned != 'Yes'
+       INNER JOIN users u2
+               ON t.driver_id = u2.users_id
+                  AND u2.banned != 'Yes'
+GROUP  BY t.request_at 
+```
+- round ~ rate' 부분은 두고두고 곱씹어 먹어야할 구문이다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

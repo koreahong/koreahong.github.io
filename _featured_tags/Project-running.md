@@ -2,7 +2,7 @@
 layout: tag-blog
 title: running
 slug: running
-category: sql
+category: project
 menu: false
 order: 1
 ---
