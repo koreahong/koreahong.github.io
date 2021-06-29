@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '리트코드 sql 14~'
+title: '리트코드 sql 14~25'
 subtitle: '리트코드'
 categories: sql
 tags: practice
@@ -251,7 +251,7 @@ SELECT *,
 FROM   triangle 
 ```
 
-# 197. Rising Temperature
+# 1336. Number of Transactions per Visit
 
 - 내풀이
 ```sql
