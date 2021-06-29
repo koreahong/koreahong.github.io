@@ -16,7 +16,7 @@ comments: True
 
 - 잘못된 풀이
 ```sql
-select c.company_code, c.founder, count(distinct(l.lead_manager_code)), count(distinct(s.senior_manager_code)), count(distinct((m.manager_code)), count(distinct(e.employee_code))
+select c.company_code, c.founder, count(distinct(l.lead_manager_code)), count(distinct(s.senior_manager_code)), count(distinct(m.manager_code)), count(distinct(e.employee_code))
 from Company c inner join 
      Lead_Manager l on c.company_code = l.company_code inner join
      Senior_Manager s on l.lead_manager_code = s.lead_manager_code inner join
@@ -24,8 +24,7 @@ from Company c inner join
      Employee e on m.manager_code = e.manager_code
 group by c.company_code, c.founder
 ```
-- 위와 같이 코딩하면 syntax 에러가 난다. 그 이유는 각 count하는 범위가 다르기 때문
-- 따라서, 애초 카운트를 해서 조인을 해야하는 방식으로 작성해야 함
+- 오류 확인 : count(distinct(`(`m.manager_code)) -> count(distinct(m.manager_code))
 
 ```sql
 SELECT company.company_code, company.founder, lead.lead_count, senior.senior_count,

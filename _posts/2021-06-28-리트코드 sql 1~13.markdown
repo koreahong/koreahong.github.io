@@ -7,7 +7,7 @@ tags: practice
 comments: True
 ---
 
-> 175 ~ Placements까지 
+> 리트코드 sql 문제풀이
 
 
 -------------------------------------------------------------------------------
@@ -102,6 +102,7 @@ FROM PERSON
 GROUP BY Email
 HAVING COUNT(1) > 1;
 ```
+
 - 기본기 탄탄.... row_number 남발하지말자
 
 # 183. Customers Who Never Order
@@ -111,7 +112,7 @@ select c.name as Customers
 from customers c 
      left join orders o
             on c.id = o.customerid
-where isnull(o.customerid)
+where isnull(o.customerid);
 ```
 
 # 184. Department Highest Salary
@@ -127,7 +128,7 @@ FROM       (
                     FROM     employee) e
 INNER JOIN department d
 ON         e.departmentid = d.id
-WHERE      e.rk = 1
+WHERE      e.rk = 1;
 ```
 
 - solution
@@ -143,6 +144,7 @@ WHERE  ( employee.departmentid, salary ) IN (SELECT departmentid,
                                              FROM   employee
                                              GROUP  BY departmentid); 
 ```
+
 - solution은 굉장히 교과서 탄탄방법이다.
 
 # 185. Department Top Three Salaries
@@ -158,8 +160,9 @@ FROM       (
                     FROM     employee) e_rk
 INNER JOIN department d
 ON         e_rk.departmentid = d.id
-WHERE      e_rk.rk <= 3
+WHERE      e_rk.rk <= 3;
 ```
+
 - solution
 
 ```sql
@@ -174,6 +177,7 @@ WHERE  3 > (SELECT Count(DISTINCT e2.salary)
             WHERE  e2.salary > e1.salary
                    AND e1.departmentid = e2.departmentid); 
 ```
+
 - 순차적으로 조인을 시도하여 최종적으로 비교를 하면 됨
 - 첫번째 방법보다는 편하지만 좋은 방법인지는 의문..
 
@@ -194,16 +198,6 @@ where id not in ( select * from (select min(id)
 
 - 내풀이
 ```sql
-FROM   weather w1
-       INNER JOIN weather w2
-               ON Date_add(w1.recorddate, INTERVAL 1 day) = w2.recorddate
-WHERE  w1.temperature < w2.temperature 
-```
-- 날짜 더하기 date_add(더할날짜, interval 1 month, second, etc)
-- 위 식을 아래와 같이 쓸 수 있다
-- from 절에서 바로 조건식을 달 수 있음
-
-```sql
 select w2.id
 from weather w1
         inner join weather w2
@@ -211,15 +205,21 @@ from weather w1
                    and w1.temperature < w2.temperature
 ```
 
+- 날짜 더하기 date_add(더할날짜, interval 1 month, second, etc)
+- 위 식을 아래와 같이 쓸 수 있다
+- from 절에서 바로 조건식을 달 수 있음
+
+
 - solution
 ```sql
 SELECT weather.id AS 'Id'
 FROM   weather
        INNER JOIN weather w
                ON Datediff(weather.recorddate, w.recorddate) = 1
-                  AND weather.temperature > w.temperature; 
-;
+                  AND weather.temperature > w.temperature
+
 ```
+
 - 차이가 1나는 식으로도 조인이 가능하다. -> 사칙연산으로 조인가능 [해커랭크참고](https://www.hackerrank.com/challenges/the-report/problem)
 
 # 197. Rising Temperature

@@ -8,9 +8,7 @@ isme2n:
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-    한번 시작하면 포기하지 않는 스타일
-    이리저리 휘달리다가 찾은 데이터 분석의 재미. 내 일만큼은 내가 하고 싶은 걸로 하고싶다.
-    그래야 책임감있게 살 수 있으리라 확신한다.	    
+    To Be data analyst
 
   # This photo will be used in the about section
   picture:
@@ -24,7 +22,7 @@ isme2n:
   # Comment/uncommet to show/hide
   # Icons appear in order, can be rearranged:
   social:
-    facebook:        <username>
+    #facebook:        <username>
     # twitter:         <username>
     # google:          <number>
     # vk:              <username>
@@ -60,7 +58,7 @@ isme2n:
     # stumbleupon:     <username>
     # paypal:          <username>
     email:           mailto:koreahong@gmail.com
-    rss:             https://koreahong.github.io/feed.xml
+    #rss:             https://koreahong.github.io/feed.xml
 
 # Another author
 mdo:

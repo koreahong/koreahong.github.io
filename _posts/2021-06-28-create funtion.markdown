@@ -66,7 +66,10 @@ END $$
 ```sql
 SELECT FNC_ATTEND('attend', '1000');
 ```
+<img width="146" alt="함수적용리턴1" src="https://user-images.githubusercontent.com/51938331/123659685-eaf6a680-d86d-11eb-9585-fd3a655208ab.png">
 
 ```sql
 SELECT * FROM EMP_ATTEND;
 ```
+
+<img width="126" alt="함수적용후셀렉" src="https://user-images.githubusercontent.com/51938331/123659741-f8139580-d86d-11eb-896a-71b863578c8d.png">
