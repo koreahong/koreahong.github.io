@@ -14,6 +14,9 @@ comments: True
 
 # 595. Big Countries
 ## basic
+
+- 내풀이
+
 ```sql
 select name, population, area
 from world
@@ -22,6 +25,9 @@ where area >= 3000000 or population >= 25000000
 
 # 596. Classes More Than 5 Students
 ## basic
+
+- 내풀이
+
 ```sql
 select class
 from 
@@ -35,7 +41,7 @@ where num >= 5
 # 601. Human Traffic of Stadium
 ## 윈도우함수 / 연속적인출력
 
-- solution
+- solution 1
 ```sql
 WITH temp
      AS (SELECT *,
@@ -57,6 +63,8 @@ WHERE  rn IN (SELECT rn
     2. 차가 같은것 끼리 묶어주고 3개이상인 것만 추출
     3. 해당한 id의 내용 출력 
     
+
+- solution 2
 ```sql
 select t1.*
 from stadium t1, stadium t2, stadium t3
@@ -77,6 +85,8 @@ and
 
 # 620. Not Boring Movies
 ## 기본함수
+
+- 내풀이
 
 ```sql
 select *
@@ -101,6 +111,8 @@ FROM   seat s1
 - `(숫자+1)^1-1 자체가 비트연산을 통해 짝수 <-> 홀수를 바꿔주는 연산이 됨`, 두고두고 써먹기
 - [비트연산](https://koreahong.github.io/sql/2021/06/29/%EB%B9%84%ED%8A%B8%EC%97%B0%EC%82%B0/)
 
+
+- solution 2
 ```sql
 select  
         case
@@ -116,6 +128,7 @@ order   by id
 ```
 - case when 활용
 
+- solution 3
 ```sql
 SELECT IF (id%2 <> 0, IF(id <> (SELECT Max(id)
                                 FROM   seat), id + 1, id), id - 1) id,
@@ -128,6 +141,8 @@ ORDER  BY id;
 
 # 627. Swap Salary
 ## if / case
+
+- 내풀이
 
 ```sql
 update salary
@@ -172,6 +187,9 @@ group by rn_table.id
 
 # 1270. All People Report to the Given Manager
 ## basic
+
+- 내풀이
+
 ```sql
 SELECT e1.employee_id
 FROM   employees e1
@@ -210,7 +228,8 @@ HAVING Sum(quiet) = 0;
     1. partition by로 student_id와 동일행의 exam_id별 최대값, 최솟값을 구한다
     2. student_id와 동일행의 score가 최대값 혹은 최솟값과 같으면 1
     3. 마지막으로 group by로 student_id로 묶은 후 sum결과가 0인 student만 출력하기
-    
+  
+- solution
 ```sql
 WITH temp
      AS (SELECT exam_id,
@@ -251,6 +270,9 @@ where  low_fats = 'Y'
 
 # 610. Triangle Judgement
 ## if / case
+
+- 내풀이 
+
 ```sql
 SELECT *,
        ( CASE
@@ -265,8 +287,7 @@ FROM   triangle
 # 1336. Number of Transactions per Visit
 ## 조인 
 
-- 내풀이  
-
+- solution
 ```sql
 with temp
         as (select v.user_id,
