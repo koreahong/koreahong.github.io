@@ -25,16 +25,22 @@ comments: False
 - 포매팅과 문서화의 중요성
 	- 포매팅 : 레이아웃 -> PEP-8, 코딩스타일
 	- 문서화 : 어노테이션 명시, docstring 작성
-		- docstring : 컴포넌트(모듈,클래스, 매서드 또는 함수)에 대한 문서화, 가능한 많은 docstring을 추가하는 것이 좋음
-		- 어노테이션 : 코드사용자에게 함수인자에 대한 힌트를 주는 것 
-			``` python
+		- docstring 
+			- 컴포넌트(모듈,클래스, 매서드 또는 함수)에 대한 문서화, 가능한 많은 docstring을 추가하는 것이 좋음
+			- 코드가 좀 더 커지게 되고, 상세한 정보가 필요함
+		- 어노테이션
+			- 코드사용자에게 함수인자에 대한 힌트를 주는 것 
+			``` {.python}
 			      Fuctnion annotation
 			      def func(arg1: str, arg2: 1+2, arg3: 'this is annotation') -> bool
     			```
-   			위와 같이 파라미터에 : expression 형태로 매개변수 마다 annotation 을 쓸 수 있다. 
- 		 	annotation 에는 arg1 처럼 매개변수의 type 을 써놓을 수도 있고,
-			arg2 의 annotation 처럼 덧셈과 같은 간단한 연산 표현도 작성 가능하며, 
-			arg3 처럼 string 형태로도 작성 가능하다. 
-			또한, function 의 return 값에 대해서는 -> expression 형태로 사용한다. 
-			return 또한 매개변수와 사용 방법은 동일하다.
-			출처: https://bluese05.tistory.com/78 [ㅍㅍㅋㄷ]
+   			위와 같이 파라미터에 : expression 형태로 매개변수 마다 annotation 을 쓸 수 있다.  
+ 		 	annotation 에는 arg1 처럼 매개변수의 type 을 써놓을 수도 있고,  
+			arg2 의 annotation 처럼 덧셈과 같은 간단한 연산 표현도 작성 가능하며,  
+			arg3 처럼 string 형태로도 작성 가능하다.  
+			또한, function 의 return 값에 대해서는 -> expression 형태로 사용한다.  
+			return 또한 매개변수와 사용 방법은 동일하다.  
+			출처: https://bluese05.tistory.com/78 [ㅍㅍㅋㄷ]  
+
+- 클린코드 자동화
+	- Mypy, Pylint, Black 사용
