@@ -265,7 +265,7 @@ FROM   triangle
 # 1336. Number of Transactions per Visit
 ## 조인 
 
-- 내풀이
+- 내풀이  
 ```sql
 with temp
         as (select v.user_id,
