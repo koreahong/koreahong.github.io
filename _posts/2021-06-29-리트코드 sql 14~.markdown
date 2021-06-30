@@ -266,6 +266,7 @@ FROM   triangle
 ## 조인 
 
 - 내풀이  
+
 ```sql
 with temp
         as (select v.user_id,
