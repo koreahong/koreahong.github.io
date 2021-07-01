@@ -2,8 +2,8 @@
 layout: post
 title: '[1일차]머신러닝과 통계'
 subtitle: '[1일차]머신러닝과 통계 용어 및 비교'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : theory
 comments: False
 ---
 > 1일차 공부정리

@@ -3,7 +3,7 @@ layout: post
 title: '21년 5월, 독서 - 글 발췌 및 요약 느낌'
 subtitle: '돈이 되는 빅데이터 읽기, 자율주행, 자율주행차가 바꾸는 세상, 수축사회, 뉴노멀'
 categories: book
-tags : nonstudy
+tags : IT
 comments: False
 ---
 

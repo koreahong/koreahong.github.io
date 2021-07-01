@@ -2,8 +2,8 @@
 layout: post
 title: '[3일차]머신러닝과 통계'
 subtitle: '[3일차]로지스틱회귀와 랜덤포레스트 비교 / 모델의 근본으로의 차이(통계학 머신러닝)'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : theory
 comments: False
 ---
 > 3일차 공부정리

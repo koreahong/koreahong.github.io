@@ -1,10 +1,10 @@
 ---
 layout: list
-title: Devlog
-slug: devlog
+title: ETC
+slug: ETC
 menu: true
 submenu: true
-order: 8
+order: 999
 description: >
-  개발관련 정보
+  ETC
 ---

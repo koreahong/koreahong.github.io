@@ -2,8 +2,8 @@
 layout: post
 title: '내가 100만 유튜브가 되려면'
 subtitle: '해볼까....ㅎ'
-categories: analysis
-#tags : 
+categories: Data_Analysis
+tags : practice 
 comments: False
 ---
 > 우리카드 자소서 항목

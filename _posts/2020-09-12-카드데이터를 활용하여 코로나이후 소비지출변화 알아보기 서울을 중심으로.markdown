@@ -2,8 +2,8 @@
 layout: post
 title: '제주카드데이터를 활용한 코로나이후 소비변화를 알아보자'
 subtitle: '서울을 중심으로 소비변화를 알아보자'
-categories: analysis
-#tags : 
+categories: Data_Analysis
+tags : practice
 comments: False
 ---
 >코로나 이후 소비는 얼마나 줄었나  

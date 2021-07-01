@@ -1,0 +1,85 @@
+---
+layout: post
+title: '백준1707 이분탐색'
+#subtitle: 'bfs&dfs'
+categories: algorithm
+tags : bfs&dfs
+comments: False
+---
+> dfs&bfs
+
+1. 확인해볼 사항
+빠르게 주변과 비교를 해야함
+- bfs가 적절
+
+2. 방법
+- 방문리스트, 컬러리스트, 그래프 생성
+- for문 -> 노드탐방
+	- if문 방문한 노드(next)와 연결된 노드(x) 컬러 확인 -> 방문리스트, 컬러리스트 필요
+		- 색이 같으면 false 리턴
+
+```python
+
+from collections import deque
+import sys
+
+#같은 코드에서 input 받는 형태를 아래와 같이 하니 시간이 더 빨랐음
+input = sys.stdin.readline
+
+def bfs(x):
+    queue = deque()
+    queue.append(x)
+    color[x] = 1
+    visited[x] = 1
+  
+    while queue:
+        x = queue.popleft()
+        #x를 꺼냈는데 방문이 되어있었다면 color확인 후 패스
+        for next in graph[x]:
+            if not visited[next]:
+                queue.append(next)
+	  #컬러를 1과 2로 구분지음
+                color[next] = 3-color[x]
+                visited[next] = 1
+
+            else:
+                if color[next] == color[x]:
+                    return False
+
+    return True
+
+K = int(input())
+
+for _ in range(K):
+    V, E = map(int, input().split())
+
+    visited = [0 for i in range(V+1)]
+    color =  [0 for i in range(V+1)]
+    graph = {i:[] for i in range(V+1)}
+
+    for _ in range(E):
+        x, y = map(int, input().split())
+
+        graph[x].append(y)
+        graph[y].append(x)
+    
+    flag = True
+    
+    for i in range(1, V+1):
+        if not visited[i]:
+            if not bfs(i):
+                flag = False
+                break
+    
+    if flag:
+         print("YES")
+
+    else: print("NO")
+  ```
+
+
+
+
+
+
+

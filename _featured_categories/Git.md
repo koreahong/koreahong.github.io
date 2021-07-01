@@ -1,10 +1,10 @@
 ---
 layout: list
-title: Analysis
-slug: analysis
+title: Git
+slug: git
 menu: true
 submenu: false
-order: 2
+order: 3
 description: >
-  주간 분석
+  git
 ---

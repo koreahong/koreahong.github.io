@@ -1,0 +1,15 @@
+---
+layout: post
+title: 'private에서 public으로 돌아온 깃 블로그 보이게 하기'
+subtitle: '블로그 안보여 ㅠㅠ'
+categories: git
+#tags : software
+comments: True
+---
+
+git commit --allow-empty -m "Trigger rebuild"
+git push
+
+public->privat->public으로 전환하였다면 위 명령을 두번하면 해결된다.
+휴우...
+-------------------------------------------------------------------------------

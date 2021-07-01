@@ -2,8 +2,8 @@
 layout: post
 title: '[2일차]머신러닝과 통계'
 subtitle: '[2일차]머신러닝과 통계모델 비교'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : theory
 comments: False
 ---
 > 2일차 공부정리

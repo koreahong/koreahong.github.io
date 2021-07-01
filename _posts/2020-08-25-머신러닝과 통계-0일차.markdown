@@ -2,8 +2,8 @@
 layout: post
 title: '[0일차]머신러닝과 통계'
 subtitle: '[0일차]머신러닝과 통계 공부시작'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : theory
 comments: False
 ---
 

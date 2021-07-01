@@ -2,8 +2,8 @@
 layout: post
 title:  "SQLD 요약"
 subtitle:   "sql명령분 부터 최적화 까지"
-categories: book
-tags: study
+categories: SQL
+tags: certification
 comments: true
 ---
 

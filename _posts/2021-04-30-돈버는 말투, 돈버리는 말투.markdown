@@ -3,7 +3,7 @@ layout: post
 title: '돈버는 말투, 돈버리는 말투'
 subtitle: '말은 짧게, 핵심만'
 categories: book
-tags : nonstudy
+tags : Culture
 comments: False
 ---
 

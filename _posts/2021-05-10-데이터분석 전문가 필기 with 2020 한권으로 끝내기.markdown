@@ -2,8 +2,8 @@
 layout: post
 title: 'ADP 필기 공부'
 subtitle: '서술형 개념 익히기'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : certification
 comments: False
 ---
 

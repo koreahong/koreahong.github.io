@@ -1,0 +1,100 @@
+---
+layout: post
+title: '리트코드 sql 26~'
+subtitle: '리트코드'
+categories: sql
+tags: practice
+comments: True
+---
+
+> 리트코드 sql 문제풀이
+
+
+-------------------------------------------------------------------------------
+
+# 1398. Customers Who Bought Products A and B but Not C
+## basic / advanced count
+
+- 내풀이
+
+```sql
+select customer_id, customer_name
+from   customers
+where  customer_id not in (select distinct customer_id
+                           from   orders
+                           where  product_name = 'C')
+       and customer_id in (select distinct customer_id
+                           from   orders
+                           where  product_name = 'B')
+       and customer_id in (select distinct customer_id
+                           from   orders
+                           where  product_name = 'A')
+```
+
+- solution
+```sql
+SELECT o.customer_id,
+       c.customer_name,
+       o.product_name
+FROM   customers c
+       INNER JOIN orders o
+               ON c.customer_id = o.customer_id
+GROUP  BY o.customer_id
+HAVING Count(o.product_name IN ( 'A', 'B' )
+              OR NULL) > 1
+       AND Count(o.product_name = 'C'
+                  OR NULL) = 0 
+```
+- `count( or null) 뜻은 count(boolean True, False) 값을 세겠다는 뜻 -> where절없이 바로 count 사용가능`
+- `반드시 or null을 사용해서 참인값을 세게 해야함. true or null -> true, False or null -> False`
+- [count( or null) stack overflow](https://stackoverflow.com/questions/5011239/why-do-i-need-or-null-in-mysql-when-counting-rows-with-a-condition)
+
+
+
+# 1384. Total Sales Amount by Year
+## datetime
+
+- 내풀이
+
+```sql
+with years
+        as (select 2018 as y
+            union 
+            select 2019
+            union
+            select 2020)
+         
+select amount_cal.product_id, 
+       product_name,
+       cast(y as char) as report_year, 
+       sum(amount) as total_amount
+from   ( select product_id,
+				average_daily_sales,
+				y,
+				(
+				   case 
+						when y = year(period_start) and y = year(period_end) then (datediff(period_end, period_start) + 1) * average_daily_sales
+						when year(period_start) < y and y < year(period_end) then 365 * average_daily_sales
+						when year(period_start) = y and y < year(period_end) then datediff(concat(cast(year(period_start)+1 as char),'-01-01'), period_start) * average_daily_sales
+						when year(period_start) < y and y = year(period_end) then (datediff(period_end, concat(cast(year(period_end) as char),'-01-01'))+1) * average_daily_sales
+				   end
+				  ) as amount
+		from   
+			(select   product_id, 
+					     period_start, 
+					     period_end, 
+					     average_daily_sales, 
+					     y1.y
+		     from    sales s, years y1, years y2
+			 where  year(s.period_start) <= y1.y
+					    and year(s.period_end) >= y2.y
+					    and y1.y = y2.y
+			) as year_table
+		) as amount_cal
+        
+             inner join product p
+                        on amount_cal.product_id = p.product_id
+group   by amount_cal.product_id, y
+order    by product_id
+```
+- [리트코드게시판에 설명등록](https://leetcode.com/problems/total-sales-amount-by-year/discuss/1306968/MySQL-solution)

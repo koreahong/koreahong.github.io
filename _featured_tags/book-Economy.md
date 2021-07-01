@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
-title: NonStudy
-slug: nonstudy
+title: Economy
+slug: Economy
 category: book
 menu: false
-order: 2
+order: 1
 ---

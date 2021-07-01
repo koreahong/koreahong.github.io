@@ -2,8 +2,8 @@
 layout: post
 title: '누구나 파이썬 통계학'
 subtitle: '통계기초 with Python'
-categories: book
-tags : study
+categories: Data_Analysis
+tags : theory
 comments: False
 ---
 

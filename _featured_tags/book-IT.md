@@ -1,7 +1,7 @@
 ---
 layout: tag-blog
-title: Study
-slug: study
+title: IT
+slug: IT
 category: book
 menu: false
 order: 1
