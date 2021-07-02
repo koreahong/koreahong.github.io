@@ -1091,13 +1091,64 @@ FROM    (
 
 
 
+# `1308. Running Total for Different Genders`
+## basic / union / recheck
+
+- 내풀이
+1. 성별로 집계
+2. union
+
+
+```sql
+(SELECT 'F'                  as gender,
+        s1.day,
+        SUM(s2.score_points) as total
+FROM    scores s1
+        INNER JOIN scores s2
+                on s1.day >= s2.day
+                   AND s1.gender = 'F'
+                   AND s2.gender = 'F'
+GROUP   BY s1.day)
+
+UNION ALL
+
+(SELECT 'M'                  as gender,
+        s1.day,
+        SUM(s2.score_points) as total
+FROM    scores s1
+        INNER JOIN scores s2
+                on s1.day >= s2.day
+                   AND s1.gender = 'M'
+                   AND s2.gender = 'M'
+GROUP   BY s1.day)
+ORDER   BY gender, day
+```
+
+
+- solution
+
+```sql
+SELECT  gender, day, 
+        SUM(score_points) OVER(partition by gender ORDER BY day) as total
+FROM    scores;
+```
+- `초간단..... 명심하자 집계함수는 윈도우 함수로 모두 사용 가능`
 
 
 
 
+# 1321. Restaurant Growth
 
-
-
+```sql
+SELECT a.visited_on AS visited_on, SUM(b.day_sum) AS amount,
+       ROUND(AVG(b.day_sum), 2) AS average_amount
+FROM
+  (SELECT visited_on, SUM(amount) AS day_sum FROM Customer GROUP BY visited_on ) a,
+  (SELECT visited_on, SUM(amount) AS day_sum FROM Customer GROUP BY visited_on ) b
+WHERE DATEDIFF(a.visited_on, b.visited_on) BETWEEN 0 AND 6
+GROUP BY a.visited_on
+HAVING COUNT(b.visited_on) = 7
+```
 
 
 
