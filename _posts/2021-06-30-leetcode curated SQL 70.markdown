@@ -813,32 +813,280 @@ having  sum(q2.weight) <= 1000
 order   by q1.turn desc limit 1
 ```
 
+# 1205. Monthly Transactions II
+## basic
+
+- solution
+    - incline / decline 상관없이 걍 조인해서 취소내역 불러오면 됨
+```sql
+SELECT  month, 
+        country, 
+        SUM(CASE WHEN state = "approved" THEN 1 ELSE 0 END) AS approved_count, 
+        SUM(CASE WHEN state = "approved" THEN amount ELSE 0 END) AS approved_amount, 
+        SUM(CASE WHEN state = "back" THEN 1 ELSE 0 END) AS chargeback_count, 
+        SUM(CASE WHEN state = "back" THEN amount ELSE 0 END) AS chargeback_amount
+FROM
+    (
+        SELECT LEFT(chargebacks.trans_date, 7) AS month, country, "back" AS state, amount
+        FROM chargebacks
+        JOIN transactions ON chargebacks.trans_id = transactions.id
+        UNION ALL
+        SELECT LEFT(trans_date, 7) AS month, country, state, amount
+        FROM transactions
+        WHERE state = "approved"
+    ) s
+GROUP   BY month, country 
+```
+
+
+# 1212. Team Scores in Football Tournament
+## basic / 조인 + union / recheck
+
+```sql
+select  t.team_id,
+        t.team_name,
+        ifnull(sum(points_tbl.points), 0) as num_points
+from    (   select  host_team as team_id,
+                    (case    
+                        when host_goals > guest_goals then 3
+                        when host_goals = guest_goals then 1
+                        when host_goals < guest_goals then 0
+                    end) points
+            from    matches
+
+            union all
+
+            select  guest_team  as team_id,
+                    (case    
+                        when host_goals < guest_goals then 3
+                        when host_goals = guest_goals then 1
+                        when host_goals > guest_goals then 0
+                    end) points
+            from    matches
+        ) as points_tbl
+        
+        right join teams t
+                on points_tbl.team_id = t.team_id
+group   by t.team_id
+order   by num_points desc, t.team_id
+
+```
+
+- solution
+
+```sql
+SELECT  team_id,
+        team_name,
+        SUM(CASE WHEN team_id=host_team AND host_goals>guest_goals THEN 3 ELSE 0 END)+
+        SUM(CASE WHEN team_id=guest_team AND guest_goals>host_goals THEN 3 ELSE 0 END)+
+        SUM(CASE WHEN team_id=host_team AND host_goals=guest_goals THEN 1 ELSE 0 END)+
+        SUM(CASE WHEN team_id=guest_team AND guest_goals=host_goals THEN 1 ELSE 0 END)
+        as num_points
+FROM    Teams
+        LEFT JOIN Matches
+               ON team_id=host_team OR team_id=guest_team
+GROUP   BY team_id
+ORDER   BY num_points DESC, team_id ASC;
+```
+
+
+# `1225. Report Contiguous Dates`
+## hard / 전체랭크 - 부분랭크로 연속적인 일자 확인하기 / recheck
+
+- solution
+```sql
+SELECT  stats       AS period_state, 
+        MIN(day)    AS start_date, 
+        MAX(day)    AS end_date
+FROM (
+        SELECT 
+                day, 
+                RANK() OVER (ORDER BY day) AS overall_ranking, 
+                stats, 
+                rk, 
+                (RANK() OVER (ORDER BY day) - rk) AS inv
+        FROM (
+                SELECT  fail_date                           AS day, 
+                        'failed'                            AS stats, 
+                        RANK() OVER (ORDER BY fail_date)    AS rk
+                FROM    Failed
+                WHERE   fail_date BETWEEN '2019-01-01' AND '2019-12-31'
+                UNION 
+                SELECT  success_date                            AS day, 
+                        'succeeded'                             AS stats, 
+                        RANK() OVER (ORDER BY success_date)     AS rk
+                FROM    Succeeded
+                WHERE   success_date BETWEEN '2019-01-01' AND '2019-12-31') t
+    ) c
+GROUP BY inv, stats
+ORDER BY start_date
+```
+
+# 1251. Average Selling Price
+## basic / 조인 후 계산
+
+- 내풀이
+
+1. between을 사용해서 날짜 조인
+2. group by 계산
+
+```sql
+select  product_id,
+        round(sum(sum_price) / sum(units), 2) as average_price
+from    (
+            select  p.product_id,
+                    p.price * u.units as sum_price,
+                    u.units
+            from    prices p
+                    inner join unitssold u
+                            on u.purchase_date between p.start_date and p.end_date
+                               and p.product_id = u.product_id
+        ) sum_tbl
+group   by product_id
+                    
+```
+
+# 1264. Page Recommendations
+## basic / union + 조인 / recheck
+
+- 내풀이
+    - user_id 1에게 추천해줄 페이지 찾기
+1. 1과 친구인 목록구하기
+2. 친구목록과 페이지 조인
+3. 추천페이지와 1의 기존 라이크 페이지 빼기
+
+```sql
+select  distinct l.page_id as recommended_page 
+from    (
+            select  user2_id as friend
+            from    friendship 
+            where   user1_id = 1
+
+            union   
+
+            select  user1_id as friend
+            from    friendship 
+            where   user2_id = 1
+        ) f_tbl
+        inner join likes l
+                on f_tbl.friend = l.user_id
+where   l.page_id not in (  select  page_id
+                            from    likes
+                            where   user_id = 1
+                         )
+```
+
+- solution
+1. `case로 user_id 1과 친구인 id 발굴` 
+```sql
+select distinct page_id as recommended_page
+from    (
+            select
+                    case
+                        when user1_id=1 then user2_id
+                        when user2_id=1 then user1_id
+                    end as user_id
+            from Friendship) a
+                 inner join Likes
+                         on a.user_id=Likes.user_id
+            where page_id not in (select page_id from Likes where user_id=1)
+```
 
 
 
+# 1270. All People Report to the Given Manager
+## basic / 조인
 
+- 내풀이
+    - 2번 조인해서 찾기
 
+```sql
 
+select  e1.employee_id
+from    employees e1
+        inner join employees e2
+                on e1.manager_id = e2.employee_id
+        inner join employees e3
+                on e2.manager_id = e3.employee_id
+where   e3.manager_id = 1 
+        and e1.employee_id <> 1
+```
 
+# `1280. Students and Examinations`
+## basic / 조인연속 recheck
 
+- solution
 
+```sql
+SELECT  student.student_id,
+        student.student_name,
+        subject.subject_name,
+        COUNT(exam.subject_name) as attended_exams
+FROM    Students as student
+        INNER JOIN Subjects as subject
+        LEFT JOIN Examinations as exam
+               ON student.student_id=exam.student_id AND subject.subject_name=exam.subject_name
+GROUP   BY student.student_id,subject.subject_name
+ORDER   BY student_id,subject_name;
+```
+# 1285. Find the Start and End Number of Continuous Ranges
 
+- solution
+    -연속적인 숫자들 점검
+1. 로우넘이랑 숫자빼기
+```sql
+SELECT  min(log_id) as start_id,
+        max(log_id) as end_id
+FROM    (
+            SELECT  log_id,
+                    log_id - row_number()
+                                    over() rk
+            FROM    `logs` l
+        ) rk_tbl
+group   by rk
 
+```
 
+# 1294. Weather Type in Each Country
+## super basic 
 
+- 내풀이
 
+```sql
+# 지역별, 기간별 날씨타입 구하기
+# 1. 조인 후 조건 - case
 
+SELECT  c.country_name,
+        case
+            when avg(weather_state) <= 15 then 'Cold'
+            when avg(weather_state) <  25 then 'Warm'
+            else 'Hot'
+        end weather_type
+FROM    countries c
+        inner join weather w
+                on c.country_id = w.country_id
+WHERE   w.day >= '2019-11-01'
+        and w.day <= '2019-11-30'
+group   by c.country_id          
+```
 
+# 1303. Find the Team Size
+## super basic
 
+- 내풀이
 
-
-
-
-
-
-
-
-
+```sql
+SELECT  e.employee_id,
+        gp_num.team_size
+FROM    (
+            SELECT  team_id,
+                    count(employee_id) as team_size
+            FROM    employee
+            GROUP   BY team_id
+        ) gp_num
+        inner join employee e
+                on gp_num.team_id = e.team_id
+```
 
 
 
