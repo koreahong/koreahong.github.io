@@ -542,35 +542,276 @@ group   by b.book_id, b.name
 having  ifnull(sum(quantity),0) <10;
 ```
 
+# 1112. Highest Grade For Each Student
+## basic
+
+- 내풀이
+1. 조건에 부합하는 rank 생성
+2. 랭크1, min course_id 추출
+
+```sql
+select  student_id, 
+        min(course_id) as course_id,
+        grade
+from    (   select  student_id, 
+                    course_id,
+                    grade,
+                    rank()
+                        over(
+                            partition by student_id order by grade desc) rk
+            from    enrollments 
+        ) as tbl
+where   rk = 1
+group   by student_id
+```
+- solution
+```sql
+select  student_id, 
+        min(course_id) course_id,
+        grade
+from    enrollments
+where   (student_id, grade) in (select  student_id, max(grade)
+                                from    enrollments
+                                group   by student_id)
+group   by student_id
+order   by student_id
+```
+
+
+# 1113. Reported Posts
+## super basic
+
+- 내풀이
+
+1. group by로 조건 맞추기
+```sql
+select  extra                    as report_reason,
+        count(distinct post_id)  as report_count
+from    actions
+where   action = 'report'
+        and action_date = '2019-07-04'
+group   by extra
+```
+
+# 1126. Active Businesses
+## super basic
+
+- 내풀이
+1. event별 평균구하기
+2. 평균보다 큰 비지니스 아이디 구하기
+
+```sql
+select  business_id
+from    (select  event_type,
+                 avg(occurences) as avg_occ
+         from    `events`
+         group   by event_type) as avg_tbl
+        inner join `events` e
+                on avg_tbl.event_type = e.event_type
+where   e.occurences > avg_tbl.avg_occ
+group   by business_id
+having  count(business_id) > 1
+```
+
+# 1126. Active Businesses
+## super basic
+
+- solution
+    - 문제를 제대로 읽지 않아서 시간이 걸림....
+    - report spam 중에 삭제된 확률을 구하는 것
+
+```sql
+SELECT Round(Avg(cnt), 2) AS average_daily_percent
+FROM   (SELECT ( Count(DISTINCT r.post_id) / Count(DISTINCT a.post_id) ) * 100
+               AS cnt
+        FROM   actions a
+               LEFT JOIN removals r
+                      ON a.post_id = r.post_id
+        WHERE  extra = 'spam'
+               AND action = 'report'
+        GROUP  BY action_date)tmp 
+```
+
+# 1141. User Activity for the Past 30 Days I
+## super basic
+
+- 내풀이
+
+```sql
+select  activity_date as day,
+        count(distinct user_id) active_users
+from    activity
+where   activity_date between '2019-06-28' and '2019-07-27'
+group   by activity_date
+```
+
+# 1148. Article Views I
+## super basic
+
+- 내풀이
+
+```sql
+select  distinct author_id as id
+from    `views`
+where   author_id = viewer_id
+order   by author_id
+```
+
+# 1149. Article Views II
+## super basic
+
+- 내풀이
+    - 하루에 2개이상 기사본 id  구하기
+1. 날짜, 뷰어아이디 별 개수 2개이상
+
+```sql
+select  distinct viewer_id as id
+from    `views`
+group   by view_date, viewer_id
+having  count(distinct article_id) > 1
+order   by id
+```
+
+# 1164. Product Price at a Given Date
+## basic / union
+
+- 내풀이
+    - 최초 상품가격은 10
+1. 8월16일자 날짜 끊고, 각 max 날짜에 new price 추출
+2. 최소 날짜가 8월16일이면 가격 10으로 고정
+3. union으로 합체
+
+```sql
+select  p.product_id,
+        p.new_price as price
+from    (   select  product_id,
+                    max(change_date) as change_date
+            from    products
+            where   change_date <= '2019-08-16'
+            group   by product_id
+         )  max_date
+          left join products p
+                 on max_date.product_id = p.product_id
+                    and max_date.change_date = p.change_date
+union 
+
+select  product_id,
+        10 as price
+from    products
+group   by product_id
+having  min(change_date) > '2019-08-16'
+```
+- [Discuss 등재](https://leetcode.com/problems/product-price-at-a-given-date/discuss/1310372/using-union-MySQL-solution)
+
+- solution
+```sql
+SELECT  T1.product_id, 
+        IFNULL(T2.new_price,10) AS price
+FROM    (SELECT DISTINCT product_id FROM Products) AS T1 
+        LEFT JOIN   (SELECT product_id, new_price
+                     FROM Products
+                     WHERE (product_id, change_date) IN (SELECT product_id, MAX(change_date) AS last_date
+                                                         FROM Products
+                                                         WHERE change_date <= '2019-08-16'
+                                                         GROUP BY product_id)) AS T2
+```
+
+
+# 1173. Immediate Food Delivery I
+## super basic / `select avg`
+
+- 내풀이 
+```sql
+select  round(( select  count(*)
+                from    delivery
+                where   order_date = customer_pref_delivery_date) / count(*) * 100, 2) as immediate_percentage 
+from    delivery
+```
+- solution
+```sql
+select  round(100 * avg(order_date = customer_pref_delivery_date), 2) as immediate_percentage 
+from    Delivery;
+```
+- `select 문에서 바로 평균때릴 수 있다`
 
 
 
+# `1193. Monthly Transactions I`
+## basic / sum count
+
+- solution
+
+```sql
+SELECT  LEFT(trans_date, 7)             AS month, 
+        country                         AS country,
+        COUNT(id)                       AS trans_count, 
+        SUM(state = 'approved')         AS approved_count, 
+        SUM(amount)                     AS trans_total_amount, 
+        SUM(CASE 
+                WHEN state = 'approved' THEN amount 
+                ELSE 0 
+            END)                        AS approved_total_amount
+FROM    Transactions
+GROUP   BY month, country
+```
+- `count(state = 'approved' or null = sum(state = 'approved')`
 
 
+# 1194. Tournament Winners
+## basic / 윈도우, union, join
+
+- 내풀이
+1. 테이블내 플레이럴 나눠서 `union all` / union만 하면 다른 경기에서 치른경기인데도 삭제될 수 있음
+2. group id 추가하기 위한 조인, 윔도우 함수로 rank 생성
+3. 순위 1등만 추출
+
+```sql
+select  group_id,
+        player_id
+from    (   select  p.player_id,
+                    p.group_id,
+                    (rank() 
+                        over(
+                            partition by p.group_id order by sum(sum_tbl.player_sum) desc, p.player_id asc)) rk
+            from    (   select  first_player     as player_id,
+                                sum(first_score) as player_sum
+                        from    Matches
+                        group   by first_player
+
+                        union   all
+
+                        select  second_player     as player_id,
+                                sum(second_score) as player_sum
+                        from    Matches
+                        group   by second_player
+                    ) sum_tbl
+
+                    inner join players p
+                            on sum_tbl.player_id = p.player_id
+            group   by player_id
+        ) as result_tbl
+where   rk = 1
+```
+- [Discuss 등재](https://leetcode.com/problems/tournament-winners/discuss/1310602/MySQL-solution-union-all-%2B-window-%2B-join)
 
 
+# `1204. Last Person to Fit in the Bus`
+## basic / 조건 걸기,조인
 
+- 내풀이
+    - turn기준으로 누적합 구하고 1000 조건 자르기
+1. 누적합 구하기
+2. 조건으로 자르기
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```sql
+select  q1.person_name
+from    queue q1
+        inner join queue q2
+                on q1.turn >= q2.turn
+group   by q1.turn
+having  sum(q2.weight) <= 1000
+order   by q1.turn desc limit 1
+```
 
 
 
