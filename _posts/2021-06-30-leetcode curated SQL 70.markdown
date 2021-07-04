@@ -1138,6 +1138,9 @@ FROM    scores;
 
 
 # 1321. Restaurant Growth
+## mediun / recheck
+
+- solution
 
 ```sql
 SELECT a.visited_on AS visited_on, SUM(b.day_sum) AS amount,
@@ -1149,8 +1152,23 @@ WHERE DATEDIFF(a.visited_on, b.visited_on) BETWEEN 0 AND 6
 GROUP BY a.visited_on
 HAVING COUNT(b.visited_on) = 7
 ```
+- from절에서 groupby로 미리 묶는 이유는 동일한 날짜가 중복되면 합산이 두번됨
 
+# 1322. Ads Performance
+## basic / case / recheck
 
+- solution
+```sql
+SELECT  ad_id, 
+        IFNULL(ROUND(AVG(CASE 
+                            WHEN action = 'Clicked' THEN 1
+                            WHEN action = 'Viewed' THEN 0
+                            ELSE NULL 
+                         END)*100,2),0) AS ctr
+FROM    Ads
+GROUP   BY ad_id
+ORDER   BY ctr DESC, ad_id
+```
 
 
 
