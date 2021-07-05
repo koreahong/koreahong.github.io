@@ -108,7 +108,7 @@ where  id in (select managerid
 # 571. Find Median Given Frequency of Numbers
 ## basic / 중앙값 구하기     
     
-- solution 1   
+- solution 1 
     
 ```sql     
 select  avg(n.Number) median
@@ -120,7 +120,8 @@ where n.Frequency >= abs((select sum(Frequency) from Numbers where Number<=n.Num
 - 왼쪽 , 오른쪽 개수를 따져서 푸는 문제인데 로직은 더 고민해봐야 할거 같다...
 
 
-- solution 2
+- solution 2  
+
 ```sql   
 with a as (    
     select number,    
@@ -132,12 +133,10 @@ with a as (
     
 select avg(number) as median    
 from   a    
-where  medium_num between lower_num and upper_num    
-        
+where  medium_num between lower_num and upper_num     
 ```   
 
-- 그나마 직관적인 풀이 방법이다. 해당컬럼 이전까지 누적개수, 해당컬럼을 포함한 누적개수, 중앙값을 산출하는 방법
-
+- 그나마 직관적인 풀이 방법이다. 해당컬럼 이전까지 누적개수, 해당컬럼을 포함한 누적개수, 중앙값을 산출하는 방법  
 
 # 534. Game Play Analysis
 ## basic / 조인
@@ -1033,7 +1032,8 @@ ORDER   BY student_id,subject_name;
 
 - solution
     -연속적인 숫자들 점검
-1. 로우넘이랑 숫자빼기
+1. 로우넘이랑 숫자빼기  
+
 ```sql
 SELECT  min(log_id) as start_id,
         max(log_id) as end_id
@@ -1170,18 +1170,197 @@ GROUP   BY ad_id
 ORDER   BY ctr DESC, ad_id
 ```
 
+# 1327. List the Products Ordered in a Period
+## super basic
+
+- 내풀이  
+
+```sql
+SELECT  p.product_name,
+        SUM(o.unit) AS unit
+FROM    products p
+        INNER JOIN orders o
+                on p.product_id = o.product_id
+WHERE   o.order_date >= '2020-02-01' 
+        AND o.order_date < '2020-03-01'
+GROUP   BY p.product_id
+HAVING  SUM(o.unit) >= 100
+```
+
+# `1336. Number of Transactions per Visit`
+## hard / `recheck`
+
+- solution
+
+```sql
+with    temp
+            as ( select v.user_id,
+                        v.visit_date,
+                        if(t.amount is null, 0, count(*)) as transaction_count
+                 from   visits v
+                        left join transactions t
+                                on v.user_id = t.user_id 
+                                   and v.visit_date = t.transaction_date
+                 group  by 1,2
+                ),
+        row_num
+            as ( select row_number()
+                                over() as rn
+                 from   transactions
+                 union
+                 select 0)
+
+SELECT  r.rn as transactions_count,
+        count(t.transaction_count) as visits_count
+FROM    temp t
+        RIGHT JOIN row_num r
+                ON t.transaction_count = r.rn
+where   rn <= (select max(transaction_count)
+              from   temp) 
+GROUP   BY r.rn
+ORDER   BY transactions_count
+```
 
 
+# 1341. Movie Rating
+## basic 
+
+- 내풀이
+
+```sql
+(SELECT  u.name as results
+FROM    movie_rating m
+        INNER JOIN users u
+                ON m.user_id = u.user_id
+GROUP   BY u.user_id
+ORDER   BY count(m.user_id) desc, u.name limit 1)
+
+UNION
+
+(SELECT  m2.title as results
+FROM    movie_rating m1
+        INNER JOIN Movies m2
+                ON m1.movie_id = m2.movie_id
+WHERE   m1.created_at >= '2020-02-01'
+        AND m1.created_at < '2020-03-01'
+GROUP   BY m1.movie_id
+ORDER   BY avg(m1.rating) desc, m2.title limit 1)
+```
+
+# 1350. Students With Invalid Departments
+## super basic
+
+- 내풀이  
+
+```sql
+SELECT  s.id,
+        s.name
+FROM    students s
+        LEFT JOIN departments d
+               ON s.department_id = d.id
+WHERE   d.id is null
+```
 
 
+# 1369. Get the Second Most Recent Activity
+## basic
+
+- 내풀이
+    - 두번째로 많이 한 활동 찾기
+1. 윈도우 함수로 랭크매기기  
+
+```sql
 
 
+WITH    tbl
+        AS (
+            SELECT  *,
+                    (rank()
+                            over(
+                                partition by username order by startdate desc)) as rk
+            FROM    useractivity 
+        )
+
+SELECT  USERNAME,
+        ACTIVITY,
+        STARTDATE,
+        ENDDATE
+FROM    tbl
+WHERE   rk = 2
+        OR username not in (SELECT  username
+                            FROM    tbl
+                            GROUP   BY username
+                            HAVING  max(rk) >= 2)
+
+```
+
+- solution  
+```sql
+SELECT *
+FROM   useractivity
+GROUP  BY username
+HAVING Count(*) = 1
+UNION ALL
+SELECT u1.*
+FROM   useractivity u1
+       LEFT JOIN useractivity u2
+              ON u1.username = u2.username
+                 AND u1.enddate < u2.enddate
+GROUP  BY u1.username,
+          u1.enddate
+HAVING Count(u2.enddate) = 1 
+```
 
 
+# 1378. Replace Employee ID With The Unique Identifier
+## super basic
 
+- 내풀이  
 
+```sql
+SELECT  e2.unique_id,
+        e1.name
+FROM    employees e1
+        LEFT JOIN employeeuni e2
+               ON e1.id = e2.id
 
+```
 
+# `1384. Total Sales Amount by Year`
+## hard / `recheck`
+
+- 내풀이
+    - 제품, 연도별 매출 기록
+1. 날짜 나누기  
+
+```sql
+WITH    y  
+        AS (
+            SELECT  2018 AS `year`
+            UNION   
+            SELECT  2019 AS `year`
+            UNION   
+            SELECT  2020 AS `year`
+        )
+        
+        
+SELECT  s1.product_id,
+        p.product_name,
+        cast(y.year as char(10)) as report_year,
+        CASE
+            WHEN year(s1.period_start) = y.year and year(s1.period_end) = y.year then (datediff(s1.period_end, s1.period_start) + 1) * average_daily_sales
+            WHEN year(s1.period_start) < y.year and year(s1.period_end) > y.year then 365 * average_daily_sales
+            WHEN year(s1.period_start) = y.year and year(s1.period_end) > y.year then datediff(concat(cast(y.year+1 as char(10)), '-01-01'), s1.period_start) * average_daily_sales
+            WHEN year(s1.period_start) < y.year and year(s1.period_end) = y.year then (datediff(s1.period_end, concat(cast(y.year as char(10)), '-01-01')) + 1) * average_daily_sales
+        END as total_amount              
+FROM    sales s1
+        INNER JOIN y
+                ON year(s1.period_start) <= y.year
+                   AND year(s1.period_end) >= y.year
+        INNER JOIN product p
+                ON s1.product_id = p.product_id
+ORDER   BY product_id, report_year
+```
 
 
 
