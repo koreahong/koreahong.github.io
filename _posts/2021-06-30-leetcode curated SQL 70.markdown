@@ -41,7 +41,7 @@ where  (player_id, event_date) in (select player_id,
 # 534. Game Play Analysis III
 ## basic / 날짜별 누적합 구하기
 
-- 내풀이
+- 내풀이  
 
 ```sql
 select a1.player_id, 
@@ -366,7 +366,8 @@ group  by p.project_id
 
 - 내풀이
 1. 서브쿼리로 최대값 찾기
-2. 최대값 적용
+2. 최대값 적용  
+
 ```sql
 select  project_id
 from    project
