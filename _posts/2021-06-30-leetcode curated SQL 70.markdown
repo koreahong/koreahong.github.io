@@ -1363,13 +1363,91 @@ ORDER   BY product_id, report_year
 ```
 
 
+# 1393. Capital Gain/Loss
+## super basic
+
+- 내풀이  
+
+```sql
+SELECT  stock_name,
+        SUM(IF(operation = 'Sell', price, 0)) - SUM(IF(operation = 'Buy', price, 0)) AS capital_gain_loss
+FROM    stocks
+GROUP   BY stock_name
+
+```
+
+# 1407. Top Travellers
+## super basic
+
+- 내풀이  
+
+```sql
+SELECT  u.name,
+        IFNULL(SUM(r.distance),0) AS travelled_distance
+FROM    users u
+        left JOIN rides r
+               ON u.id = r.user_id
+GROUP   BY u.id
+ORDER   BY travelled_distance desc, u.name
+```
 
 
+# 1412. Find the Quiet Students in All Exams
+## medium / recheck
+
+- 내풀이
+  - 어느 시험에서나 꼴등이나 1등하지 않은 친구 찾기
+1. with로 1등 꼴등한 점수,아이디 찾기
+2. 메인 쿼리에서 not in으로 친구 찾기  
+
+```sql
+WITH    temp
+        AS (
+            SELECT  e.student_id
+            FROM    exam e
+                    INNER JOIN  (   SELECT  exam_id,
+                                            MIN(score) score 
+                                    FROM    exam
+                                    GROUP   BY exam_id
+
+                                    UNION   ALL
+
+                                    SELECT  exam_id,
+                                            MAX(score) score
+                                    FROM    exam
+                                    GROUP   BY exam_id
+                                ) tbl
+                            ON e.exam_id = tbl.exam_id
+                               AND e.score = tbl.score
+        )
+           
+SELECT  DISTINCT s.student_id,
+        s.student_name
+FROM    exam e
+        LEFT JOIN student s
+               ON e.student_id = s.student_id
+WHERE   s.student_id not in (   SELECT  *
+                                FROM    temp)
+ORDER   BY s.student_id
+```
+- [윈도우함수 풀이참고](https://leetcode.com/submissions/detail/515182877/)
 
 
+# 1421. NPV Queries
+## super basic
 
+- 내풀이  
 
-
+```sql
+SELECT  q.id,
+        q.year,
+        IFNULL(n.npv, 0) as npv
+FROM    queries q
+        LEFT JOIN NPV n
+               ON q.id = n.id
+                  AND q.year = n.year
+              
+```
 
 
 
