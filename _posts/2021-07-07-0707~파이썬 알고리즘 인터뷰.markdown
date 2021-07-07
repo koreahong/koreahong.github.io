@@ -47,9 +47,7 @@ comments: False
     - 다양한 라이브러리 활용가능
     
 # 2부 파이썬
-## 3부. 파이썬
-
-### 3장. 파이썬이란
+## 3장. 파이썬이란
 - WHAT?
     - 프로그래밍 언어
 - WHY?
@@ -58,8 +56,8 @@ comments: False
 - HOW?
     - pip로 라이브러리 다운
     
-### 3장. 파이썬 문법
-#### 인덴트
+## 3장. 파이썬 문법
+### 인덴트
 - WHAT?
     - 공백
 - WHY?
@@ -68,7 +66,7 @@ comments: False
     - 공백 4칸 들여쓰기
     - 파이참 리포맷 기능 활용
 
-#### 네이밍 컨벤션
+### 네이밍 컨벤션
 - WHAT?
     - 변수명
 - WHY?
@@ -78,7 +76,7 @@ comments: False
 - HOW?
     - 스네이크 케이스 / '_' 추가방식
     
-#### 타입힌트
+### 타입힌트
 - WHAT?
     - 파라미터 타입 명시
 - WHY?
@@ -86,7 +84,7 @@ comments: False
 - HOW?
     - 파라미터와 리턴값을 명시
     
-#### 리스트 컴프리핸션
+### 리스트 컴프리핸션
 - WHAT?
     - 기존 리스트를 기반으로 새로운 리스트를 만들어내는 구문
 - WHY?
@@ -94,7 +92,7 @@ comments: False
 - HOW?
     - [기존 리스트 for문 if문 등]
     
-#### 제너레이터
+### 제너레이터
 - WHAT?
     - 루프의 반복동작을 제어할 수 있는 루틴 형태
 - WHY?
@@ -104,7 +102,7 @@ comments: False
     - yield와 next 구성
     - 생성 조건만 보관
     
-#### print
+### print
 - WHAT?
     - 출력 결과를 보여주는 것
 - WHY?
@@ -112,7 +110,7 @@ comments: False
 - HOW?
     - f-string ex : ```python print(f'{idx+1}: {fruit}')```
     
-#### pass
+### pass
 - WHAT?
     - Null연산으로 아무것도 하지 않는 기능
 - WHY?
@@ -120,7 +118,7 @@ comments: False
 - HOW?
     - ```python def method_a() pass```
     
-#### 코딩스타일
+### 코딩스타일
 - WHAT?
     - 코딩하는 스타일
 - WHY?
@@ -128,7 +126,7 @@ comments: False
 - HOW?
     - PEP8과 같은 가이드라인 참고
     
-#### 변수명과 주석
+### 변수명과 주석
 - WHAT?
     - 변수명과 주석
 - WHY?
