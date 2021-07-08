@@ -18,17 +18,150 @@ comments: False
     - 리트코드 / 번호찾기
 
 ## 6장. 문자열 조작 / 추가문제
-### 
-
-        result = ''
+### `leetcode 3. Longest Substring Without Repeating Characters`
+- 내풀이
+  - 풀이 : 오른쪽으로 반복된 문자가 나오기 전까지 숫자를 카운팅
+  - 문제점 : 이중for문으로 느림, 확인했던 부분을 재확인 함 => 불필요함
+```python  
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        def expand(left: int, right: int) -> str:
+            chrs
+            while right < len(s) and s[right] not in s[left:right]:
+                right += 1
+            return len(s[left:right])
         
-        for i in range(len(s) - 1):
-            result = max(result, ''
-                            expand(i, i + 1),
-                            expand(i, i + 2),
-                            key = len)
-            
+        if len(s) <= 1:
+            return len(s)
+        
+        result = 0
+        for i in range(len(s)):
+            result = max(result,
+                            expand(i, i + 1))
+        
         return result
 ```
 
+- solution
+  - 풀이
+    1. 문자와 숫자를 같이 저장 
+    2. 중복된 문자가 나오면 for문은 idx번호와 저장되었던 idx번호를 뺌
+       - 이전에 확인했던 문자들은 빼는 행위로 재확인이 필요없게 됨 
+    3. 중복되었던 문자의 value값, 카운팅 시작값 갱신
+  
+- explanation
+  - string in strs and strs[string] >= start : 중복된 문자 발견을 했는데, 이전의 중복된 문자가 우리가 카운팅하려는 범위안에 있어야됨
+  - max(result, len(s) - start) : 처음부터 끝까지 중복된 문자가 없을 경우를 대비 
+```python  
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        
+        #예외처리
+        if len(s) < 2:
+            return len(s)
+        
+        strs = {}
+        start, result = 0, 0
+        
+        for i, string in enumerate(s):
+            if string in strs and strs[string] >= start:
+                result = max(result, i - start)
+                start = strs[string] + 1
+            strs[string] = i
+            
+        return max(result, len(s) - start)
+```
 
+### 953. Verifying an Alien Dictionary
+
+- solution
+  - 풀이
+    1. 새로 정의된 순서를 dict에 저장
+    2. 붙어 있는 단어만 비교해서 순서 비교  
+  
+```python  
+class Solution:
+    def isAlienSorted(self, words: List[str], order: str) -> bool:
+        order_map = {}
+        for index, val in enumerate(order):
+            order_map[val] = index
+
+        for i in range(len(words) - 1):
+
+            for j in range(len(words[i])):
+                if j >= len(words[i + 1]): return False
+
+                if words[i][j] != words[i + 1][j]:
+                    if order_map[words[i][j]] > order_map[words[i + 1][j]]: return False
+                    break
+
+        return True
+```
+
+```python  
+class Solution:
+    def isAlienSorted(self, words: List[str], order: str) -> bool:
+        return words == sorted(words, key=lambda word: [order.index(char) for char in word])
+```
+
+
+### leetcode 415. Add Strings
+
+- 내풀이
+  1. 길이 비고 후 적은 곳에 0 채워 넣기
+  2. 더하기 for 문(거꾸로)  
+```python  
+class Solution:
+    def addStrings(self, num1: str, num2: str) -> str:
+        
+        #각 부족한 자릿수 만큼 0으로 채우기
+        if len(num1) > len(num2):
+            num2 = '0' * (len(num1) - len(num2)) + num2
+        if len(num2) > len(num1):
+            num1 = '0' * (len(num2) - len(num1)) + num1
+        
+        result = ''
+        add = '0'
+        for i, j in zip(num1[::-1], num2[::-1]):
+            num = int(i) + int(j) + int(add)
+            if  num >= 10:
+                add = '1'
+                result = str(num % 10) + result
+            else:
+                result = str(num) + result
+                add = '0'
+        
+        if add == '1':
+            result = add + result
+        
+        return result
+```
+
+- [Discuss 등재](https://leetcode.com/problems/add-strings/discuss/1324890/python-solution)
+
+
+### `leetcode 1396. Design Underground System`
+`- 함수내의 구조를 새겨야 하는 문제`
+
+- solution
+  1. 딕셔너리를 활용해 데이터 기록 , `키의 디폴트 값으로 [0,0] 형태로 설정`
+```python  
+class UndergroundSystem:
+
+    def __init__(self):
+        self.check_in_data = {}
+        self.journey_data = collections.defaultdict(lambda : [0, 0])
+                
+    def checkIn(self, id: int, stationName: str, t: int) -> None:
+        self.check_in_data[id] = [stationName, t]
+
+    def checkOut(self, id: int, end_station: str, t: int) -> None:
+
+        start_station, start_time = self.check_in_data.pop(id)
+        self.journey_data[(start_station, end_station)][0] += (t - start_time)
+        self.journey_data[(start_station, end_station)][1] += 1
+            
+    def getAverageTime(self, start_station: str, end_station: str) -> float:
+        total_time, total_trips = self.journey_data[(start_station, end_station)]
+        return total_time / total_trips
+```
