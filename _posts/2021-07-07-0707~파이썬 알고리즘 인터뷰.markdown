@@ -313,7 +313,6 @@ class Solution:
 1. `isdigit으로 숫자열인지 확인` [isalnum과 isdigit 차이](https://velog.io/@oaoong/python-%EB%AC%B8%EC%9E%90%EC%97%B4%EC%B2%B4%ED%81%AC-isdigit-isalpha-isalnum-isnumeric-is-decimic-%ED%95%A8%EC%88%98)
 2. sort 파라미터 key를 람다함수로 정렬
 3. 연산자로 리스트 합치기  
-
 ```python  
 class Solution:
     def reorderLogFiles(self, logs: List[str]) -> List[str]:
@@ -329,9 +328,9 @@ class Solution:
         return letter + digit
 ```
 
-#### 가장 흔한 단어 / leetcode 819
+#### `가장 흔한 단어 / leetcode 819`
 
-- solution 1 : re.sub + 리스트컴프리헨션 + Counter
+- solution 1 : `re.sub + 리스트컴프리헨션 + Counter`
 1. `정규표현식 \w : 단어`
 2. `리스트컴프리헨션으로 banned에 있는 단어는 제외하고 리스트형성`
 3. counter.most_common 기능으로 가장 많은 단어 찾기
@@ -358,58 +357,112 @@ class Solution:
 2. 동일
 3. defaultdict으로 딕셔너리 생성해서 key별 count 세기
 4. `max함수로 찾되 파라미터 key를 get기능을 활용. get은 딕셔너리 key값의 value를 가져옴`
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
-- WHY?
-- HOW?
-- WHAT?
 
+
+#### `그룹 애너그램 / leetcode 49`
+
+- solution : `dict key값 + 문자정렬`
+1. 각 문자들을 sorted() 기능으로 정렬한 후에 딕셔너리 키값으로 넣는다
+2. for문으로 정렬된 키값 기준으로 append
+3. dict.values() 기능으로 값 추출
+- `PLUS`
+    - `문자는 sorted('문자') 정렬할 수 있음. 반환값은 list`
+    - `dict의 키값은 꼭 숫자나 단순한 것이 아니어도 됨.` 
+- 풀이   
+```python  
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        anagrams = collections.defaultdict(list)
+        
+        for word in strs:
+            anagrams[''.join(sorted(word))].append(word)
+        
+        result = list(anagrams.values())
+        
+        return result
+```
+
+#### `가장 긴 팰린드롬 / leetcode 5`
+
+- solution : 2중 반복 + max
+1. 짝수, 홀수 각각 설정
+2. while로 팰린드롬 확인
+3. 가장 긴 팰린드롬 추출
+```python                                                                                                                class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        def expand(left: int, right: int) -> str:
+            while left >= 0 and right < len(s) and s[left] == s[right]:
+                left -= 1
+                right += 1
+            
+            return s[left + 1:right]
+        
+        if len(s) < 2 or s == s[::-1]:
+            return s
+        
+        result = ''
+        
+        for i in range(len(s) - 1):
+            result = max(result, ''
+                            expand(i, i + 1),
+                            expand(i, i + 2),
+                            key = len)
+            
+        return result
+```
+
+
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
+- WHY?
+- HOW?
+- WHAT?
 - WHY?
 - HOW?

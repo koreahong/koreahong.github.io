@@ -1,0 +1,34 @@
+---
+layout: post
+title: '0707~, leetcode 알고리즘 문제풀이'
+#subtitle: '구조화된 코드는 어떤 거인가'
+categories: algorithm
+#tags : software  
+comments: False
+---
+
+> leetcode 알고리즘 문제풀이
+
+# 요약의 목적
+- 도움이 될만한 독자 : 코딩-중하 이상
+- 해당 페이지의 중점은 다음과 같다
+    - '파이썬 알고리즘 인터뷰' 장별 추가 문제풀기
+    - '파이썬 알고리즘 인터뷰'에서 사용한 방법을 최대한 이용 
+- 알고리즘 문제
+    - 리트코드 / 번호찾기
+
+## 6장. 문자열 조작 / 추가문제
+### 
+
+        result = ''
+        
+        for i in range(len(s) - 1):
+            result = max(result, ''
+                            expand(i, i + 1),
+                            expand(i, i + 2),
+                            key = len)
+            
+        return result
+```
+
+
