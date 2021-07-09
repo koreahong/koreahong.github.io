@@ -146,7 +146,7 @@ class Solution:
 `- 함수내의 구조를 새겨야 하는 문제`
 
 - solution / recheck
-  1. 딕셔너리를 활용해 데이터 기록 , `키의 디폴트 값으로 [0,0] 형태로 설정`   
+  1. 딕셔너리를 활용해 데이터 기록 , `키의 디폴트 값으로 [0,0] 형태로 설정`    
 ```python  
 class UndergroundSystem:
 
@@ -167,3 +167,50 @@ class UndergroundSystem:
         total_time, total_trips = self.journey_data[(start_station, end_station)]
         return total_time / total_trips
 ```
+
+### `leetcode 17. Letter Combinations of a Phone Number`
+
+- solution / `recheck`
+    - 재귀사용
+- explanation
+    1. 해당문제는 digit개수만큼 각 문자를 더해야함
+    2. 재귀를 활용하는데 더할문자, 문자의 위치를 파라미터를 활용함
+    3. 합쳐진 문자가 digit개수이면 결과에 합침
+    4. 반복   
+- PLUS
+    - 중첩for문이 필요한 상황에는 재귀적으로 풀어나가보자
+    - 그때 전달하는 파라미터는 문제의 조건을 통해서(해당 문제는 digit 개수만큼의 조합) 결정, 함수(중간내용물, 조건에 해당하는내용)  
+```python  
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        
+        def combine(s, d):
+            
+            if len(s) == len(digits):
+                res.append(s)
+                return
+            
+            for i in e[d[0]]:
+                
+                combine(s + i, d[1:])
+                
+        e = {
+            '2': ['a', 'b', 'c'],
+            '3': ['d', 'e', 'f'],
+            '4': ['g', 'h', 'i'],
+            '5': ['j', 'k', 'l'],
+            '6': ['m', 'n', 'o'],
+            '7': ['p', 'q', 'r', 's'],
+            '8': ['t', 'u', 'v'],
+            '9': ['w', 'x', 'y', 'z'],
+        }
+        
+        if not digits: return []
+
+        res = []
+        
+        combine("", digits)
+        
+        return res
+```
+
