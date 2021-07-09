@@ -564,8 +564,7 @@ class Solution:
     - 0이 3개 인것은 별도로 추가
     - 양수와 음수를 더한 것에서 0으로 만드는 수를 구하는데 조건이 있음
         - 양수와 음수와 다른수거나
-        - 같은 수 인데 해당숫자가 2개 이상 있을 경우  
-  
+        - 같은 수 인데 해당숫자가 2개 이상 있을 경우   
 ```python  
 class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
