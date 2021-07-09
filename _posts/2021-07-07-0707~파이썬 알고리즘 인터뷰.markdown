@@ -513,6 +513,7 @@ class Solution:
         
         return cnt
 ```
+
 ### 15. 3Sum
 
 - solution 1
@@ -580,6 +581,7 @@ class Solution:
                     res.add(tuple(sorted([n1, n2, c])))
         return res
 ```
+
 ### 561. Array Partition I
 
 - 내풀이
