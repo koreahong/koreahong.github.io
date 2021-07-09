@@ -487,7 +487,7 @@ class Solution:
     2. 왼쪽 최고 높이 <= 오른쪽 최고 높이
         - 왼쪽 최고에서 현재 최고를 빼주면 해당 지점의 물 저장량을 구할 수 있음
         - 이게 가능한 이유는 해당지점의 양극의 최고높이는 해당지점의 물저장량을 결정짓기 때문  
-```pytyhon  
+```python   
 class Solution:
     def trap(self, height: List[int]) -> int:
         if not height:
