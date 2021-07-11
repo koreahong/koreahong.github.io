@@ -214,3 +214,216 @@ class Solution:
         return res
 ```
 
+## 7장. 배열 / 추가문제
+
+### `11. Container With Most Water`
+
+> 투포인터
+>
+- 내풀이
+    - 해당막대기 기준으로 좌우 모두 확인하여 최대 크기 찾기
+    - 결과 : 타임에러
+```python  
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        
+        result = 0
+        
+        for idx1, num1 in enumerate(height):
+            #left
+            for left, num2 in enumerate(height[:idx1]):
+                if num2 >= num1:
+                    result = max(result, num1 * (idx1 - left))
+            for right, num3 in enumerate(height[idx1:]):
+                if num3 >= num1:
+                    result = max(result, num1 * (right))
+                    
+        return result
+```
+- solution / 투포인터 / `recheck`  
+    - `투 포인터`를 이용해서 작은 막대기가 있는 쪽을 계속 전진시키면서 면적 비교
+    - `큰 막대기는 계속해서 사용되기 때문에 큰막대기 기준으로 이동`
+```python  
+class Solution:
+    def maxArea(self, height: List[int]) -> int:   
+        max_area = 0
+        left, right = 0, len(height)-1
+        while left < right:
+            max_area = max(max_area, min(height[left], height[right])*(right-left))
+            if height[left] <= height[right]:
+                left += 1
+            else:
+                right -= 1  
+        return max_area
+```
+
+### `56. Merge Intervals`
+
+> 정렬 후 조건문 활용
+
+- 내풀이
+    1. 정렬
+    2. 첫번째 요소의 뒤가 두번째 요소 앞보다 크고 첫번째 요소의 뒤가 두번쨰 요소의 뒤보다 작으면 업데이트
+    3. 첫번째 요소의 앞,뒤가 두번째 요소의 앞,뒤보다 크거나 같으면 넘어감
+    4. 이외는 append  
+```python  
+class Solution:
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        
+        intervals.sort(key = lambda x: (x[0], x[1]))
+        
+        result = [intervals[0]]
+        idx = 0
+        
+        for ran in intervals[1:]:
+            if result[idx][1] >= ran[0] and result[idx][1] < ran[1]:
+                result[idx] = [result[idx][0], ran[1]]
+            elif result[idx][1] >= ran[0] and result[idx][1] >= ran[1]:
+                continue
+            else:
+                result.append(ran)
+                idx += 1
+                
+        return result
+```
+
+- solution / 정렬 후 if조건 / `recheck`
+    - 원리는 내풀이와 같음
+    - 하지만 앞뒤 표현이 -1로 표기함으로써 간결하게 가져감 
+    - 곱씹어볼 풀이임 -1, max를 사용한 부분  
+```python  
+class Solution:
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+
+        intervals.sort(key=lambda x: x[0])
+
+        merged = []
+        ### 곱씹어먹어야 할 부분!!!!
+        for interval in intervals:
+            if not merged or merged[-1][1] < interval[0]:
+                merged.append(interval)
+            else:
+                merged[-1][1] = max(merged[-1][1], interval[1])
+
+        return merged
+```
+
+### `253. Meeting Rooms II`
+
+> 최소힙사용
+
+- solution 1 / `recheck`
+    - 최소힙사용
+    1. 정렬
+    2. 첫번째꺼 끝나는 시간을 넣고 다음 시작시간과 비교
+        - 시작시간이 작으면 넣고
+        - 시작시간이 크면 빼고  
+    ```python  
+    class Solution:
+        def minMeetingRooms(self, intervals: List[List[int]]) -> int:
+            
+            if not intervals:
+                return 0
+    
+            free_rooms = []
+    
+            intervals.sort(key= lambda x: x[0])
+    
+            heapq.heappush(free_rooms, intervals[0][1])
+    
+            for i in intervals[1:]:
+    
+                if free_rooms[0] <= i[0]:
+                    heapq.heappop(free_rooms)
+    
+                heapq.heappush(free_rooms, i[1])
+    
+            return len(free_rooms)
+    ```
+  
+> 투포인터, 투리스트 사용
+
+- solution 2 / `recheck`
+    - 투포인터, 투리스트 사용
+    1. 시작시간과 끝나는 시간 따로 정렬함
+    2. 시작시간과 끝나는 시간비교
+        - 시작시간이 끝나는시간보다 작으면 넣고, start += 1
+        - 시작시간이 끝나는시간보다 크면 빼고, end += 1
+    ```python  
+    class Solution:
+        def minMeetingRooms(self, intervals: List[List[int]]) -> int:
+            
+            if not intervals:
+                return 0
+    
+            used_rooms = 0
+    
+            start_timings = sorted([i[0] for i in intervals])
+            end_timings = sorted(i[1] for i in intervals)
+            L = len(intervals)
+    
+            end_pointer = 0
+            start_pointer = 0
+    
+            while start_pointer < L:
+                if start_timings[start_pointer] >= end_timings[end_pointer]:
+                    used_rooms -= 1
+                    end_pointer += 1
+    
+                used_rooms += 1    
+                start_pointer += 1   
+    
+            return used_rooms
+    ```
+
+### 1465. Maximum Area of a Piece of Cake After Horizontal and Vertical Cuts
+
+> 정렬 후 구간설정
+
+- 내풀이 / `recheck`
+    1. 정렬
+    2. 구간설정
+        - `여기서 엣지 케이스를 고려`
+            1. 나눈 그대로의 길이
+            2. 길이와 나눈 구간과 차이
+        - 인접한 나눈길이의 차이  
+    ```python  
+    class Solution:
+        def maxArea(self, h: int, w: int, horizontalCuts: List[int], verticalCuts: List[int]) -> int:
+            horizontalCuts.sort()
+            verticalCuts.sort()
+    
+            h_max = max(horizontalCuts[0], h - horizontalCuts[-1])
+            for a, b in zip(horizontalCuts[:-1], horizontalCuts[1:]):
+                h_max = max(h_max, b - a)
+            
+            v_max = max(verticalCuts[0], w - verticalCuts[-1])
+            for a, b in zip(verticalCuts[:-1], verticalCuts[1:]):
+                v_max = max(v_max, b - a)
+                    
+            return (h_max * v_max) % (10**9 + 7)
+    ```
+
+
+### `560. Subarray Sum Equals K`
+
+> 딕셔너리 + 연속
+
+- solution / `recheck`
+    - 딕셔너리 활용
+    1. 계속 더하다가 합계 - 목표숫자가 이제까지 더했던 결과에 있으면 + 1
+        - 이게 가능한 이유는 순서대로 더했기때문에 해당합이 있으면 합까지 나온데까지 제거하면 목표숫자가 나온다는 것
+- PULS
+    - dict.get(key, default value) : 해당키값이 없으면 디폴트값으로 반환
+    
+ ```python    
+class Solution:
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        
+        count, cur, res = {0: 1}, 0, 0
+        for v in nums:
+            cur += v
+            res += count.get(cur - k, 0)
+            count[cur] = count.get(cur, 0) + 1
+        return res 
+```
