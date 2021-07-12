@@ -146,7 +146,7 @@ class Solution:
 `- 함수내의 구조를 새겨야 하는 문제`
 
 - solution / recheck
-  1. 딕셔너리를 활용해 데이터 기록 , `키의 디폴트 값으로 [0,0] 형태로 설정`    
+  1. 딕셔너리를 활용해 데이터 기록 , `키의 디폴트 값으로 [0,0] 형태로 설정`     
 ```python  
 class UndergroundSystem:
 
