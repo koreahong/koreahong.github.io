@@ -146,7 +146,7 @@ class Solution:
 `- 함수내의 구조를 새겨야 하는 문제`
 
 - solution / recheck
-  1. 딕셔너리를 활용해 데이터 기록 , `키의 디폴트 값으로 [0,0] 형태로 설정`     
+  1. 딕셔너리를 활용해 데이터 기록 , `키의 디폴트 값으로 [0,0] 형태로 설정
 ```python  
 class UndergroundSystem:
 
@@ -219,7 +219,7 @@ class Solution:
 ### `11. Container With Most Water`
 
 > 투포인터
->
+
 - 내풀이
     - 해당막대기 기준으로 좌우 모두 확인하여 최대 크기 찾기
     - 결과 : 타임에러
