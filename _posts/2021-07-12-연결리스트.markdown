@@ -2,7 +2,7 @@
 layout: post
 title: '연결리스트'
 subtitle: '자료구조'
-categories: Data Structures
+categories: Data_Structures
 #tags: theory
 comments: True
 ---
@@ -12,7 +12,7 @@ comments: True
 
 -------------------------------------------------------------------------------
 
-[gitcode참조]()
+[gitcode참조](https://github.com/koreahong/Data_Structures_with_python)
 
 #연결리스트
 
