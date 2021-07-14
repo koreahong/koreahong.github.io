@@ -717,96 +717,95 @@ class Solution:
 - solution 1
     - 연결리스트 사용, `deque는 이중연결리스트`
     - 나머지는 그대로      
-```python 
-class Solution:
-    def isPalindrome(self, head: ListNode) -> bool:
-        
-        q: Deque = collections.deque()
+    ```python 
+    class Solution:
+        def isPalindrome(self, head: ListNode) -> bool:
             
-        if not head:
-            return True
-        
-        node = head
-        while node:
-            q.append(node.val)
-            node = node.next
+            q: Deque = collections.deque()
+                
+            if not head:
+                return True
             
-        while len(q) > 1:
-            if q.popleft() != q.pop():
-                return False
-        
-        return True 
-```
+            node = head
+            while node:
+                q.append(node.val)
+                node = node.next
+                
+            while len(q) > 1:
+                if q.popleft() != q.pop():
+                    return False
+            
+            return True 
+    ```
 
-> 러너활용
+> 러너활용  
 - solution 2 / `recheck`
     - 러너 활용
 - Explanation
     - 빠른러너, 느린러너를 활용해 빠른러너가 리스트 끝까지 갔을때 느린러너는 리스트 중간지점에 도착하는 것을 이용
     - 느린러너는 역으로 LINK를 연결함
     - 느린러너가 중간에서 시작하여 REV와 비교  
-```python  
-def isPalindrome(self, head: ListNode) -> bool:
-    
-    rev = None
-    
-    slow = fast = head
-    
-    #fast가 움직일때마다, slow도 한칸 앞으로, rev도 이전껄 잇는다
-    while fast and fast.next:
-        fast = fast.next.next
-        rev, rev.next, slow = slow, rev, slow.next                
-    
-    #fast가 홀수이면 slow가 중간지점까지 가지 못하기 때문에
-    #slow를 한칸 더 보냄
-    if fast:
-        slow = slow.next
+    ```python  
+    def isPalindrome(self, head: ListNode) -> bool:
         
-    #슬로우가 리스트끝까지 갈때까지 팰린드롬 검사    
-    #and rev 조건은 rev가 None인 지점까지 돌으라는 뜻
-    while rev and slow.val == rev.val:
-        rev, slow = rev.next, slow.next
+        rev = None
         
-    return not rev
-```
+        slow = fast = head
+        
+        #fast가 움직일때마다, slow도 한칸 앞으로, rev도 이전껄 잇는다
+        while fast and fast.next:
+            fast = fast.next.next
+            rev, rev.next, slow = slow, rev, slow.next                
+        
+        #fast가 홀수이면 slow가 중간지점까지 가지 못하기 때문에
+        #slow를 한칸 더 보냄
+        if fast:
+            slow = slow.next
+            
+        #슬로우가 리스트끝까지 갈때까지 팰린드롬 검사    
+        #and rev 조건은 rev가 None인 지점까지 돌으라는 뜻
+        while rev and slow.val == rev.val:
+            rev, slow = rev.next, slow.next
+            
+        return not rev
+    ```
 
-> 슬라이싱 활용
+> 슬라이싱 활용  
 - solution 3
     - 리스트를 담고 슬라이싱 `[::-1] 활용
-```python  
-class Solution:
-    def isPalindrome(self, head: ListNode) -> bool:
-        vals = []
-        current_node = head
-        while current_node is not None:
-            vals.append(current_node.val)
-            current_node = current_node.next
-        return vals == vals[::-1]
-```
+    ```python  
+    class Solution:
+        def isPalindrome(self, head: ListNode) -> bool:
+            vals = []
+            current_node = head
+            while current_node is not None:
+                vals.append(current_node.val)
+                current_node = current_node.next
+            return vals == vals[::-1]
+    ```
 
-> 재귀함수 
-
+> 재귀함수   
 - solution 4 / `recheck`
     - 재귀활용
         1. current node가 None일때까지 재귀를 반복/ current node를 끝까지 보내기 위함
-        2. 끝까지 보내고나서 재귀들이 하나씩 풀리는 것을 활용해서 역순과 정순을 비교
-    ```python 
-    class Solution:
-    def isPalindrome(self, head: ListNode) -> bool:
-
-        self.front_pointer = head
-
-        def recursively_check(current_node=head):
-            if current_node is not None:
-                if not recursively_check(current_node.next):
-                    return False
-                if self.front_pointer.val != current_node.val:
-                    return False
-                self.front_pointer = self.front_pointer.next
-            return True
-
-        return recursively_check()
-    ```
+        2. 끝까지 보내고나서 재귀들이 하나씩 풀리는 것을 활용해서 역순과 정순을 비교  
+        ```python 
+        class Solution:
+        def isPalindrome(self, head: ListNode) -> bool:
+    
+            self.front_pointer = head
+    
+            def recursively_check(current_node=head):
+                if current_node is not None:
+                    if not recursively_check(current_node.next):
+                        return False
+                    if self.front_pointer.val != current_node.val:
+                        return False
+                    self.front_pointer = self.front_pointer.next
+                return True
+    
+            return recursively_check()
+        ```
   
 ### 21. Merge Two Sorted Lists
 
@@ -867,7 +866,7 @@ class Solution:
 - solution 3
     - 재귀활용, l1에 계속 연결하는 방식
         1. l1이 None이거나 l2값이 l1보다 더 작으면 l1, l2 스왑
-        2. l1이 값이 None이 아니면 l1에 값 연결
+        2. l1이 값이 None이 아니면 l1에 값 연결  
     ```python  
     class Solution:
         def mergeTwoLists(self, l1, l2):
@@ -926,61 +925,60 @@ class Solution:
 - solution / `recheck`
     - divmod, if문 활용
         1. result = head는 같은 주소를 참조하는 것을 활용하여 결과값 제출
-        2. l1, l2, carry 더한 것을 divmod(나머지, 몫 반환)를 활용해 다음 노드에 val를 집어넣음  
-   ```python  
-    class Solution:
-        def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
-        
-            result = head = ListNode(0)
+        2. l1, l2, carry 더한 것을 divmod(나머지, 몫 반환)를 활용해 다음 노드에 val를 집어넣음    
+       ```python  
+        class Solution:
+            def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
             
-            carry = 0
-            
-            while l1 or l2 or carry:
-                sum = 0
+                result = head = ListNode(0)
                 
-                if l1:
-                    sum += l1.val
-                    l1 = l1.next
-                if l2:
-                    sum += l2.val
-                    l2 = l2.next
+                carry = 0
+                
+                while l1 or l2 or carry:
+                    sum = 0
                     
-                carry, val = divmod(carry + sum, 10)
-                head.next = ListNode(val)
-                head = head.next
-                
-            return result.next
-    ```
+                    if l1:
+                        sum += l1.val
+                        l1 = l1.next
+                    if l2:
+                        sum += l2.val
+                        l2 = l2.next
+                        
+                    carry, val = divmod(carry + sum, 10)
+                    head.next = ListNode(val)
+                    head = head.next
+                    
+                return result.next
+        ```
   
 ### 24. Swap Nodes in Pairs
 
 > 연결리스트 next 활용, 값만 변경
 
 - 내풀이
-    - next.next 활용  
-    ```python  
-    class Solution:
-        def swapPairs(self, head: ListNode) -> ListNode:
+    - next.next 활용    
+```python  
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+        
+        if not head or not head.next:
+            return head
+        
+        result = first = head
+        
+        second = first.next
+        
+        while first and second:
+            first.val, second.val = second.val, first.val
+            if not first.next.next or not second.next.next:
+                return result
             
-            if not head or not head.next:
-                return head
-            
-            result = first = head
-            
-            second = first.next
-            
-            while first and second:
-                first.val, second.val = second.val, first.val
-                if not first.next.next or not second.next.next:
-                    return result
-                
-                first, second = first.next.next, second.next.next
-    
-    ```    
+            first, second = first.next.next, second.next.next
+```    
 
 > 내풀이와 동일
 - solution 1
-    - 내풀이와 동일, 단 코드가 간결하게 작성  
+    - 내풀이와 동일, 단 코드가 간결하게 작성     
 ```python 
 class Solution:
     def swapPairs(self, head: ListNode) -> ListNode:
@@ -996,25 +994,25 @@ class Solution:
 
 > 노드 자체를 바꿈, 반복구조  
 - solution 2 / `recheck`  
-    - head와 head다음것을 지정하여 스왑해주는 형태  
-```python  
-class Solution:
-    def swapPairs(self, head: ListNode) -> ListNode:
-        
-        result = prev = ListNode(0)
-        
-        prev.next = head
-        
-        while head and head.next:
-            b = head.next
-            head.next = b.next
-            b.next = head
+    - head와 head다음것을 지정하여 스왑해주는 형태                  
+    ```python  
+    class Solution:
+        def swapPairs(self, head: ListNode) -> ListNode:
             
-            prev.next = b
+            result = prev = ListNode(0)
             
-            head = head.next
-            prev = prev.next.next
-```
+            prev.next = head
+            
+            while head and head.next:
+                b = head.next
+                head.next = b.next
+                b.next = head
+                
+                prev.next = b
+                
+                head = head.next
+                prev = prev.next.next
+    ```
 
 > 재귀형태
 - solution 3 / `recheck`
@@ -1022,17 +1020,17 @@ class Solution:
         1. head와 바꿀 포인터 p 생성
         2. head.next는 스왑된 값을 받고 이어줌
         3. 스왑된 p값을 리턴  
-    ```python  
-    class Solution:
-        def swapPairs(self, head: ListNode) -> ListNode:
+        ```python  
+        class Solution:
+            def swapPairs(self, head: ListNode) -> ListNode:
+                
+                p = head.next
+                head.next = self.swapPairs(p.next)
+                p.next = head
+                return p
             
-            p = head.next
-            head.next = self.swapPairs(p.next)
-            p.next = head
-            return p
-        
-        return head
-    ```
+            return head
+        ```
   
 
 ### 328. Odd Even Linked List
@@ -1066,24 +1064,24 @@ class Solution:
 ### `92. Reverse Linked List II`
 > 투포인터 사용
 - solution
-  - 투포인터 사용, start, end를 고정해서 반복시에 포인터를 바꾼다    
-```python  
-class Solution:
-    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
-        root = start = ListNode(0)
-        
-        root.next = head 
-        
-        for _ in range(left - 1):
-            start = start.next
-        end = start.next
-        
-        for _ in range(right - left):
-            temp, start.next, end.next = start.next, end.next, end.next.next
-            start.next.next = temp
+    - 투포인터 사용, start, end를 고정해서 반복시에 포인터를 바꾼다     
+    ```python  
+    class Solution:
+        def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
+            root = start = ListNode(0)
             
-        return root.next
-```
+            root.next = head 
+            
+            for _ in range(left - 1):
+                start = start.next
+            end = start.next
+            
+            for _ in range(right - left):
+                temp, start.next, end.next = start.next, end.next, end.next.next
+                start.next.next = temp
+                
+            return root.next
+    ```
   - WHY?
 - HOW?
 - WHAT?
