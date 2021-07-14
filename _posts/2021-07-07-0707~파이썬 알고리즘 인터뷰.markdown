@@ -716,7 +716,7 @@ class Solution:
 > 연결리스트, deque 활용
 - solution 1
     - 연결리스트 사용, `deque는 이중연결리스트`
-    - 나머지는 그대로  
+    - 나머지는 그대로      
 ```python 
 class Solution:
     def isPalindrome(self, head: ListNode) -> bool:
@@ -922,11 +922,11 @@ class Solution:
 
 ### `2. Add Two Numbers`
 
-> divmod 활용
+> divmod 활용  
 - solution / `recheck`
     - divmod, if문 활용
         1. result = head는 같은 주소를 참조하는 것을 활용하여 결과값 제출
-        2. l1, l2, carry 더한 것을 divmod(나머지, 몫 반환)를 활용해 다음 노드에 val를 집어넣음
+        2. l1, l2, carry 더한 것을 divmod(나머지, 몫 반환)를 활용해 다음 노드에 val를 집어넣음  
    ```python  
     class Solution:
         def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
@@ -957,30 +957,30 @@ class Solution:
 > 연결리스트 next 활용, 값만 변경
 
 - 내풀이
-    - next.next 활용   
-```python  
-class Solution:
-    def swapPairs(self, head: ListNode) -> ListNode:
-        
-        if not head or not head.next:
-            return head
-        
-        result = first = head
-        
-        second = first.next
-        
-        while first and second:
-            first.val, second.val = second.val, first.val
-            if not first.next.next or not second.next.next:
-                return result
+    - next.next 활용  
+    ```python  
+    class Solution:
+        def swapPairs(self, head: ListNode) -> ListNode:
             
-            first, second = first.next.next, second.next.next
-
-``` 
+            if not head or not head.next:
+                return head
+            
+            result = first = head
+            
+            second = first.next
+            
+            while first and second:
+                first.val, second.val = second.val, first.val
+                if not first.next.next or not second.next.next:
+                    return result
+                
+                first, second = first.next.next, second.next.next
+    
+    ```    
 
 > 내풀이와 동일
 - solution 1
-    - 내풀이와 동일, 단 코드가 간결하게 작성
+    - 내풀이와 동일, 단 코드가 간결하게 작성  
 ```python 
 class Solution:
     def swapPairs(self, head: ListNode) -> ListNode:
@@ -994,8 +994,8 @@ class Solution:
         return head
 ```
 
-> 노드 자체를 바꿈, 반복구조
-- solution 2 / `recheck`
+> 노드 자체를 바꿈, 반복구조  
+- solution 2 / `recheck`  
     - head와 head다음것을 지정하여 스왑해주는 형태  
 ```python  
 class Solution:
@@ -1021,7 +1021,7 @@ class Solution:
     - 재귀함수
         1. head와 바꿀 포인터 p 생성
         2. head.next는 스왑된 값을 받고 이어줌
-        3. 스왑된 p값을 리턴
+        3. 스왑된 p값을 리턴  
     ```python  
     class Solution:
         def swapPairs(self, head: ListNode) -> ListNode:
@@ -1044,29 +1044,29 @@ class Solution:
         2. odd와 even 두개단위로 넘어감
         3. while 조건식 even, even.next
 - explanation
-    - 여기서 next.next가 가능한 이유는 even.next가 존재하면 even.next.next는 없어도 none이기 때문  
-```python 
-class Solution:
-    def oddEvenList(self, head: ListNode) -> ListNode:
-        if not head:
+    - 여기서 next.next가 가능한 이유는 even.next가 존재하면 even.next.next는 없어도 none이기 때문    
+    ```python 
+    class Solution:
+        def oddEvenList(self, head: ListNode) -> ListNode:
+            if not head:
+                return head
+            
+            odd = head
+            even = even_head = head.next
+            
+            while even and even.next:
+                odd.next, even.next = odd.next.next, even.next.next
+                odd, even = odd.next, even.next
+            
+            odd.next = even_head
+            
             return head
-        
-        odd = head
-        even = even_head = head.next
-        
-        while even and even.next:
-            odd.next, even.next = odd.next.next, even.next.next
-            odd, even = odd.next, even.next
-        
-        odd.next = even_head
-        
-        return head
-```
+    ```
 
 ### `92. Reverse Linked List II`
 > 투포인터 사용
 - solution
-  - 투포인터 사용, start, end를 고정해서 반복시에 포인터를 바꾼다  
+  - 투포인터 사용, start, end를 고정해서 반복시에 포인터를 바꾼다    
 ```python  
 class Solution:
     def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
