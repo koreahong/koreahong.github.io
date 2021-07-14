@@ -871,17 +871,16 @@ class Solution:
 - solution 3 / `rechekc`
     - 재귀활용, l1에 계속 연결하는 방식
         1. l1이 None이거나 l2값이 l1보다 더 작으면 l1, l2 스왑
-        2. l1이 값이 None이 아니면 l1에 값 연결  
-    ```python  
-    class Solution:
-        def mergeTwoLists(self, l1, l2):
-            if (not l1) or (l2 and l1.val > l2.val):
-                l1, l2 = l2, l1
-            if l1:
-                l1.next = self.mergeTwoLists(l1.next, l2)
-            
-            return l1
+        2. l1이 값이 None이 아니면 l1에 값 연결    
+        ```python  
+        class Solution:
+            def mergeTwoLists(self, l1, l2):
+                if (not l1) or (l2 and l1.val > l2.val):
+                    l1, l2 = l2, l1
+                if l1:
+                    l1.next = self.mergeTwoLists(l1.next, l2)
                 
+                return l1      
     ```
 
 
@@ -907,6 +906,18 @@ class Solution:
             return prev
     ```
 
+- 변수 할당을 통해서 적용  
+```python  
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        
+        node, prev = head, None
+        
+        while node:
+            node.next, prev, node = prev, node, node.next
+        
+        return prev
+```
 > 재귀함수
 
 - solution 2
@@ -957,29 +968,29 @@ class Solution:
                 return result.next
         ```
   
-### 24. Swap Nodes in Pairs
+### `24. Swap Nodes in Pairs`
 
 > 연결리스트 next 활용, 값만 변경
 
 - 내풀이
     - next.next 활용    
 ```python  
-class Solution:
-    def swapPairs(self, head: ListNode) -> ListNode:
-        
-        if not head or not head.next:
-            return head
-        
-        result = first = head
-        
-        second = first.next
-        
-        while first and second:
-            first.val, second.val = second.val, first.val
-            if not first.next.next or not second.next.next:
-                return result
+    class Solution:
+        def swapPairs(self, head: ListNode) -> ListNode:
             
-            first, second = first.next.next, second.next.next
+            if not head or not head.next:
+                return head
+            
+            result = first = head
+            
+            second = first.next
+            
+            while first and second:
+                first.val, second.val = second.val, first.val
+                if not first.next.next or not second.next.next:
+                    return result
+                
+                first, second = first.next.next, second.next.next
 ```    
 
 > 내풀이와 동일
@@ -987,16 +998,16 @@ class Solution:
 - solution 1
     - 내풀이와 동일, 단 코드가 간결하게 작성     
 ```python 
-class Solution:
-    def swapPairs(self, head: ListNode) -> ListNode:
-        
-        cur = head
-    
-        while cur and cur.next:
-            cur.val, cur.next.val = cur.next.val, cur.val
-            cur = cur.next.next
+    class Solution:
+        def swapPairs(self, head: ListNode) -> ListNode:
             
-        return head
+            cur = head
+        
+            while cur and cur.next:
+                cur.val, cur.next.val = cur.next.val, cur.val
+                cur = cur.next.next
+                
+            return head
 ```
 
 > 노드 자체를 바꿈, 반복구조  
@@ -1004,22 +1015,22 @@ class Solution:
 - solution 2 / `recheck`  
     - head와 head다음것을 지정하여 스왑해주는 형태                  
     ```python  
-    class Solution:
-        def swapPairs(self, head: ListNode) -> ListNode:
-            
-            result = prev = ListNode(0)
-            
-            prev.next = head
-            
-            while head and head.next:
-                b = head.next
-                head.next = b.next
-                b.next = head
+        class Solution:
+            def swapPairs(self, head: ListNode) -> ListNode:
                 
-                prev.next = b
+                result = prev = ListNode(0)
                 
-                head = head.next
-                prev = prev.next.next
+                prev.next = head
+                
+                while head and head.next:
+                    b = head.next
+                    head.next = b.next
+                    b.next = head
+                    
+                    prev.next = b
+                    
+                    head = head.next
+                    prev = prev.next.next
     ```
 
 > 재귀형태
@@ -1030,23 +1041,23 @@ class Solution:
         2. head.next는 스왑된 값을 받고 이어줌
         3. 스왑된 p값을 리턴  
         ```python  
-        class Solution:
-            def swapPairs(self, head: ListNode) -> ListNode:
+            class Solution:
+                def swapPairs(self, head: ListNode) -> ListNode:
+                    
+                    p = head.next
+                    head.next = self.swapPairs(p.next)
+                    p.next = head
+                    return p
                 
-                p = head.next
-                head.next = self.swapPairs(p.next)
-                p.next = head
-                return p
-            
-            return head
+                return head
         ```
   
 
-### 328. Odd Even Linked List
+### `328. Odd Even Linked List`
 
 > next.next 활용  
 
-- solution
+- solution / `recheck`
     - next포인터 활용
         1. 나중에 홀수와 짝수를 이어줄 even_head를 지정
         2. odd와 even 두개단위로 넘어감
@@ -1093,3 +1104,145 @@ class Solution:
                 
             return root.next
     ```
+  
+  
+### 146. LRU Cache
+
+> LRU, OrderedDict 사용
+
+- solution / `recheck`  
+    - orderdict : 기본 dict과 달리 입력된 순서대로 저장함
+        1. 입력
+            - capa보다 크면 최근꺼빼고 삭제(last = False), move_to_end로 제일 뒤로 보내기
+            - 기존에 있으면 value 최신화, move_to_end로 제일 뒤로 보내기 
+        2. 출록
+            - 있으면 value 출력
+            - 없으면 return -1
+    ```python  
+        from collections import OrderedDict
+        
+        class LRUCache(OrderedDict):
+        
+            def __init__(self, capacity: int):
+                self.capacity = capacity
+        
+            def get(self, key: int) -> int:
+                if key not in self:
+                    return -1
+                
+                self.move_to_end(key)
+                return self[key]
+            
+            def put(self, key: int, value: int) -> None:
+                
+                if key in self:
+                    self.move_to_end(key)
+                self[key] = value
+                
+                if len(self) > self.capacity:
+                    self.popitem(last = False)
+    ```
+  
+### 445. Add Two Numbers II
+
+> reverse + 합치기
+- 내풀이
+    - reverse + 더하기 + reverse  
+    ```python  
+        class Solution:
+            def reverse_list(self, head: ListNode) -> ListNode:
+                
+                prev = None
+                node = head
+                
+                while node:
+                    next, node.next = node.next, prev
+                    node, prev = next, node
+                    
+                return prev
+            
+            def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+                
+                l1 = self.reverse_list(l1)
+                l2 = self.reverse_list(l2)
+                
+                carry = 0
+                result = head = ListNode(0)
+                
+                while l1 or l2 or carry:
+                    sum = 0
+                    
+                    if l1:
+                        sum += l1.val
+                        l1 = l1.next
+                        
+                    if l2:
+                        sum += l2.val
+                        l2 = l2.next
+                        
+                    carry, val = divmod(carry + sum, 10)
+                    head.next = ListNode(val)
+                    head = head.next
+                
+                
+                
+                return self.reverse_list(result.next)
+    ```
+
+
+### `143. Reorder List` ****
+
+> 3step : 중간지점찾기 + 역순 + 합치기  
+
+- solution / `recheck`
+    - 3step 
+        - 러너로 중간지점 찾기
+        - 중간지점에서 이후 역순으로 만들기
+        - 앞뒤 섞어서 합치기  
+    ```python 
+        class Solution:
+            def reorderList(self, head: ListNode) -> None:
+                """
+                Do not return anything, modify head in-place instead.
+                """
+                if not head:
+                    return 
+                
+                fast = slow = head
+                
+                while fast and fast.next:
+                    slow = slow.next
+                    fast = fast.next.next
+                    
+                node, prev = slow, None
+                while node:
+                    node.next, prev, node = prev, node, node.next
+                    
+                first, second = head, prev
+                while second.next:
+                    first.next, first = second, first.next
+                    second.next, second = first, second.next
+    ```
+  
+### `160. Intersection of Two Linked Lists`
+
+> a+b+c = b+a+c
+
+- solution / `recheck`
+    - 리스트를 공유할때 ,각각 다른 길이를 가진 list를 번갈아 더하면 같은 위치에 도달
+    - 리스트를 공휴하지 않을때 각각 list길이를 더하면 null에 도달
+    - .... 너무 아이디어가 멋있다;;; WoW  
+    ```python  
+        class Solution:
+            def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+                pA = headA
+                pB = headB
+        
+                while pA != pB:
+                    pA = headB if pA is None else pA.next
+                    pB = headA if pB is None else pB.next
+        
+                return pA
+    ```
+
+
