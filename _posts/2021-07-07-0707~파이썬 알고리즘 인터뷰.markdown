@@ -1033,12 +1033,18 @@ class Solution:
         
         return head
     ```
+  
+
+### 328. Odd Even Linked List
+
 > next.next 활용  
 - solution
     - next포인터 활용
         1. 나중에 홀수와 짝수를 이어줄 even_head를 지정
         2. odd와 even 두개단위로 넘어감
         3. while 조건식 even, even.next
+- explanation
+    - 여기서 next.next가 가능한 이유는 even.next가 존재하면 even.next.next는 없어도 none이기 때문  
 ```python 
 class Solution:
     def oddEvenList(self, head: ListNode) -> ListNode:
@@ -1055,6 +1061,28 @@ class Solution:
         odd.next = even_head
         
         return head
+```
+
+### `92. Reverse Linked List II`
+> 투포인터 사용
+- solution
+  - 투포인터 사용, start, end를 고정해서 반복시에 포인터를 바꾼다  
+```python  
+class Solution:
+    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
+        root = start = ListNode(0)
+        
+        root.next = head 
+        
+        for _ in range(left - 1):
+            start = start.next
+        end = start.next
+        
+        for _ in range(right - left):
+            temp, start.next, end.next = start.next, end.next, end.next.next
+            start.next.next = temp
+            
+        return root.next
 ```
   - WHY?
 - HOW?
