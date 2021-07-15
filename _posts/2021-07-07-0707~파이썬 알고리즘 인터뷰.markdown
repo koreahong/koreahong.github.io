@@ -9,6 +9,8 @@ comments: False
 
 > 파이썬 알고리즘 인터뷰 요약
 
+[자료구조 구현 코드](https://colab.research.google.com/drive/11WDB2N_NDSigqaIYCZb87yeoDSzkp95F?usp=sharing)
+  
 # 요약의 목적
 - 도움이 될만한 독자 : 코딩-중하 이상
 - 해당 요약의 중점은 다음과 같다
@@ -673,7 +675,7 @@ class Solution:
 ```
 
 
-## 연결리스트
+## 8장. 연결리스트
 
 - WHAT?
     - 연결리스트(단일,이중,원형)
@@ -1105,144 +1107,292 @@ class Solution:
             return root.next
     ```
   
-  
-### 146. LRU Cache
+## 9장. 스택, 큐
 
-> LRU, OrderedDict 사용
+- What : 스택, FILO
+- Why : ctrl + z 연산, 애플리케이션 개발에 쓰임
+- How : 파이썬 리스트, 연결리스트 
+        - 연결리스트는 삽입 삭제가 O(1)
+        - 파이썬리스트는 동적크기조절로 O(N)
 
-- solution / `recheck`  
-    - orderdict : 기본 dict과 달리 입력된 순서대로 저장함
-        1. 입력
-            - capa보다 크면 최근꺼빼고 삭제(last = False), move_to_end로 제일 뒤로 보내기
-            - 기존에 있으면 value 최신화, move_to_end로 제일 뒤로 보내기 
-        2. 출록
-            - 있으면 value 출력
-            - 없으면 return -1
-    ```python  
-        from collections import OrderedDict
-        
-        class LRUCache(OrderedDict):
-        
-            def __init__(self, capacity: int):
-                self.capacity = capacity
-        
-            def get(self, key: int) -> int:
-                if key not in self:
-                    return -1
-                
-                self.move_to_end(key)
-                return self[key]
-            
-            def put(self, key: int, value: int) -> None:
-                
-                if key in self:
-                    self.move_to_end(key)
-                self[key] = value
-                
-                if len(self) > self.capacity:
-                    self.popitem(last = False)
-    ```
-  
-### 445. Add Two Numbers II
+### 20. Valid Parentheses
 
-> reverse + 합치기
+> 스택 + 조건문 
+
 - 내풀이
-    - reverse + 더하기 + reverse  
+    - 조건문 활용
+        1. ), }, ] 가 들어오면 바로전 stack 확인
+        2. 바로전문자와 매칭이 되지 않거나, stack 개수가 0개 이상이면 False  
+        ```python  
+            class Solution:
+                def isValid(self, s: str) -> bool:
+                    stack = []
+                    
+                    for i in s:
+                        if i == ']':
+                            if not stack or stack[-1] != '[':
+                                return False
+                            if stack[-1] == '[':
+                                stack.pop()
+                                continue
+                        elif i == '}':
+                            if not stack or stack[-1] != '{':
+                                return False
+                            if stack[-1] == '{':
+                                stack.pop()
+                                continue                
+                        elif i == ')':
+                            if not stack or stack[-1] != '(':
+                                return False
+                            if stack[-1] == '(':
+                                stack.pop()
+                                continue      
+                        
+                        stack.append(i)
+                        
+                    return len(stack) == 0
+        ```
+
+> 스택 + 딕셔너리
+   
+- solution / `recheck`
+    - 딕셔너리를 만들어서 각 괄호와 대응하는 것을 추출하여 비교  
     ```python  
         class Solution:
-            def reverse_list(self, head: ListNode) -> ListNode:
+            def isValid(self, s: str) -> bool:
                 
-                prev = None
-                node = head
+                table = {
+                        ')' : '(',
+                        '}' : '{',
+                        ']' : '['
+                }
                 
-                while node:
-                    next, node.next = node.next, prev
-                    node, prev = next, node
+                stack: Deque = collections.deque()
+                
+                for char in s:
+                    if char not in table:
+                        stack.append(char)
+                    elif not stack or table[char] != stack.pop():
+                        return False
                     
-                return prev
+                return len(stack) == 0
+    ```
+
+
+### `316. Remove Duplicate Letters`
+
+> set + Counter + 스택
+
+- solution 1 / `recheck`
+    1. Counter를 활용해 문자별 숫자를 파악
+    2. set을 활용해 전에 추가되었던 문자인지 확인
+    3. 스택을 활용해 순서적으로 마지막에 온 문자를 확인하여 이전에 추가된 문자가 후에도 나올것인지 Counter개수를 통해 확인
+- Explanation
+    - set, 스택을 동시에 활용한 이유
+        - set는 중복제거로 이전에 추가되었던 내역들을 확인하는데 사용할 수 있음
+        - stack은 for loop중 최근에 추가된 것을 슬라이싱을 이용해 확인할 수 있음  
+        ```python  
+            class Solution:
+                def removeDuplicateLetters(self, s: str) -> str:
+                    counter, seen, stack = collections.Counter(s), set(), []
+                    
+                    for char in s:
+                        counter[char] -= 1
+                        if char in seen:
+                            continue
+                            
+                        while stack and char < stack[-1] and counter[stack[-1]] > 0:
+                            seen.remove(stack.pop())
+                        stack.append(char)
+                        seen.add(char)
+                        
+                    return ''.join(stack)
+        ```
+- PLUS in SET
+    - set는 한개 추가할때 : add() 사용
+    - 여러개 추가할때 : update([]) 사용
+    - 제거할때 : remove() 사용
+    - [set 활용법](https://thispointer.com/python-set-remove-single-or-multiple-elements-from-a-set/)
+     
+> 재귀활용
+
+- solution 2 / Hard....
+    1. 정렬된 set를 for loop로 돌려서 애초에 순서가 정렬된 결과를 얻는다
+    2. index를 활용해 해당문자가 처음나온곳부터 끝까지와 확인하려는 구간 전체를 set로 비교해 같은지 확인
+        - 같으면 해당문자가 와도 된다는 뜻
+        - 다르면 해당문자가 앞에오면 순서적으로 모순이 있다는 뜻
+    3. return값 : 해당문자와 나머지 탐색해야할 구간
+        - 여기서 의문, for문으로 재귀를 돌리면 return값이 합쳐서 return 되는것인가?  
+    ```python  
+        class Solution:
+            def removeDuplicateLetters(self, s: str) -> str:
+                
+                #집합으로 정렬
+                for char in sorted(set(s)):
+                    suffix = s[s.index(char):]
+                    
+                    if set(s) == set(suffix):
+                        return char + self.removeDuplicateLetters(suffix.replace(char, ''))
+                    
+                return ''
+    ```
+
+### `739. Daily Temperatures`  
+> stack
+
+- solution / `recheck`
+    1. 스택으로 쌓다가 다음수가 이전수보다 크면 같거나 작을때까지 빼기
+    2. enumerate로 추출된 idx넘버를 저장하여 현재시점과 작은 시점을 빼서 계산하기    
+- Explanation
+    - 해당문제는 결과들이 각각 독립적인 입장을 취하고 있음으로 정답배열을 미리 선언하는게 좋음  
+    ```python  
+        class Solution:
+            def dailyTemperatures(self, temperatures: List[int]) -> List[int]:                
+                answer = [0] * len(temperatures)                
+                stack = []                
+                for idx, tem in enumerate(temperatures):
+                    #현재 온도가 스택의 마지막 온도보다 높다면 일자 구하기                
+                    while stack and temperatures[stack[-1]] < tem:
+                        last = stack.pop()
+                        answer[last] = idx - last
+                    stack.append(idx)
+                    
+                return answer
+    ```
+ 
+### 225. Implement Stack using Queues
+> 큐로 스택구현
+
+- solution 
+    - deque를 선언해서 
+```python  
+class MyStack:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.q = collections.deque()
+        
+
+    def push(self, x: int) -> None:
+        """
+        Push element x onto stack.
+        """
+        self.q.append(x)
+        
+        for _ in range(len(self.q) - 1):
+            self.q.append(self.q.popleft())
+
+    def pop(self) -> int:
+        """
+        Removes the element on top of the stack and returns that element.
+        """
+        return self.q.popleft()
+
+    def top(self) -> int:
+        """
+        Get the top element.
+        """
+        return self.q[0]
+
+    def empty(self) -> bool:
+        """
+        Returns whether the stack is empty.
+        """
+        return len(self.q) == 0
+```
+
+###
+> 스택으로 큐구현
+
+- solution
+    1. 스택으로 큐를 규현하려면 두개의 리스트가 필요
+        - 담아두었다가 -> 다른데로 옮기면서 역순으로 정렬
+    ```python  
+        class MyQueue:
+        
+            def __init__(self):
+                """
+                Initialize your data structure here.
+                """
+                self.input = []
+                self.output = []
+        
+            def push(self, x: int) -> None:
+                """
+                Push element x to the back of queue.
+                """
+                self.input.append(x)
+        
+            def pop(self) -> int:
+                """
+                Removes the element from in front of queue and returns that element.
+                """
+                self.peek()
+                return self.output.pop()
+        
+            def peek(self) -> int:
+                """
+                Get the front element.
+                """
+                if not self.output:
+                    while self.input:
+                        self.output.append(self.input.pop())
+                return self.output[-1]
             
-            def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
-                
-                l1 = self.reverse_list(l1)
-                l2 = self.reverse_list(l2)
-                
-                carry = 0
-                result = head = ListNode(0)
-                
-                while l1 or l2 or carry:
-                    sum = 0
-                    
-                    if l1:
-                        sum += l1.val
-                        l1 = l1.next
-                        
-                    if l2:
-                        sum += l2.val
-                        l2 = l2.next
-                        
-                    carry, val = divmod(carry + sum, 10)
-                    head.next = ListNode(val)
-                    head = head.next
-                
-                
-                
-                return self.reverse_list(result.next)
+        
+            def empty(self) -> bool:
+                """
+                Returns whether the queue is empty.
+                """
+                return self.input == [] and self.output == []
     ```
 
+### 622. Design Circular Queue
+> 원형 큐 구현 with 배열
 
-### `143. Reorder List` ****
-
-> 3step : 중간지점찾기 + 역순 + 합치기  
-
-- solution / `recheck`
-    - 3step 
-        - 러너로 중간지점 찾기
-        - 중간지점에서 이후 역순으로 만들기
-        - 앞뒤 섞어서 합치기  
-    ```python 
-        class Solution:
-            def reorderList(self, head: ListNode) -> None:
-                """
-                Do not return anything, modify head in-place instead.
-                """
-                if not head:
-                    return 
-                
-                fast = slow = head
-                
-                while fast and fast.next:
-                    slow = slow.next
-                    fast = fast.next.next
-                    
-                node, prev = slow, None
-                while node:
-                    node.next, prev, node = prev, node, node.next
-                    
-                first, second = head, prev
-                while second.next:
-                    first.next, first = second, first.next
-                    second.next, second = first, second.next
-    ```
-  
-### `160. Intersection of Two Linked Lists`
-
-> a+b+c = b+a+c
-
-- solution / `recheck`
-    - 리스트를 공유할때 ,각각 다른 길이를 가진 list를 번갈아 더하면 같은 위치에 도달
-    - 리스트를 공휴하지 않을때 각각 list길이를 더하면 null에 도달
-    - .... 너무 아이디어가 멋있다;;; WoW  
+- solution 
+    - 배열로 구성했을때 공간을 재활용한다는 이점이 있음
+    1. 투포인터를 선언하여 front, rear의 위치를 잡음
+    2. 각 명령에 맞게 한칸씩 이동  
     ```python  
-        class Solution:
-            def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
-                pA = headA
-                pB = headB
+        class MyCircularQueue:
         
-                while pA != pB:
-                    pA = headB if pA is None else pA.next
-                    pB = headA if pB is None else pB.next
+            def __init__(self, k: int):
+                self.q = [None] * k
+                self.maxlen = k
+                self.p1 = 0
+                self.p2 = 0
         
-                return pA
+            def enQueue(self, value: int) -> bool:
+                if self.q[self.p2] is None:
+                    self.q[self.p2] = value
+                    self.p2 = (self.p2 + 1) % self.maxlen
+                    return True
+                else:
+                    return False
+                
+        
+            def deQueue(self) -> bool:
+                if self.q[self.p1] is None:
+                    return False
+                else:
+                    self.q[self.p1] = None
+                    self.p1 = (self.p1 + 1) % self.maxlen
+                    return True
+        
+            def Front(self) -> int:
+                return self.q[self.p1] if self.q[self.p1] is not None else -1
+        
+            def Rear(self) -> int:
+                return self.q[self.p2 - 1] if self.q[self.p2 - 1] is not None else -1
+        
+            def isEmpty(self) -> bool:
+                return self.p1 == self.p2 and self.q[self.p1] is None
+        
+            def isFull(self) -> bool:
+                return self.p1 == self.p2 and self.q[self.p1] is not None
     ```
 
 

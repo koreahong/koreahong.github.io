@@ -428,3 +428,191 @@ class Solution:
         return res 
 ```
 
+## 8장. 연결리스트
+
+
+### 146. LRU Cache
+
+> LRU, OrderedDict 사용
+
+- solution / `recheck`  
+    - orderdict : 기본 dict과 달리 입력된 순서대로 저장함
+        1. 입력
+            - capa보다 크면 최근꺼빼고 삭제(last = False), move_to_end로 제일 뒤로 보내기
+            - 기존에 있으면 value 최신화, move_to_end로 제일 뒤로 보내기 
+        2. 출록
+            - 있으면 value 출력
+            - 없으면 return -1
+    ```python  
+        from collections import OrderedDict
+        
+        class LRUCache(OrderedDict):
+        
+            def __init__(self, capacity: int):
+                self.capacity = capacity
+        
+            def get(self, key: int) -> int:
+                if key not in self:
+                    return -1
+                
+                self.move_to_end(key)
+                return self[key]
+            
+            def put(self, key: int, value: int) -> None:
+                
+                if key in self:
+                    self.move_to_end(key)
+                self[key] = value
+                
+                if len(self) > self.capacity:
+                    self.popitem(last = False)
+    ```
+  
+### 445. Add Two Numbers II
+
+> reverse + 합치기  
+
+- 내풀이
+    - reverse + 더하기 + reverse  
+    ```python  
+        class Solution:
+            def reverse_list(self, head: ListNode) -> ListNode:
+                
+                prev = None
+                node = head
+                
+                while node:
+                    next, node.next = node.next, prev
+                    node, prev = next, node
+                    
+                return prev
+            
+            def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+                
+                l1 = self.reverse_list(l1)
+                l2 = self.reverse_list(l2)
+                
+                carry = 0
+                result = head = ListNode(0)
+                
+                while l1 or l2 or carry:
+                    sum = 0
+                    
+                    if l1:
+                        sum += l1.val
+                        l1 = l1.next
+                        
+                    if l2:
+                        sum += l2.val
+                        l2 = l2.next
+                        
+                    carry, val = divmod(carry + sum, 10)
+                    head.next = ListNode(val)
+                    head = head.next
+                
+                
+                
+                return self.reverse_list(result.next)
+    ```
+
+
+### `143. Reorder List` ****
+
+> 3step : 중간지점찾기 + 역순 + 합치기  
+
+- solution / `recheck`
+    - 3step 
+        - 러너로 중간지점 찾기
+        - 중간지점에서 이후 역순으로 만들기
+        - 앞뒤 섞어서 합치기  
+        ```python 
+            class Solution:
+                def reorderList(self, head: ListNode) -> None:
+                    """
+                    Do not return anything, modify head in-place instead.
+                    """
+                    if not head:
+                        return 
+                    
+                    fast = slow = head
+                    
+                    while fast and fast.next:
+                        slow = slow.next
+                        fast = fast.next.next
+                        
+                    node, prev = slow, None
+                    while node:
+                        node.next, prev, node = prev, node, node.next
+                        
+                    first, second = head, prev
+                    while second.next:
+                        first.next, first = second, first.next
+                        second.next, second = first, second.next
+        ```
+  
+### `160. Intersection of Two Linked Lists`
+
+> a+b+c = b+a+c
+
+- solution / `recheck`
+    - 리스트를 공유할때 ,각각 다른 길이를 가진 list를 번갈아 더하면 같은 위치에 도달
+    - 리스트를 공휴하지 않을때 각각 list길이를 더하면 null에 도달
+    - .... 너무 아이디어가 멋있다;;; WoW  
+    ```python  
+        class Solution:
+            def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+                pA = headA
+                pB = headB
+        
+                while pA != pB:
+                    pA = headB if pA is None else pA.next
+                    pB = headA if pB is None else pB.next
+        
+                return pA
+    ```
+
+## 9장. 스택, 큐
+
+### `901. Online Stock Span`
+
+> 리스트에 리스트를 저장, [가격, 순위]
+
+- solution / `recheck`
+    - 주의할점은 현재 가격보다 과거의 가격이 연속적으로 얼마나 낮냐를 측정하는 것!
+    1. 가격과 그시각 순위를 묶어서 스택에 쌓는다
+    2. 현재가격이 과거의 가격중 큰게 나올때까지 빼서 순위를 더한다  
+    ```python  
+        class StockSpanner:
+        
+            def __init__(self):
+                self.stack = []
+        
+            def next(self, price):
+                res = 1
+                while self.stack and self.stack[-1][0] <= price:
+                    res += self.stack.pop()[1]
+                self.stack.append([price, res])
+                return res
+    ```
+### 1762. Buildings With an Ocean View
+
+> stack
+
+- 내풀이
+    1. 최대저장하고 while 문으로 비교
+    2. sorted 사용해서 정렬
+    ```python  
+        class Solution:
+            def findBuildings(self, heights: List[int]) -> List[int]:
+                
+                right_max = 0
+                
+                result = []
+                while heights:
+                    cur = heights.pop()
+                    if cur > right_max:
+                        result.append(len(heights))
+                        right_max = cur
+                
+                return sorted(result)
+    ```
