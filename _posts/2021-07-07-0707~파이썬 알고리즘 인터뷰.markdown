@@ -243,8 +243,8 @@ comments: False
     - 문자열을 변경하거나 분리하는 등의 여러 과정
 - WHY?
     - 다양한 분야에서 사용되고 실무에 많음
-### HOW?
-#### 6-1. 유효한 팰린드롬 / leetcode 125
+
+### 6-1. 유효한 팰린드롬 / leetcode 125
 
 - 슬라이싱 활용
 1. re.sub으로 불필요 문자 제거, [정규표현식](추가예정
@@ -280,7 +280,7 @@ class Solution:
         return True
 ```
 
-#### 문자열 뒤집기 / leetcode 344
+### 문자열 뒤집기 / leetcode 344
 - 슬라이싱 활용
 1. s[:]와 같이 플랫폼마다 트릭을 사용해야만 정상 작동하는 경우가 있다. 
 ```python  
@@ -309,7 +309,7 @@ class Solution:
             left += 1
 ```
 
-#### 로그 파일 재정렬 / leetcode 937
+### 로그 파일 재정렬 / leetcode 937
 
 - 람다 + 연산자 사용
 1. `isdigit으로 숫자열인지 확인` [isalnum과 isdigit 차이](https://velog.io/@oaoong/python-%EB%AC%B8%EC%9E%90%EC%97%B4%EC%B2%B4%ED%81%AC-isdigit-isalpha-isalnum-isnumeric-is-decimic-%ED%95%A8%EC%88%98)
@@ -330,7 +330,7 @@ class Solution:
         return letter + digit
 ```
 
-#### `가장 흔한 단어 / leetcode 819`
+### `가장 흔한 단어 / leetcode 819`
 
 - solution 1 : `re.sub + 리스트컴프리헨션 + Counter`
 1. `정규표현식 \w : 단어`
@@ -361,7 +361,7 @@ class Solution:
 4. `max함수로 찾되 파라미터 key를 get기능을 활용. get은 딕셔너리 key값의 value를 가져옴`
 
 
-#### `그룹 애너그램 / leetcode 49`
+### `그룹 애너그램 / leetcode 49`
 
 - solution : `dict key값 + 문자정렬`
 1. 각 문자들을 sorted() 기능으로 정렬한 후에 딕셔너리 키값으로 넣는다
@@ -384,7 +384,7 @@ class Solution:
         return result
 ```
 
-#### `가장 긴 팰린드롬 / leetcode 5`
+### `가장 긴 팰린드롬 / leetcode 5`
 
 - solution : 2중 반복 + max
 1. 짝수, 홀수 각각 설정
