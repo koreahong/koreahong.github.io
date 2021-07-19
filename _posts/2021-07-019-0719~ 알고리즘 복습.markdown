@@ -1,0 +1,176 @@
+---
+layout: post
+title: '0719~, 알고리즘 복숩'
+#subtitle: '구조화된 코드는 어떤 거인가'
+categories: algorithm
+#tags : software  
+comments: False
+---
+
+> 모든 알고리즘 복습
+
+
+
+# 요약의 목적
+- 도움이 될만한 독자 : 코딩-중하 이상
+- 해당 페이지의 중점은 다음과 같다
+    - '파이썬 알고리즘 인터뷰', leetcode 핵심문제 복습
+
+# 6장. 문자열 조작
+
+- 문자열에서 필요한 작업
+    - 전처리
+        - replace : 단어, 문자 등을 제거
+        - re.sub : 정규표현식을 사용하여 원하는 문자들의 조합 추출
+    - 문자순서정렬
+        - 슬라이싱 : [::-1] 등을 활용하여 역순정렬
+        - 리스트담기 : 반복문으로 리스트담고 비교
+        - 러너사용 : 빠른, 느린러너 사용하기
+
+## 819. Most Common Word
+> dict, 정규표현식 '\w', split()
+
+```python  
+class Solution:
+        def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+            paragraph = paragraph.lower()
+            #단어외의 문자제거
+            #정규표현식 '\w' : 단어
+            paragraph = re.sub('[^\w]', ' ', paragraph)
+            #banned이외의 문자 추출
+            paragraph = [word for word in paragraph.split() if word not in banned]
+            
+            #딕셔너리를 활용
+            count = collections.defaultdict(int)
+            
+            #딕셔너리 value를 기준으로 최댓값 추출
+            for word in paragraph:
+                count[word] += 1
+            return max(count, key=count.get)
+```
+
+## `49. Group Anagrams` / recheck
+> dict, ''.join
+
+- 풀이그림  
+
+1. `문자마다 정렬된 순서를 key로하는 dict에 넣어줌`
+2. 해당하는 key값에 원래 문자를 append
+3. dict.values로 값 추출
+
+```python  
+    class Solution:
+        def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+            anagrams = collections.defaultdict(list)
+            
+            for word in strs:
+                anagrams[''.join(sorted(word))].append(word)
+                
+            result = list(anagrams.values())
+            
+            return result
+```
+
+## `5. Longest Palindromic Substring` / recheck
+> 투포인터
+
+- 풀이그림  
+
+```python  
+    class Solution:
+        def longestPalindrome(self, s: str) -> str:
+            #투포인터로 팰린드롬을 확인하는 함수
+            def expand(left: int, right: int) -> str:
+                while left >= 0 and right < len(s) and s[left] == s[right]:
+                    left -= 1
+                    right += 1
+                
+                return s[left + 1:right]
+            #예외처리
+            if len(s) < 2 or s == s[::-1]:
+                return s
+            
+            result = ''
+            
+            for i in range(len(s) - 1):
+                result = max(result, 
+                                #짝수
+                                expand(i, i + 1),
+                                #홀수
+                                expand(i, i + 2),
+                                key = len)
+                
+            return result 
+```
+
+## `3. Longest Substring Without Repeating Characters` / recheck
+> 투포인터
+
+- 풀이그림  
+
+## `953. Verifying an Alien Dictionary` / recheck
+> dict, for문 비교
+
+- 풀이그림
+
+
+> sorted(), 리스트간 부등호 비교
+
+- 풀이그림
+
+## 17. Letter Combinations of a Phone Number / recheck
+> 재귀
+
+- 풀이그림
+
+# 7장. 배열
+
+## 234. Palindrome Linked List
+> 러너 사용, 역순으로 연결
+
+- 풀이그림  
+
+## 15. 3Sum
+> 투포인터
+
+- 풀이그림
+
+> 양수, 음수 구분
+
+- 풀이그림
+
+## 238. Product of Array Except Self
+> 밀어서 곱하기
+
+- 풀이그림
+
+## 56. Merge Intervals
+
+- if not merged, max() 부분은 꼽씹어 먹자  
+    ```python   
+        class Solution:
+            def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+                
+                intervals.sort(key = lambda x: x[0])
+        
+                merged = []
+                
+                for interval in intervals:
+                    if not merged or merged[-1][1] < interval[0]:
+                        merged.append(interval)
+                    else:
+                        merged[-1][1] = max(merged[-1][1], interval[1])
+                        
+                return merged
+    ```
+  
+## 253. Meeting Rooms II
+> 양쪽사이드만 따로 추출한 배열리스트 2개 생성
+
+- 풀이그림  
+
+
+
+
+
+

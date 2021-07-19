@@ -1392,5 +1392,17 @@ class Solution:
             def isFull(self) -> bool:
                 return self.p1 == self.p2 and self.q[self.p1] is not None
     ```
+  
+## 데크, 우선순위 큐
+
+- What
+    - 데크
+- Why
+    - 양쪽 끝에서 삽입, 삭제 연산이 간으함
+- How
+    - 이중연결리스트
+    - collections.deque()
+
+### 
 
 
