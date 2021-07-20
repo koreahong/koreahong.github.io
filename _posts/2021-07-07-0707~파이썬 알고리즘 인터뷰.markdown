@@ -716,6 +716,7 @@ class Solution:
 ```
 
 > 연결리스트, deque 활용  
+
 - solution 1
     - 연결리스트 사용, `deque는 이중연결리스트`
     - 나머지는 그대로      
@@ -742,6 +743,7 @@ class Solution:
     ```
 
 > 러너활용  
+
 - solution 2 / `recheck`
     - 러너 활용
 - Explanation
@@ -775,6 +777,7 @@ class Solution:
     ```
 
 > 슬라이싱 활용  
+
 - solution 3
     - 리스트를 담고 슬라이싱 `[::-1] 활용
     ```python  
@@ -1393,7 +1396,7 @@ class Solution:
                 return self.p1 == self.p2 and self.q[self.p1] is not None
     ```
   
-## 데크, 우선순위 큐
+## 10장. 데크, 우선순위 큐
 
 - What
     - 데크
@@ -1403,6 +1406,397 @@ class Solution:
     - 이중연결리스트
     - collections.deque()
 
+- What
+    - 우선순위 큐
+- Why
+    - 우선순위대로 정렬함
+- How
+    - 힙
+
+### 23. Merge k Sorted Lists
+> 배열생성 -> 연결리스트로 잇기
+
+- solution
+    1. 값만 저장하는 배열을 따로 생성하여 값을 저장한다
+    2. 값을 정렬한후 연결리스트를 생성해서 잇는다  
+    ```python  
+        class Solution:
+            def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+                
+                self.nodes = []
+                head = point = ListNode(0)
+                for l in lists:
+                    while l:
+                        self.nodes.append(l.val)
+                        l = l.next
+                for x in sorted(self.nodes):
+                    point.next = ListNode(x)
+                    point = point.next
+                return head.next
+    ```
+
+## 11장. 해시테이블
+
+- What
+    - 해싱 : 테이블을 인덱싱하기 위해 함수를 사용하는 것
+- Why
+    - 대부분의 연산이 분할 상환 분석에 따라서 O(1)임
+    - 최적 검색이 필요한 분야
+- How
+    - 충돌방지 : 충돌이 많아지면 불필요한 연산이 많아짐
+        - 로드팩터 (데이터개수 / 버킷의 개수)
+        - 개별 체이닝 : 충돌시 연결리스트로 연결
+        - 오픈 어드레싱 : 충돌된 버킷 바로 다음 버킷에 저장
+        - 로드펙터 80%까지는 오픈 어드레싱이 효율적임, 파이썬은 오픈 어드레싱으로 되어 있음   
+  
+###
+> 연결리스트 + 해시테이블 + 개별체이싱
+
+- solution
+    1. 노드 class 선언
+    2. defaultdict로 검색시 바로 생성할 수 있게 ADT 설정
+    3. key % self.size 해시함수 설정  
+    
+    ```python  
+        class ListNode:
+            def __init__(self, key = None, value = None):
+                self.key = key
+                self.value = value
+                self.next = None
+                
+        class MyHashMap:
+        
+            def __init__(self):
+           
+                #크기 설정
+                self.size = 1000
+                #해쉬맵 ADT 설정
+                self.table = collections.defaultdict(ListNode)
+                
+        
+            def put(self, key: int, value: int) -> None:
+        
+                index = key % self.size
+                #인덱스에 노드가 없다면 삽입 후 종료
+                if self.table[index].value is None:
+                    self.table[index] = ListNode(key, value)
+                    return
+                
+                #인덱스에 노드가 있다면 연결리스트처리(개별체이싱)
+                p = self.table[index]
+                while p:
+                    if p.key == key:
+                        p.value = value
+                        return
+                    if p.next is None:
+                        break
+                    p = p.next
+                p.next = ListNode(key, value)
+        
+            def get(self, key: int) -> int:
+        
+                index = key % self.size
+                #조회하는 즉시 생성되기 때문에 값이 None인지 찾아야함
+                if self.table[index].value is None:
+                    return -1
+        
+                #노드가 존재할때 일치하는 키 탐색
+                p = self.table[index]
+                while p:
+                    if p.key == key:
+                        return p.value
+                    p = p.next
+                return -1
+            
+            def remove(self, key: int) -> None:
+                index = key % self.size
+                
+                #조회하는 노드가 없는 경우
+                if self.table[index].value is None:
+                    return
+                
+                # 인덱스의 첫 번째 노드일 경우
+                # 인덱스가 가리키는 노드를 빈노드로 하거나 다음노드를 가리키게 함
+                p = self.table[index]
+                if p.key == key:
+                    self.table[index] = ListNode() if p.next is None else p.next
+        
+                # 연결리스트 노드 삭제
+                # 다음노드와 다다음 노드를 연결
+                prev = p
+                while p:
+                    if p.key == key:
+                        prev.next = p.next
+                        return
+                    prev, p = p, p.next
+                
+    ```
+  
 ### 
+> 해시테이블 - 딕셔너리 사용
+
+```python  
+class Solution:
+    def numJewelsInStones(self, jewels: str, stones: str) -> int:
+        
+        freqs = {}
+        
+        for char in stones:
+            if char not in freqs:
+                freqs[char] = 1
+            else:
+                freqs[char] += 1
+                
+        count = 0
+        for char in jewels:
+            count += freqs.get(char, 0)
+            
+        return count
+```
+
+> set 사용
+
+```python  
+class Solution:
+    def numJewelsInStones(self, jewels: str, stones: str) -> int:
+        
+        Jset = set(jewels)
+        return sum(s in Jset for s in stones)
+```
+
+> 문자열 사용
+
+```python  
+class Solution:
+    def numJewelsInStones(self, jewels: str, stones: str) -> int:
+        
+        return sum(stone in jewels for stone in stones)
+```
+
+- 성능은 디셔너리를 이용한 hash table이 가장 좋음
 
 
+### 
+> 딕셔너리, enumerate 활용
+
+- solutions
+    1. 딕셔너리에 문자별 위치갱신
+    2. 위치가 있으면 start 갱신
+    3. 이전에 없던거면 길이 측정  
+    ```python  
+        class Solution:
+            def lengthOfLongestSubstring(self, s: str) -> int:        
+                
+                start = 0
+                string = {}
+                
+                result = 0
+                for idx, char in enumerate(s):
+                    if char in string and string[char] >= start:
+                        start = string[char] + 1
+                    else:
+                        result = max(result, idx - start)
+        
+                    string[char] = idx
+                        
+                return result
+    ```
+
+### 347. Top K Frequent Elements
+
+> Counter 사용
+
+- 내풀이
+    ```python  
+        class Solution:
+            def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+                counter = collections.Counter(nums)
+                
+                count = [c for c in counter.items()] 
+                
+                count.sort(key = lambda x: x[1], reverse = True)
+                
+                result = [key for key, value in count[:k]]
+                return result
+    ```
+> 파이써닉 + most_common + zip
+
+- solution
+    ```python  
+        class Solution:
+            def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+                return list(zip(*collections.Counter(nums).most_common(k)))[0]
+    ```
+  
+  
+### 244. Shortest Word Distance II
+> 해시테이블, 이중for문
+
+- 내풀이
+    1. 딕셔너리에 위치 넣기
+    2. 이중for문으로 최솟값 찾기  
+    ```python  
+        class WordDistance:
+        
+            def __init__(self, wordsDict: List[str]):
+                self.table = collections.defaultdict(list)
+                for idx, word in enumerate(wordsDict):
+                    self.table[word].append(idx)
+                
+                return 
+            
+            def shortest(self, word1: str, word2: str) -> int:
+                result = sys.maxsize
+                
+                for idx1 in self.table[word1]:
+                    for idx2 in self.table[word2]:
+                        result = min(result, abs(idx1 - idx2))
+                        
+                return result
+    ```
+  
+> 해시에이블, while
+
+- solution
+    1. 딕셔너리에 위치 넣기
+    2. while로 한칸씩 앞으로 가면서 확인  
+    ```python  
+        class WordDistance:
+        
+            def __init__(self, wordsDict: List[str]):
+                self.locations = collections.defaultdict(list)
+                for idx, word in enumerate(wordsDict):
+                    self.locations[word].append(idx)
+                
+                return 
+            
+            def shortest(self, word1: str, word2: str) -> int:
+                loc1, loc2 = self.locations[word1], self.locations[word2]
+                l1, l2 = 0, 0
+                min_diff = float("inf")
+        
+                # Until the shorter of the two lists is processed
+                while l1 < len(loc1) and l2 < len(loc2):
+                    min_diff = min(min_diff, abs(loc1[l1] - loc2[l2]))
+                    if loc1[l1] < loc2[l2]:
+                        l1 += 1
+                    else:
+                        l2 += 1
+                return min_diff                         
+    ```  
+  
+### 767. Reorganize String
+
+- solution / `recheck`
+    1. `문자를 정렬한다음 카운트개수대로 정렬하기`
+        - 여기서 문자를 정렬한다음 진행하는 이유는 개수가 같으면 정렬이 되지 않은채로 결과값이 그대로 임
+        - 문자정렬 안하고 진행 : "bababa" -> "bababa"
+        - 문자정렬 하고 진행 : "bababa" -> "aaabbb"
+    2. 반반 나눠서 [::2]를 활용해 반반을 교차로 섞기
+    3. 교차로 섞고나서 마지막 2문자가 같으면 false 아니면 True
+        - 왜냐 한문자가 과반 이상일 경우에만 위 방법으로 진행했을때 마지막 두문자가 같게됨  
+    ```python  
+        class Solution:
+            def reorganizeString(self, s: str) -> str:
+        
+                a = sorted(sorted(s), key=s.count)
+                h = len(a) // 2
+                a[1::2], a[::2] = a[:h], a[h:]
+                
+                return ''.join(a) * (a[-1] != a[-2])
+    ```
+
+- 위 코드는 sorted 정렬할때 O(n^2)이 걸린다는 단점이있다.  
+  그래서 아래와 같이 보완하면 O(n)으로 가능하다  
+- `PLUS / append와 extend의 차이`
+    - append는 추가할 component를 리스트로 묶어서 받음
+    - extend는 추가할 component를 각 개별요소로 받음
+    - append는 묶어서 주고 extend 개별요소로 찢어서 주고  
+    - [참고](https://m.blog.naver.com/wideeyed/221541104629)  
+    ```python  
+        class Solution:
+            def reorganizeString(self, s: str) -> str:
+        
+                d = collections.Counter(s)  
+                a = []
+                for ch, cnt in sorted(d.items(), key=lambda x: x[1]): 
+                    a.extend(ch*cnt)
+                    
+                h = len(a) // 2
+                a[1::2], a[::2] = a[:h], a[h:]
+                
+                return ''.join(a) * (a[-1] != a[-2])
+    ```  
+
+
+### 1152. Analyze User Website Visit Pattern
+>itertools.combination, sum(, start = ) 사용
+
+- solution / `recheck`
+    1. 딕셔너리로 각 유저별 방문웹사이트 저장
+    2. combination으로 유저별 distinct 웹사이트 순서 카운트
+        - `set(~~~)하면 순서대로 저장됨` 
+    3. sum(~~)으로 합계추출
+        - `sum(start = 0)이 디폴트인데, Counter객체를 더하기 위해서는 디폴트값을 Counter객체로 변경해줘야함`  
+    ```python  
+        class Solution:
+            def mostVisitedPattern(self, username: List[str], timestamp: List[int], website: List[str]) -> List[str]:
+                dp = collections.defaultdict(list)
+                for t, u, w in sorted(zip(timestamp, username, website)):
+                    dp[u].append(w)  
+                        
+                count = sum([collections.Counter(set(itertools.combinations(dp[u], 3))) for u in dp], collections.Counter())
+                
+                return list(min(count, key=lambda k: (-count[k], k)))
+    ```
+  
+>itertools.combination, update사용
+
+- solution
+    1. 딕셔너리로 각 유저별 방문웹사이트 저장
+    2. Counter 객체생성(dict)
+    3. combination으로 유저별 distinct 웹사이트 순서 update
+        - `이때 value의 type이 숫자이면 같은 key값이 왔을때 1씩 더해진다`
+    4. key이름순서대로 정렬된 것을 value기준으로 max추출  
+    ```python  
+        class Solution:
+            def mostVisitedPattern(self, username: List[str], timestamp: List[int], website: List[str]) -> List[str]:
+                
+                users = defaultdict(list)
+            
+                for user, time, site in sorted(zip(username, timestamp, website), key = lambda x: (x[0],x[1])): 
+                    users[user].append(site)
+        
+                patterns = Counter()
+                
+                for user, sites in users.items():
+                    patterns.update(Counter(set(combinations(sites, 3))))
+                    
+                return max(sorted(patterns), key=patterns.get)
+    ```
+
+### 740. Delete and Earn
+> 딕셔너리, 투포인터 사용
+
+- solution
+    1. Counter 딕셔너리 생성
+    2. 첫번째를 curr, prev를 0으로 잡고 투포인터 시작
+    3. key값 비교, for문을 한칸 미뤄서 시작
+        - 1차이나면 prev + for문 현재값과 curr값 비교
+        - 나지 않으면 그대로 더하기  
+    ```python 
+    class Solution:
+        def deleteAndEarn(self, nums: List[int]) -> int:
+            if not nums:
+                return 0
+            dic = collections.Counter(nums)
+            keys = sorted(dic.keys())
+            prev = 0
+            curr = keys[0]*dic[keys[0]]
+            for i in range(1, len(keys)):
+                if keys[i] - keys[i-1] == 1:
+                    prev, curr = curr, max(prev + keys[i] * dic[keys[i]], curr)
+                else:
+                    prev, curr = curr, curr + keys[i] * dic[keys[i]]
+            return curr 
+    ```
