@@ -1629,174 +1629,401 @@ class Solution:
     ```
   
   
-### 244. Shortest Word Distance II
-> 해시테이블, 이중for문
+## 12장. 그래프
 
-- 내풀이
-    1. 딕셔너리에 위치 넣기
-    2. 이중for문으로 최솟값 찾기  
-    ```python  
-        class WordDistance:
-        
-            def __init__(self, wordsDict: List[str]):
-                self.table = collections.defaultdict(list)
-                for idx, word in enumerate(wordsDict):
-                    self.table[word].append(idx)
-                
+- What
+    - 일부의 쌍들이 영관되어 있는 객체 집합 구조
+- Why
+    - 정점과 간선을 활용해 경로 문제를 해결할 수 있음
+- How
+    - BFS
+        - 큐
+    - DFS
+        - 재귀
+        - 스택 
+    - 백트랙킹
+        - 한번 가보고 가능성이 없으면 버리기
+        - 브루트포스와 유사하나 브루트포스는 한번가본데를 또간다
+        - 따라서, 백트랙킹으로 인한 가지치기는 탐색을 최적화할 수 있다.   
+  
+### 200. Number of Islands
+> DFS
+
+- solution
+    1. bfs사용
+    2. 이중for문으로 아일랜드 탐색  
+    - version 1
+        ```python  
+            class Solution:
+                def numIslands(self, grid: List[List[str]]) -> int:
+                    def dfs(x, y):
+                        
+                        if 0 <= x < len(grid) and 0 <= y < len(grid[-1]) and grid[x][y] == '1':
+                            
+                            grid[x][y] = 0
+                            dfs(x + 1, y)
+                            dfs(x - 1, y)
+                            dfs(x, y + 1)
+                            dfs(x, y - 1)
+                            
+                    
+                    result = 0
+                    for i in range(len(grid)):
+                        for j in range(len(grid[0])):
+                            if grid[i][j] == '1':
+                                dfs(i, j)
+                                result += 1 
+                    
+                    return result
+        ```
+    - 같은 풀이를 더 짧은 코드로 구현
+    - 하지만, 공간, 시간복잡도는 비효율적임  
+    - version 2
+        ```python  
+            class Solution:
+                def numIslands(self, grid: List[List[str]]) -> int:
+                    def dfs(r, c):
+                        if r < 0 or r >= len(grid) or c < 0 or c >= len(grid[0]) or grid[r][c] == '0':
+                            return 0
+                        
+                        grid[r][c] = '0'
+                        
+                        for i, j in zip((r - 1, r + 1, r, r), (c, c, c - 1, c + 1)):
+                            dfs(i, j)
+                        
+                        return 1
+                    
+                    return sum(dfs(i, j) for i in range(len(grid)) for j in range(len(grid[0])))            
+         ```
+      
+### 17. Letter Combinations of a Phone Number
+
+> DFS
+- 내풀이 / 문자열처리 문제와 동일  
+```python  
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        def dfs(char, digits):
+            if not digits:
+                result.append(char)
                 return 
             
-            def shortest(self, word1: str, word2: str) -> int:
-                result = sys.maxsize
+            for i in e[digits[0]]:
+                dfs(char + i, digits[1:])
                 
-                for idx1 in self.table[word1]:
-                    for idx2 in self.table[word2]:
-                        result = min(result, abs(idx1 - idx2))
+        #예외처리
+        if not digits:
+            return []
+        
+        e = {
+            '2': ['a', 'b', 'c'],
+            '3': ['d', 'e', 'f'],
+            '4': ['g', 'h', 'i'],
+            '5': ['j', 'k', 'l'],
+            '6': ['m', 'n', 'o'],
+            '7': ['p', 'q', 'r', 's'],
+            '8': ['t', 'u', 'v'],
+            '9': ['w', 'x', 'y', 'z'],
+        }
+        
+        result = []
+        dfs('', digits)
+        
+        return result
+```
+
+- solution  
+```python  
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        def dfs(index, path):
+            if len(path) == len(digits):
+                result.append(path)
+                return
+            
+            for i in range(index, len(digits)):
+                for j in dic[digits[i]]:
+                    dfs(i + 1, path + j)
+                    
+        #예외처리
+        if not digits:
+            return []
+        
+        dic = {
+            '2': ['a', 'b', 'c'],
+            '3': ['d', 'e', 'f'],
+            '4': ['g', 'h', 'i'],
+            '5': ['j', 'k', 'l'],
+            '6': ['m', 'n', 'o'],
+            '7': ['p', 'q', 'r', 's'],
+            '8': ['t', 'u', 'v'],
+            '9': ['w', 'x', 'y', 'z'],
+        }
+        
+        result = []
+        
+        dfs(0, "")
+        
+        return result      
+```
+
+### 46. Permutations / `all recheck`
+
+> DFS, 재귀
+
+- solution 1  
+```python  
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        
+        result = []
+        prev_elements = []
+        
+        def dfs(elements):
+            if not elements:
+                result.append(prev_elements[:])
+                
+            for e in elements:
+                next_elements = elements[:]
+                next_elements.remove(e)
+                
+                prev_elements.append(e)
+                dfs(next_elements)
+                prev_elements.pop()
+                
+        dfs(nums)
+        return result
+```
+> 재귀
+
+- solution 2  
+```python  
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        def backtrack(first = 0):
+            # if all integers are used up
+            if first == n:  
+                output.append(nums[:])
+            for i in range(first, n):
+                # place i-th integer first 
+                # in the current permutation
+                nums[first], nums[i] = nums[i], nums[first]
+                # use next integers to complete the permutations
+                backtrack(first + 1)
+                # backtrack
+                nums[first], nums[i] = nums[i], nums[first]
+        
+        n = len(nums)
+        output = []
+        backtrack()
+        return output
+```
+
+> DFS, 재귀
+
+- solution 3  
+```python  
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        self.dfs(nums, [], res)
+        return res
+
+    def dfs(self, nums, path, res):
+        if not nums:
+            res.append(path)
+            # return # backtracking
+        for i in range(len(nums)):
+            self.dfs(nums[:i]+nums[i+1:], path+[nums[i]], res)
+```
+
+### 77. Combinations / `recheck`
+> DFS, 재귀
+
+```python  
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        result = []
+        
+        def dfs(elements, start: int, k: int):
+            if k == 0:
+                result.append(elements[:])
+                return
+
+            for i in range(start, n + 1):
+                elements.append(i)
+                dfs(elements, i + 1, k - 1)
+                elements.pop()
+        
+        dfs([], 1, k)
+        return result
+```
+
+```python  
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        def backtrack(first = 1, curr = []):
+            if len(curr) == k:
+                output.append(curr[:])
+                
+            for i in range(first, n + 1):
+                curr.append(i)
+                backtrack(i + 1, curr)
+                curr.pop()
+                
+        output = []
+        backtrack()
+        return output
+```
+
+### 39. Combination Sum / `recheck`
+> DFS, 재귀
+
+- solution
+    - 목표하는 합계에 도달하는 조합 추출
+        - 목표합계에서 원소들을 빼면서 == 0, < 0으로 확인
+    1. dfs로 설정
+        - 한없이 빼는 것을 방지하기 위해 < 0, == 0으로 재귀종류
+    2. 자기자신을 포함해서 연달아 합계
+        - 파라미터 인자를 전할때 i + 1이 아닌 i  
+    ```python  
+        class Solution:
+            def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+                result = []
+                
+                def dfs(csum, index, path):
+                    if csum < 0:
+                        return
+                    elif csum == 0:
+                        result.append(path)
+                        return
+                    
+                    for i in range(index, len(candidates)):
+                        dfs(csum - candidates[i], i, path + [candidates[i]])
+        
+                dfs(target, 0, [])
+                
+                return result
+    ```
+
+- `***` 위의 풀이와 방식은 비슷함
+    - 하지만 속도에서 가장큰 차이점이 있음
+        - 위 풀이는 for문 돌려 재귀에 들어감 -> 호출을 많이함
+        - 아래 풀이는 for문을 돌려 불필요한 것은 바로 브레이크  
+    ```python  
+        class Solution:
+            def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+                res = []
+                def dfs(tmplst, candidates, target):
+                    for i, c in enumerate(candidates):
+                        d = target - c
+                        if d == 0:
+                            res.append(tmplst + [c])
+                        elif d > 0:
+                            dfs(tmplst + [c], candidates[i:], d)
+                        else:
+                            break
+                dfs([], sorted(candidates), target)
+                return res
+    ```
+  
+###
+> DFS, 재귀
+
+- 내풀이
+    - 조합문제 + 변경되는 k값
+```python  
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        
+        result = []
+        
+        def dfs(elements, start, k):
+            if k == 0:
+                result.append(elements[:])
+                return
+            
+            for i in range(start, len(nums)):
+                elements.append(nums[i])
+                dfs(elements, i + 1, k - 1)
+                elements.pop()
+                
+        for i in range(len(nums) + 1):
+            dfs([], 0, i)
+        
+        return result
+```
+
+> DFS, 재귀
+
+- solution
+    - 조합을 할때 모든 노드의 조합을 살피기 때문에 굳이 제약조건 없이 모든것을 결과에 더해주면 됨  
+    ```python  
+        class Solution:
+            def subsets(self, nums: List[int]) -> List[List[int]]:
+                
+                result = []
+                
+                def dfs(start, path):
+                    result.append(path[:])
+                    
+                    for i in range(start, len(nums)):
+                        dfs(i + 1, path + [nums[i]])
                         
+                
+                dfs(0, [])
+                
                 return result
     ```
   
-> 해시에이블, while
+###
+> DFS, 재귀
 
-- solution
-    1. 딕셔너리에 위치 넣기
-    2. while로 한칸씩 앞으로 가면서 확인  
-    ```python  
-        class WordDistance:
-        
-            def __init__(self, wordsDict: List[str]):
-                self.locations = collections.defaultdict(list)
-                for idx, word in enumerate(wordsDict):
-                    self.locations[word].append(idx)
-                
-                return 
-            
-            def shortest(self, word1: str, word2: str) -> int:
-                loc1, loc2 = self.locations[word1], self.locations[word2]
-                l1, l2 = 0, 0
-                min_diff = float("inf")
-        
-                # Until the shorter of the two lists is processed
-                while l1 < len(loc1) and l2 < len(loc2):
-                    min_diff = min(min_diff, abs(loc1[l1] - loc2[l2]))
-                    if loc1[l1] < loc2[l2]:
-                        l1 += 1
-                    else:
-                        l2 += 1
-                return min_diff                         
-    ```  
-  
-### 767. Reorganize String
-
-- solution / `recheck`
-    1. `문자를 정렬한다음 카운트개수대로 정렬하기`
-        - 여기서 문자를 정렬한다음 진행하는 이유는 개수가 같으면 정렬이 되지 않은채로 결과값이 그대로 임
-        - 문자정렬 안하고 진행 : "bababa" -> "bababa"
-        - 문자정렬 하고 진행 : "bababa" -> "aaabbb"
-    2. 반반 나눠서 [::2]를 활용해 반반을 교차로 섞기
-    3. 교차로 섞고나서 마지막 2문자가 같으면 false 아니면 True
-        - 왜냐 한문자가 과반 이상일 경우에만 위 방법으로 진행했을때 마지막 두문자가 같게됨  
+- solution 1
+    1. 순서정렬된 ticket을 딕셔너리로 저장하기
+    2. dfs로 타고타고 들어가서 pop()하고 route에 추가하기
+    3. 역순으로 결과 출력  
     ```python  
         class Solution:
-            def reorganizeString(self, s: str) -> str:
-        
-                a = sorted(sorted(s), key=s.count)
-                h = len(a) // 2
-                a[1::2], a[::2] = a[:h], a[h:]
+            def findItinerary(self, tickets: List[List[str]]) -> List[str]:
                 
-                return ''.join(a) * (a[-1] != a[-2])
-    ```
-
-- 위 코드는 sorted 정렬할때 O(n^2)이 걸린다는 단점이있다.  
-  그래서 아래와 같이 보완하면 O(n)으로 가능하다  
-- `PLUS / append와 extend의 차이`
-    - append는 추가할 component를 리스트로 묶어서 받음
-    - extend는 추가할 component를 각 개별요소로 받음
-    - append는 묶어서 주고 extend 개별요소로 찢어서 주고  
-    - [참고](https://m.blog.naver.com/wideeyed/221541104629)  
-    ```python  
-        class Solution:
-            def reorganizeString(self, s: str) -> str:
-        
-                d = collections.Counter(s)  
-                a = []
-                for ch, cnt in sorted(d.items(), key=lambda x: x[1]): 
-                    a.extend(ch*cnt)
+                graph = collections.defaultdict(list)
+                for x in sorted(tickets):
+                    graph[x[0]].append(x[1])
                     
-                h = len(a) // 2
-                a[1::2], a[::2] = a[:h], a[h:]
+                route = []
+                def dfs(x):
+                    while graph[x]:
+                        dfs(graph[x].pop(0))
+                    route.append(x)
                 
-                return ''.join(a) * (a[-1] != a[-2])
-    ```  
-
-
-### 1152. Analyze User Website Visit Pattern
->itertools.combination, sum(, start = ) 사용
-
-- solution / `recheck`
-    1. 딕셔너리로 각 유저별 방문웹사이트 저장
-    2. combination으로 유저별 distinct 웹사이트 순서 카운트
-        - `set(~~~)하면 순서대로 저장됨` 
-    3. sum(~~)으로 합계추출
-        - `sum(start = 0)이 디폴트인데, Counter객체를 더하기 위해서는 디폴트값을 Counter객체로 변경해줘야함`  
-    ```python  
-        class Solution:
-            def mostVisitedPattern(self, username: List[str], timestamp: List[int], website: List[str]) -> List[str]:
-                dp = collections.defaultdict(list)
-                for t, u, w in sorted(zip(timestamp, username, website)):
-                    dp[u].append(w)  
-                        
-                count = sum([collections.Counter(set(itertools.combinations(dp[u], 3))) for u in dp], collections.Counter())
+                dfs('JFK')
                 
-                return list(min(count, key=lambda k: (-count[k], k)))
+                return route[::-1]           
     ```
   
->itertools.combination, update사용
+> 스택
 
-- solution
-    1. 딕셔너리로 각 유저별 방문웹사이트 저장
-    2. Counter 객체생성(dict)
-    3. combination으로 유저별 distinct 웹사이트 순서 update
-        - `이때 value의 type이 숫자이면 같은 key값이 왔을때 1씩 더해진다`
-    4. key이름순서대로 정렬된 것을 value기준으로 max추출  
-    ```python  
-        class Solution:
-            def mostVisitedPattern(self, username: List[str], timestamp: List[int], website: List[str]) -> List[str]:
-                
-                users = defaultdict(list)
-            
-                for user, time, site in sorted(zip(username, timestamp, website), key = lambda x: (x[0],x[1])): 
-                    users[user].append(site)
-        
-                patterns = Counter()
-                
-                for user, sites in users.items():
-                    patterns.update(Counter(set(combinations(sites, 3))))
-                    
-                return max(sorted(patterns), key=patterns.get)
-    ```
-
-### 740. Delete and Earn
-> 딕셔너리, 투포인터 사용
-
-- solution
-    1. Counter 딕셔너리 생성
-    2. 첫번째를 curr, prev를 0으로 잡고 투포인터 시작
-    3. key값 비교, for문을 한칸 미뤄서 시작
-        - 1차이나면 prev + for문 현재값과 curr값 비교
-        - 나지 않으면 그대로 더하기  
+- solution 2/ `recheck`이긴하나 내가 사용할 수 있는 방법일지는 모르겠음
+    1. 딕셔너리로 ticket 저장
+    2. JFK를 시작으로 여행을 쌓음
+    3. 중간에 통로가 막힐수도 있음으로 쌓은거를 다시 다른곳에 쌓음
+    4. 역순으로 결과 출력  
     ```python 
-    class Solution:
-        def deleteAndEarn(self, nums: List[int]) -> int:
-            if not nums:
-                return 0
-            dic = collections.Counter(nums)
-            keys = sorted(dic.keys())
-            prev = 0
-            curr = keys[0]*dic[keys[0]]
-            for i in range(1, len(keys)):
-                if keys[i] - keys[i-1] == 1:
-                    prev, curr = curr, max(prev + keys[i] * dic[keys[i]], curr)
-                else:
-                    prev, curr = curr, curr + keys[i] * dic[keys[i]]
-            return curr 
-    ```
+        class Solution:
+            def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+                
+                graph = collections.defaultdict(list)
+                
+                for a,b in sorted(tickets):
+                    graph[a].append(b)
+                    
+                route, stack = [], ['JFK']
+                while stack:
+                    while graph[stack[-1]]:
+                        stack.append(graph[stack[-1]].pop(0))
+                    route.append(stack.pop())
+                    
+                return route[::-1]   
+    ```    
+    
