@@ -1676,61 +1676,62 @@ class Solution:
                     
                     return result
         ```
-    - 같은 풀이를 더 짧은 코드로 구현
-    - 하지만, 공간, 시간복잡도는 비효율적임  
-    - version 2
-        ```python  
-            class Solution:
-                def numIslands(self, grid: List[List[str]]) -> int:
-                    def dfs(r, c):
-                        if r < 0 or r >= len(grid) or c < 0 or c >= len(grid[0]) or grid[r][c] == '0':
-                            return 0
-                        
-                        grid[r][c] = '0'
-                        
-                        for i, j in zip((r - 1, r + 1, r, r), (c, c, c - 1, c + 1)):
-                            dfs(i, j)
-                        
-                        return 1
+- 같은 풀이를 더 짧은 코드로 구현
+- 하지만, 공간, 시간복잡도는 비효율적임  
+- version 2
+    ```python  
+        class Solution:
+            def numIslands(self, grid: List[List[str]]) -> int:
+                def dfs(r, c):
+                    if r < 0 or r >= len(grid) or c < 0 or c >= len(grid[0]) or grid[r][c] == '0':
+                        return 0
                     
-                    return sum(dfs(i, j) for i in range(len(grid)) for j in range(len(grid[0])))            
-         ```
+                    grid[r][c] = '0'
+                    
+                    for i, j in zip((r - 1, r + 1, r, r), (c, c, c - 1, c + 1)):
+                        dfs(i, j)
+                    
+                    return 1
+                
+                return sum(dfs(i, j) for i in range(len(grid)) for j in range(len(grid[0])))            
+     ``` 
       
 ### 17. Letter Combinations of a Phone Number
 
 > DFS
+
 - 내풀이 / 문자열처리 문제와 동일  
-```python  
-class Solution:
-    def letterCombinations(self, digits: str) -> List[str]:
-        def dfs(char, digits):
-            if not digits:
-                result.append(char)
-                return 
-            
-            for i in e[digits[0]]:
-                dfs(char + i, digits[1:])
+  ```python  
+    class Solution:
+        def letterCombinations(self, digits: str) -> List[str]:
+            def dfs(char, digits):
+                if not digits:
+                    result.append(char)
+                    return 
                 
-        #예외처리
-        if not digits:
-            return []
-        
-        e = {
-            '2': ['a', 'b', 'c'],
-            '3': ['d', 'e', 'f'],
-            '4': ['g', 'h', 'i'],
-            '5': ['j', 'k', 'l'],
-            '6': ['m', 'n', 'o'],
-            '7': ['p', 'q', 'r', 's'],
-            '8': ['t', 'u', 'v'],
-            '9': ['w', 'x', 'y', 'z'],
-        }
-        
-        result = []
-        dfs('', digits)
-        
-        return result
-```
+                for i in e[digits[0]]:
+                    dfs(char + i, digits[1:])
+                    
+            #예외처리
+            if not digits:
+                return []
+            
+            e = {
+                '2': ['a', 'b', 'c'],
+                '3': ['d', 'e', 'f'],
+                '4': ['g', 'h', 'i'],
+                '5': ['j', 'k', 'l'],
+                '6': ['m', 'n', 'o'],
+                '7': ['p', 'q', 'r', 's'],
+                '8': ['t', 'u', 'v'],
+                '9': ['w', 'x', 'y', 'z'],
+            }
+            
+            result = []
+            dfs('', digits)
+            
+            return result
+  ```
 
 - solution  
 ```python  
