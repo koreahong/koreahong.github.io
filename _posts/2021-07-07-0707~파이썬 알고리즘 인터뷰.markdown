@@ -2388,50 +2388,50 @@ class Solution:
         - right 마찬가지
     2. 둘 중 하나가 None
         - return으로 둘 하나를 보내면 됨, `or` 사용
-```python  
-class Solution:
-    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
-        
-        if root1 and root2:
-            node = TreeNode(root1.val + root2.val)
-            node.left = self.mergeTrees(root1.left, root2.left)
-            node.right = self.mergeTrees(root1.right, root2.right)
-            return node
-        else:
-            return root1 or root2
-``` 
+    ```python  
+        class Solution:
+            def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+                
+                if root1 and root2:
+                    node = TreeNode(root1.val + root2.val)
+                    node.left = self.mergeTrees(root1.left, root2.left)
+                    node.right = self.mergeTrees(root1.right, root2.right)
+                    return node
+                else:
+                    return root1 or root2
+    ``` 
 
 > BFS            
 
 - solution 2
     1. root1을 업데이트
     2. roo1에 없으면 root2거를 넣어줌  
-```python  
-class Solution:
-    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
-        
-        if root1 is None:
-            return root2
-        
-        stack = [(root1, root2)]
-        while stack:
-            t1, t2 = stack.pop()
-            if t2 is None:
-                continue
-            t1.val += t2.val    
-            
-            if t1.left is None:
-                t1.left = t2.left
-            else:
-                stack.append((t1.left, t2.left))
+    ```python  
+        class Solution:
+            def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
                 
-            if t1.right is None:
-                t1.right = t2.right
-            else:
-                stack.append((t1.right, t2.right))
+                if root1 is None:
+                    return root2
                 
-        return root1
-```
+                stack = [(root1, root2)]
+                while stack:
+                    t1, t2 = stack.pop()
+                    if t2 is None:
+                        continue
+                    t1.val += t2.val    
+                    
+                    if t1.left is None:
+                        t1.left = t2.left
+                    else:
+                        stack.append((t1.left, t2.left))
+                        
+                    if t1.right is None:
+                        t1.right = t2.right
+                    else:
+                        stack.append((t1.right, t2.right))
+                        
+                return root1
+    ```
 
 
 
