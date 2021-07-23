@@ -1630,6 +1630,7 @@ class Solution:
   
   
 ## 12장. 그래프
+- `all recheck`
 
 - What
     - 일부의 쌍들이 영관되어 있는 객체 집합 구조
@@ -2069,6 +2070,8 @@ class Solution:
     ```
    
 ## 13장. 최단경로 문제
+- `all recheck`
+
 - What
     - 각 정점들의 혹인 일부를 거치는데 정점의 값의 합이 최소인 것
 - Why
@@ -2134,5 +2137,305 @@ class Solution:
         return ans if ans < float('inf') else -1
 ```
 
+### / `recheck`
+
+> BFS, 다익스트라
+
+- solution
+    1. 딕셔너리에 정보 저장
+    2. 방문했는지 확인하기 위한 딕셔너리 선언
+    3. 방문수를 카운트하는데 더 오래 걸린거면 패스
+        - 이미 heappush에서 최소 비용을 업데이트 했음
+        - 덜 걸린 경로가 들어오면, count와 cost를 다시 측정해야하기 때문에 지나갔던 노드들 재방문
+    4. 위 작업 반복
+        - 도착하려는 노드가 있을 경우 return cost
+        - 없을경우 return -1  
+    ```python  
+        #다익스트라 + BFS
+        class Solution:
+            def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+                graph = collections.defaultdict(dict)
+                for u, v, w in flights:
+                    graph[u][v] = w
   
+                Q = [(0, src, k + 1)]
+                vis = [0] * n
+                while Q:
+                    cost, node, count = heapq.heappop(Q)
+                    if node == dst:
+                        return cost
+                    # 이미 방문했던 노드인데, 이전과 비교했을때 더 짧게 트립했는데 확인
+                    if vis[node] >= count:
+                        continue
+                    vis[node] = count
+                    for y, dw in graph[node].items():
+                        heapq.heappush(Q, (cost+ dw, y, count - 1))
+                return -1  
+    ```
+  
+## 14.트리
+- `tree all recheck`
+
+- What
+    - 계층형 트리 구조를 시뮬레이션 하는 추상자료형
+    - 루트 값과 부모-자식관계의 서브트리로 구성
+    - 트리 vs 그래프
+        - 트리는 순환 구조를 갖지 않는 그래프
+        - 트리는 부모가 하나
+- Why
+    - 계층형 그래프를 사용하기 위해서
+- How
+    - 재귀, bfs 등
+    
+### 104. Maximum Depth of Binary Tree / `recheck`
+
+> 재귀
+
+- solution 2
+    1. 1 + ((None or not None) or (None or not None))로 뎁스 계산  
+    ```python 
+        class Solution:
+            def maxDepth(self, root: TreeNode) -> int:
+                #더큰 노드값을 타고들어가서 계산: 존재하는지만 파악하는 것이기 때문에 둘다 None값이 아닐때까지 확인하는 방법
+                # +1이 실질적으로 depth를 확인하는 것
+                # 1 + ((None or None) or (None or None))
+                return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right)) if root else 0
+    ```
+
+> BFS
+
+- solution 2
+    1 deque를 이용해서 큐에서 pop하면서 None값이 될때까지 계산  
+    ```python  
+        class Solution:
+            def maxDepth(self, root: TreeNode) -> int:
+                return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right)) if root else 0
+                 
+                queue = collections.deque([root])
+                depth = 0
+                
+                while queue:
+                    depth += 1
+                    for _ in range(len(queue)):
+                        cur_root = queue.popleft()
+                        if cur_root.left:
+                            queue.append(cur_root.left)
+                        if cur_root.right:
+                            queue.append(cur_root.right)
                     
+                    return depth
+    ```
+
+### 543. Diameter of Binary Tree / `recheck`
+> 재귀, 트리
+
+- solution
+    1. 재귀적으로 왼쪽과 오른쪽을 계속 타고 들어가는 패턴 생성
+    2. None값인 노드로 갈경우 -1 반환 / 정이진트리에서 패널티를 주기 위함
+    3. self.longest는 해당위치에서 오른쪽에서 왼쪽까지의 거리: +2
+    4. return은 left, right중에 더 큰것 + 1
+```python  
+class Solution:
+    longest: int = 0
+    
+    def diameterOfBinaryTree(self, root: TreeNode) -> int:
+        
+        def dfs(node: TreeNode) -> int:
+            if not node:
+                return -1
+            
+            left = dfs(node.left)
+            right = dfs(node.right)
+            #현재 가장 긴 거리
+            self.longest = max(self.longest, left + right + 2)
+            #리프노드에서 현재 노드까지의 거리
+            return max(left, right) + 1
+            
+        dfs(root)
+        
+        return self.longest     
+```
+
+### 104. Maximum Depth of Binary Tree
+
+- solution
+    - 같은 값의 노드들끼리의 최대거리 구하기
+    1. left, right를 계속 타고 내려감
+    2. node와 node.left 혹은 node와 node.right의 값이 같은지 확인
+        - 같으면 + 1
+        - 다르면 0
+    3. return값을 그냥 left값을 올려야함
+        - 이전처럼 depth를 구하는 것이 아니기 때문에 그대로 올려서 재귀적으로 값이 같은지 확인해야함  
+    ```python 
+        class Solution:
+            result: int = 0
+                
+            def longestUnivaluePath(self, root: TreeNode) -> int:
+                def dfs(node):
+                    if not node:
+                        return 0
+                    
+                    left = dfs(node.left)
+                    right = dfs(node.right)
+                    
+                    if node.left and node.left.val == node.val:
+                        left += 1
+                    else:
+                        left = 0
+                    
+                    if node.right and node.right.val == node.val:
+                        right += 1
+                    else:
+                        right = 0
+                        
+                    self.result = max(self.result, left + right)
+                    
+                    return max(left, right)
+                
+                dfs(root)
+                
+                return self.result
+    ```
+
+### 226. Invert Binary Tree
+> 다중할당, 전위순회
+
+- solution 1
+    - 파이써닉한 풀이
+    1. 다중할당으로 스왑
+    2. return으로 값올리기  
+    ```python 
+        class Solution:
+            def invertTree(self, root: TreeNode) -> TreeNode:
+                if root:
+                    root.right, root.left = self.invertTree(root.left), self.invertTree(root.right)
+                    return root
+    ```
+
+> BFS, 전위순회
+
+- solution 2
+    - popleft 사용해서 부모부터 스왑
+    1. 부모빼서 다중할당으로 스왑
+    2. while 사용으로 queue가 없을때까지 반복      
+    ```python 
+        class Solution:
+            def invertTree(self, root: TreeNode) -> TreeNode:
+                queue = collections.deque([root])
+                
+                while queue:
+                    node = queue.popleft()
+                    
+                    if node:
+                        node.left, node.right = node.right, node.left
+                        
+                        queue.append(node.left)
+                        queue.append(node.right)
+                        
+                return root   
+    ```
+> DFS, 전위순회
+
+- solution 2
+    - pop 사용해서 부모부터 스왑
+    1. 부모빼서 다중할당으로 스왑
+    2. while 사용으로 stack가 없을때까지 반복      
+    ```python 
+        class Solution:
+            def invertTree(self, root: TreeNode) -> TreeNode:
+                stack = collections.deque([root])
+                
+                while stack:
+                    node = stack.pop()
+                    
+                    if node:
+                        node.left, node.right = node.right, node.left
+                        
+                        stack.append(node.left)
+                        stack.append(node.right)
+                        
+                return root   
+    ```   
+> DFS, 후위순회
+
+- solution 2
+    - pop 사용해서 부모부터 스왑
+    1. 부모빼서 다중할당으로 스왑
+    2. while 사용으로 stack가 없을때까지 반복      
+    ```python 
+        class Solution:
+            def invertTree(self, root: TreeNode) -> TreeNode:
+                stack = collections.deque([root])
+                
+                while stack:
+                    node = stack.pop()
+                    
+                    if node:
+                        stack.append(node.left)
+                        stack.append(node.right)
+  
+                        node.left, node.right = node.right, node.left
+                return root   
+    ``` 
+  
+###
+> DFS, 재귀
+
+- solution 1
+    1. 양쪽트리가 None이 아니라면
+        - 새로운 노드를 설정, 값은 둘의 합
+        - left포인터로 재귀적으로 left끼리 설정
+        - right 마찬가지
+    2. 둘 중 하나가 None
+        - return으로 둘 하나를 보내면 됨, `or` 사용
+```python  
+class Solution:
+    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+        
+        if root1 and root2:
+            node = TreeNode(root1.val + root2.val)
+            node.left = self.mergeTrees(root1.left, root2.left)
+            node.right = self.mergeTrees(root1.right, root2.right)
+            return node
+        else:
+            return root1 or root2
+``` 
+
+> BFS            
+
+- solution 2
+    1. root1을 업데이트
+    2. roo1에 없으면 root2거를 넣어줌  
+```python  
+class Solution:
+    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+        
+        if root1 is None:
+            return root2
+        
+        stack = [(root1, root2)]
+        while stack:
+            t1, t2 = stack.pop()
+            if t2 is None:
+                continue
+            t1.val += t2.val    
+            
+            if t1.left is None:
+                t1.left = t2.left
+            else:
+                stack.append((t1.left, t2.left))
+                
+            if t1.right is None:
+                t1.right = t2.right
+            else:
+                stack.append((t1.right, t2.right))
+                
+        return root1
+```
+
+
+
+
+
+
+
