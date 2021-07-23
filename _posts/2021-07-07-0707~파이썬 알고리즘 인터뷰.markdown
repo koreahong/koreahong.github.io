@@ -1928,7 +1928,7 @@ class Solution:
                 return res
     ```
   
-###
+### 39. Combination Sum / `recheck`
 > DFS, 재귀
 
 - 내풀이
@@ -1977,7 +1977,7 @@ class Solution:
                 return result
     ```
   
-###
+### 78. Subsets / `recheck`
 > DFS, 재귀
 
 - solution 1
@@ -2028,3 +2028,55 @@ class Solution:
                 return route[::-1]   
     ```    
     
+### 332. REconstruct ltinerary
+> DFS, 재귀
+
+- solution 
+    1. 각 노드별로 연결되어 있는 정보를 dict에 저장
+    2. 노드별로 연결되어 있는 것을 dfs 파고파고 들어간다
+        - 방문중인 노드를 재방문하는 일이 생기면 False
+        - 방문기록을 남겨서 다른 노드를 통해서 방문하는 곳은 바로 패스  
+    ```python  
+        class Solution:
+            def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+                graph = collections.defaultdict(list)
+                for key, value in prerequisites:
+                    graph[key].append(value)
+                    
+                traced = set()
+                visited = set()
+                #dfs로 타고타고 들어가서 최초에 타고 들어간 노드가 추가될 일이 생기면 False
+                def dfs(node):
+                    if node in traced:
+                        return False
+                    if node in visited:
+                        return True
+                    
+                    traced.add(node)
+                    for i in graph[node]:
+                        if not dfs(i):
+                            return False
+                    traced.remove(node)
+                    visited.add(node)
+                    
+                    return True
+                
+                for node in list(graph):
+                    if not dfs(node):
+                        return False
+                    
+                return True
+    ```
+   
+## 13장. 최단경로 문제
+- What
+    - 각 정점들의 혹인 일부를 거치는데 정점의 값의 합이 최소인 것
+- Why
+    - 경로 최적화를 하기 위함
+- How
+    - 우선순위 큐, BFS
+ 
+###
+
+  
+                    
