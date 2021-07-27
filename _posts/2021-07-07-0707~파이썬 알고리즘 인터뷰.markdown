@@ -2488,9 +2488,242 @@ class Solution:
             return root
 ```
 
+### 110. Balanced Binary Tree
+> dfs, 재귀
 
+- solution
+    - 양쪽 subtree의 높이를 +1하면서 차이를 계속 확인.
+    1. 새로운 함수를 정의해서 리턴값을 비교하여 결과 산출
+    2. left, right 깊이 들어가면서 비교
+    3. left, right가 없으면 0 있으면 높이 + 1  
+    ```python  
+        class Solution:
+            def isBalanced(self, root: TreeNode) -> bool:
+                
+                def check(root):
+                    if not root:
+                        return 0
+                
+                    left = check(root.left)
+                    right = check(root.right)
+        
+                    if left == -1 or right == -1 or abs(left - right) > 1:
+                        return -1
+                    
+                    return max(left, right) + 1
+                
+                return check(root) != -1
+    ```
 
+### 310. Minimum Height Trees
+> BFS
 
+- solution
+    1. 그래프완성
+    2. bfs로 길이가 1인 노드 자르기
+    3. 2번 반복
+    4. 최종적으로 2개 이하가 남으면 종료
+    - 시간복잡도
+        - 그래프 만들기 O(V)
+        - 노드제거 O(V)
+    - 공간복잡도
+        - O(V)  
+    ```python  
+        class Solution:
+            def findMinHeightTrees(self, n: int, edges: List[List[int]]) -> List[int]:
+                #예외처리, n = 1이하이면 return [0]
+                if n <= 1:
+                    return [0]
+                
+                #graph끼리 연결
+                graph = collections.defaultdict(list)
+                for i,j in edges:
+                    graph[i].append(j)
+                    graph[j].append(i)
+                    
+                #첫번재 리프노드 추가
+                leaves = []
+                for i in range(n + 1):
+                    if len(graph[i]) == 1:
+                        leaves.append(i)
+                        
+                #리프노드 제거하면서 최종노드 찾기
+                #2개이상 님을 수도 있으므로 조건제시
+                while n > 2:
+                    n -= len(leaves)
+                    new_leaves = []
+                    for leaf in leaves:
+                        neighbor = graph[leaf].pop()
+                        graph[neighbor].remove(leaf)
+                        #제거하고나서 연결노드가 1개인지 확인
+                        if len(graph[neighbor]) == 1:
+                            new_leaves.append(neighbor)
+                    leaves = new_leaves
+                return leaves
+    ```
+### 108. Convert Sorted Array to Binary Search Tree
+> DFS, 재귀 
+
+- solution
+    1. 중앙에 위치한 값 슬라이싱
+    2. 재귀적으로 중앙값 슬라이싱
+    3. 값이 없으면 None 리턴, 있으면 node리턴  
+    ```python  
+        class Solution:
+            def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
+                if not nums:
+                    return None
+                
+                mid = len(nums) // 2
+                
+                node = TreeNode(nums[mid])
+                node.left = self.sortedArrayToBST(nums[:mid])
+                node.right = self.sortedArrayToBST(nums[mid + 1:])
+                
+                return node
+    ```
+### 1038. Binary Search Tree to Greater Sum Tree
+> 재귀, DFS
+
+- solution
+    1. BST는 정렬되어있음, 오른쪽이 가장 쿰
+    2. 오른쪽에서 올라오면서 총합을 구함  
+    ```python  
+        class Solution:
+            val: int = 0
+            def bstToGst(self, root: TreeNode) -> TreeNode:
+                if root:
+                    self.bstToGst(root.right)
+                    self.val += root.val
+                    root.val = self.val
+                    self.bstToGst(root.left)
+                    
+                return root
+    ```
+###
+
+- 내풀이
+```python  
+class Solution:
+    total: int = 0
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        if root:
+            if low <= root.val <= high:
+                self.total += root.val
+            self.rangeSumBST(root.left, low, high)
+            self.rangeSumBST(root.right, low, high)
+        return self.total
+```
+
+> DFS, 가지치기
+
+- solution 1  
+```python 
+class Solution:
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        def dfs(node: TreeNode):
+            if not node:
+                return 0
+            #가지치는 부분
+            if node.val < low:
+                return dfs(node.right)
+            if node.val > high:
+                return dfs(node.left)
+            return node.val + dfs(node.left) + dfs(node.right)
+        return dfs(root)
+```
+
+> 반복구조
+
+- solution 2
+```python 
+class Solution:
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        stack, sum = [root], 0
+        
+        while stack:
+            node = stack.pop()
+            if node:
+                if node.val < high:
+                    stack.append(node.right)
+                if node.val > low:
+                    stack.append(node.left)
+                if low <= node.val <= high:
+                    sum += node.val
+        return sum
+```
+
+> 반복구조, BFS
+
+- solution 3
+```python 
+class Solution:
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        stack, sum = [root], 0
+        
+        while stack:
+            node = stack.pop(0)
+            if node:
+                if node.val < high:
+                    stack.append(node.right)
+                if node.val > low:
+                    stack.append(node.left)
+                if low <= node.val <= high:
+                    sum += node.val
+        return sum
+```
+
+### 783. Minimum Distance Between BST Nodes
+> DFS, 중위순회
+
+- solution 1  
+```python 
+class Solution:
+    def minDiffInBST(self, root: TreeNode) -> int:
+        def dfs(node):
+            if node:
+                #왼쪽부터
+                dfs(node.left)
+                #가운데
+                self.result = min(self.result, node.val - self.prev)
+                self.prev = node.val
+                #오른쪽
+                dfs(node.right)
+                               
+        self.prev = -sys.maxsize
+        self.result = sys.maxsize
+        dfs(root)
+        return self.result
+```
+
+> 반복순회, 중위순회
+
+- solution 2
+    ```python  
+        class Solution:
+            def minDiffInBST(self, root: TreeNode) -> int:
+                #전, 결과 담아두기
+                prev = -sys.maxsize
+                result = sys.maxsize
+                
+                stack, node = [], root
+                #왼쪽을 먼저 확인해야함 -> 차를 확인하기 때문, BST는 오름정렬
+                #node와 stack이 모두 없을때 까지 진행
+                #node는 left right가 없을경우가 있기때문
+                #stack만 하지 않는 경우는 node 오른쪽 부분이 남아있을 수 있기 때문
+                while stack or node:
+                    while node:
+                        stack.append(node)
+                        node = node.left
+                    
+                    node = stack.pop()
+                    result = min(result, node.val - prev)
+                    prev = node.val
+        
+                    node = node.right
+        
+                return result
+    ```
 
 
 
