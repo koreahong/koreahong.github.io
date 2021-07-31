@@ -2978,7 +2978,7 @@ class Solution:
         return str(int(''.join(map(str, nums))))
 ```
 
-###
+### Sort Colors
 > 제자리정렬
 
 - solution
@@ -3034,4 +3034,280 @@ class Solution:
             result.append((x,y))
 
         return result
+```
+
+## 18장. 이진검색
+- What
+  - 이진검색
+- Why
+  - O(logn)으로 빠른 검색이 가능함
+- How
+  - 이진트리, 정렬된어 있는 환경
+  
+###
+> 반복
+
+- solution 1
+```python  
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+
+        left = 0
+        right = len(nums) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[mid] > target:
+                mid = (mid + right) // 2
+                right = mid - 1
+            else:
+                left = mid + 1
+        return -1 
+```
+
+> 재귀
+
+- solution 2
+```python 
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        def binary_search(left, right):
+            if left <= right:
+                mid = (left + right) // 2
+
+                if nums[mid] < target:
+                    return binary_search(mid + 1, right)
+                elif nums[mid] > target:
+                    return binary_search(left, mid - 1)
+                else:
+                    return mid
+            else:
+                return -1
+        
+        return binary_search(0, len(nums) - 1)
+```
+
+> 이진트리 라이브러리
+
+- solution 3
+```python 
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        index = bisect.bisect_left(nums, target)
+        
+        if index < len(nums) and nums[index] == target:
+            return index
+        else:
+            return -1
+```
+
+> index 활용
+
+- solution 4
+```python 
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        try:
+            return nums.index(target)
+        except:
+            return -1
+```
+
+###
+> 반복, pivot과 mid
+
+- solution
+    - 최소인 인덱스 찾기
+        - mid지점과 right지점을 비교하면서 mid지점이 계속크면 왼쪽을 오른쪽으로 당김
+        - mid지점이 right지점보다 작으면 right을 mid지점으로 옮김
+    - pivot(최소지점) + mid지점으로 실제 인덱스 위치의 값추출
+    - mid로 값이동
+```python  
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        if not nums:
+            return -1
+        
+        left, right = 0, len(nums) - 1
+        while left < right:
+            mid = left + (right - left) // 2
+            
+            if nums[mid] > nums[right]:
+                left = mid + 1
+            else:
+                right = mid
+        pivot = left
+        
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            mid = left  + (right - left) // 2
+            mid_pivot = (mid + pivot) % len(nums)
+            
+            if nums[mid_pivot] > target:
+                right = mid - 1
+            elif nums[mid_pivot] < target:
+                left = mid + 1
+            else:
+                return mid_pivot
+        return -1
+        
+```
+
+### 349. Intersection of Two Arrays
+
+> bisect, 이진탐색
+
+- solution  1
+    1. 한쪽의 숫자를 for문
+    2. 반대쪽은 정렬 후 이진탐색  
+    ```python 
+        class Solution:
+            def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:
+                result: Set = set()
+                #한쪽은 그냥 찾고 한쪽은 이진탐색
+                nums2.sort()
+                for n1 in nums1:
+                    i2 = bisect.bisect_left(nums2, n1)
+                    if len(nums2) > 0 and len(nums2) > i2 and n1 == nums2[i2]:
+                        result.add(n1)
+                return result  
+    ```
+
+> 투포인터
+
+- solution 2
+    1. 양쪽 모두 정렬
+    2. 다르면 한쪽씩 추가  
+    ```python 
+        class Solution:
+            def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:
+                result: Set = set()
+                
+                i = j = 0
+                
+                #포인터를 옮기면서 값이 같은 값을 찾기
+                nums1.sort()
+                nums2.sort()
+                
+                while i < len(nums1) and j < len(nums2):
+                    if nums1[i] > nums2[j]:
+                        j += 1
+                    elif nums1[i] < nums2[j]:
+                        i += 1
+                    else:
+                        result.add(nums1[i])
+                        i += 1
+                        j += 1
+                return result
+    ```
+
+###
+> 투포인터
+- solution 1 
+```python 
+class Solution:
+    def twoSum(self, numbers: List[int], target: int) -> List[int]:
+        #이진탐색으로 가능한 이유가 오름차순 정렬이 되어 있고
+        #점점 좁혀지기 때문
+        left, right = 0, len(numbers) - 1
+        while not left == right:
+            if numbers[left] + numbers[right] < target:
+                left += 1
+            elif numbers[left] + numbers[right] > target:
+                right -= 1
+            else:
+                return left + 1, right + 1
+            
+```
+
+> 이진검색
+- solution 2
+    1. for문으로 하나씩 돌리고
+    2. 다른쪽은 이진탐색
+    ```python 
+        class Solution:
+            def twoSum(self, numbers: List[int], target: int) -> List[int]:
+                for k, v in enumerate(numbers):
+                    left, right = k + 1, len(numbers) - 1
+                    expected = target - v
+                    
+                    while left <= right:
+                        mid = left + (right - left) // 2
+                        if numbers[mid] < expected:
+                            left = mid + 1
+                        elif numbers[mid] > expected:
+                            right = mid - 1
+                        else:
+                            return k + 1, mid + 1
+    ```
+
+> bisect모듈
+
+- solution 3
+```python 
+    class Solution:
+        def twoSum(self, numbers: List[int], target: int) -> List[int]:
+            for k, v in enumerate(numbers):
+                expected = target - v
+                i = bisect.bisect_left(numbers, expected, k + 1)
+                if i < len(numbers) and numbers[i] == expected:
+                    return k + 1, i + 1
+```
+
+### 240. Search a 2D Matrix II
+> 행렬
+
+- solution 1 
+```python 
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        if not matrix:
+            return False
+        
+        row = 0
+        col = len(matrix[0]) - 1
+        
+        while row <= len(matrix) - 1 and col >= 0:
+            if target == matrix[row][col]:
+                return True
+            elif target < matrix[row][col]:
+                col -= 1
+            else:
+                row += 1
+        return False
+```
+
+## 19장. 비트연산 
+- What
+    - 비트연산
+- Why
+    - 컴퓨터 연산
+- How
+    - and, or, xor, not 등
+    
+### 136. Single Number
+> 비트연산
+
+- solution
+    1. ^연산으로 계속 result에 추가
+    2. 두번나온 숫자는 0으로 되기 때문에 한개만 나온 숫자만 남음  
+```python 
+    class Solution:
+        def singleNumber(self, nums: List[int]) -> int:
+            result = 0
+            for num in nums:
+                result ^= num
+            return result
+```
+
+###
+> 비트연산, bin(), count()
+
+- solution
+```python 
+    class Solution:
+        def hammingDistance(self, x: int, y: int) -> int:
+            return bin(x ^ y).count('1')
 ```
