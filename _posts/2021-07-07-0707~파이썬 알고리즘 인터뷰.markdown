@@ -3311,3 +3311,102 @@ class Solution:
         def hammingDistance(self, x: int, y: int) -> int:
             return bin(x ^ y).count('1')
 ```
+
+## 20장. 슬라이딩 윈도우
+> deque
+
+- solution
+    1. 인덱스로 비교
+        - 윈도우 숫자만큼 충분한지 확인
+        - 윈도우 밤위를 벗어났는지 확인
+    2. 현재값이 가장 크다면 계속 빼내기
+    3. 윈도우 벗어나면 제거
+        - 해당사항은 첫번째 값이 윈도우 범위에 벗어날때까지 클 경우 나타남  
+    4. max값 추가  
+    ```python  
+        class Solution:
+            def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+                #인덱스 저장
+                q = Deque()
+                result = []
+                
+                for idx, cur in enumerate(nums):
+                    #현재 값이 가장 큰 값이면 전부빼내기
+                    while q and nums[q[-1]] <= cur:
+                        q.pop()
+                        
+                    q.append(idx)
+                    
+                    #오른쪽으로 가면서 윈도우에 벗어나면 제거
+                    #해당값은 최대값이었던 idx인데 윈도우 범위를 벗어난것
+                    if idx - q[0] >= k:
+                        q.popleft()
+                    
+                    #max값 추가
+                    if idx >= k - 1:
+                        result.append(nums[q[0]])
+                        
+                return result        
+    ```
+  
+### 76. Minimum Window Substring
+> 투포인터
+
+- solution  
+    1. 필요한 문자와 개수 파악
+    2. 필요한 문자를 다 찾았을 경우
+        - substring 길이 비교
+        - 왼쪽 포인터 + 1 이동
+        - 불필요한 문자들 줄이기  
+    3. 2. 반복  
+    ```python 
+        class Solution:
+            def minWindow(self, s: str, t: str) -> str:
+                #Counter를 사용하는 것보다, dict선언 + for문이 훨씬 빠름
+                need = collections.defaultdict(int)
+                for ch in t:
+                    need[ch] += 1
+                    
+                missing = len(t)
+                left = start = 0
+                end = len(s) + 1
+                
+                for right, char in enumerate(s, 1):
+                    missing -= need[char] > 0
+                    need[char] -= 1
+                    
+                    if missing == 0:
+                        #필요요소 이외의 문자들을 substring에서 제거
+                        while left < right and need[s[left]] < 0:
+                            need[s[left]] += 1
+                            left += 1
+                        
+                        #길이가 더 짧은지 확인
+                        if right - left <= end - start:
+                            start, end = left, right
+                        #현재 필요한 문자에 위치함으로 다음으로 넘어가기 위해서 해당 변수들을 + 1해줌
+                        need[s[left]] += 1
+                        missing += 1
+                        left += 1
+                return s[start:end] if end <= len(s) else ''
+    ```
+
+### 424. Longest Repeating Character Replacement
+
+```python 
+class Solution:
+    def characterReplacement(self, s: str, k: int) -> int:
+        window = collections.defaultdict(int)
+        max_amount, max_len = 0
+
+        for i in range(len(s)):
+            window[s[i]] += 1
+            if window[s[i]] > max_amount:
+                max_amount = window[s[i]]
+            if max_len < max_amount + k:
+                max_len += 1
+            else:
+                window[s[i - max_len]] -= 1
+                
+        return max_len
+```
