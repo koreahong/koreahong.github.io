@@ -3035,3 +3035,461 @@ class Solution:
 
         return result
 ```
+
+
+## 21장. 그리디 알고리즘
+
+### 122. Best Time to Buy and Sell Stock II
+- 내풀이 
+```python 
+    class Solution:
+        def maxProfit(self, prices: List[int]) -> int:
+            result = 0
+            for idx in range(len(prices[:-1])):
+                result += max(prices[idx + 1] - prices[idx], 0)
+            return result
+```
+
+> 파이써닉, zip
+
+- solution 1
+```python  
+    class Solution:
+        def maxProfit(self, prices: List[int]) -> int:
+            return sum([tomorrow - today for today, tomorrow in zip(prices, prices[1:]) if tomorrow - today > 0])
+```
+
+### 406. Queue Reconstruction by Height
+> sort, 
+
+- solution
+```python 
+    class Solution:
+        def reconstructQueue(self, people: List[List[int]]) -> List[List[int]]:
+            people.sort(key = lambda x: (-x[0], x[1]))
+            print(people)
+            output = []
+            for p in people:
+                output.insert(p[1], p)
+            return output
+```
+
+### 621. Task Scheduler
+> math
+
+- solution 1
+    1. 개수 파악
+    2. 최대인 문자를 idle읠 띄워서 배치
+    3. idle 공간에 나머지 문자 넣기
+    4. 최대갯수가 같은 문자가 여러개 있을 경우 idle에 넣지말고 최대갯수 문자개수 * 최대갯수를 해줌  
+    ```python 
+    class Solution:
+            def leastInterval(self, tasks: List[str], n: int) -> int:
+                d = collections.Counter(tasks)        
+                s = list(d.values())
+                Max = max(s)
+                m = l = 0        
+                for v in s:
+                    if v == Max: m += 1
+                    else: l += v
+                return max((Max - 1) * (n + 1 - m), l) + m * Max
+    ```
+
+> count, math, 최대갯수와 최댓개수의 개수를 파악하여 계산
+
+- solution 2
+    1. 문자리스트에 개수파악
+    2. 최대갯수 구하기
+    3. 최대갯수의 개수 구하기
+    4. max(tasks개수, 최대갯수 - 1 * idle + 최대갯수의 개수)
+```python 
+class Solution:
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        count = [0] * 26
+        for task in tasks:
+            count[ord(task) - ord('A')] += 1
+
+        c_max = max(count)
+
+        n_max = count.count(c_max)
+
+        return max(len(tasks), (c_max - 1) * (n + 1) + n_max)
+```
+
+> 통로개수 차감하기
+
+- solution 3
+     1. 최대갯수 구하기
+     2. 최대갯수를 가진 문자간의 빈공간에 나머지 문자들 넣어 통로개수 차감하기
+     3. 2반복  
+    ```python 
+        class Solution:
+            def leastInterval(self, tasks: List[str], n: int) -> int:
+                # frequencies of the tasks
+                frequencies = [0] * 26
+                for t in tasks:
+                    frequencies[ord(t) - ord('A')] += 1
+                
+                frequencies.sort()
+        
+                # max frequency
+                f_max = frequencies.pop()
+                idle_time = (f_max - 1) * n
+                
+                while frequencies and idle_time > 0:
+                    idle_time -= min(f_max - 1, frequencies.pop())
+                idle_time = max(0, idle_time)
+        
+                return idle_time + len(tasks)
+    ```
+  
+ > Counter
+
+- solution 4
+    - `counter객채에 빈 counter객체를 더하면 0인 key는 사라짐` 
+    1. counter로 문자별 개수 파악
+    2. most_common(n + 1)로 최댓개수의 문자 + idle개수만큼 추출해서 길이 측정  
+    3. 1번 순환할때 추출된 문자개수가 n + 1보다 높으면 차감, 낮으면 증감
+    4. 2,3 반복   
+    ```python 
+        class Solution:
+            def leastInterval(self, tasks: List[str], n: int) -> int:
+                counter = collections.Counter(tasks)
+                result = 0
+                
+                while True:
+                    sub_count = 0
+                    
+                    #n + 1(최대개수 + 나머지 문자)를 추출하기
+                    for task, _ in counter.most_common(n + 1):
+                        sub_count += 1
+                        result += 1
+                        #추출된 문자 1공제
+                        counter.subtract(task)
+                        #개수가 0이면 dict에서 삭제
+                        counter += collections.Counter()
+                    
+                    if not counter:
+                        break
+                    
+                    #idle부분, idle보다 회전수가 더 많았으면 차감, 더 적으면 증감
+                    result += n - sub_count + 1
+                    
+                return result
+    ```
+  
+### 134. Gas Station
+> zip, 순회 
+
+- 내풀이
+    1. 순회하면서 tank가 0 밑으로 떨어지면 다음 스테이션으로 출발지 지정
+    2. 1번 gas station개수만큼 본복
+    - 시간복잡도 O(N^2)
+    - 공간복잡도 O(N)
+    ```python 
+        class Solution:
+            def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+                
+                result = -1
+                idx = 0
+        
+                while idx < len(gas):
+                    tank = 0
+                    for g, c in zip(gas[idx:] + gas[:idx], cost[idx:] + cost[:idx]):
+                        tank += g - c
+                        if tank < 0:
+                            idx += 1
+                            break
+                    else:
+                        return idx
+                return result     
+    ```
+  
+> math
+
+- solution
+    1. gas총합이 cost총합보다 작으면 순회가 안됨
+    2. gas총합이 더 크다면
+        - total_tank가 0으로 떨어지면 순회하는 station에 + 1
+    3. 2반복  
+    ```python  
+        class Solution:
+            def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+                #순회가능한지 총량으로 확인
+                if sum(gas) < sum(cost):
+                    return -1
+                total = 0
+                res = 0
+                
+                for i in range(len(gas)):
+                    total += (gas[i] - cost[i])
+                    if total < 0:
+                        total = 0
+                        res = i + 1
+                        
+                return res
+    ```
+  
+### 455. Assign Cookies
+> 투포인터
+
+- 내풀이  
+```python 
+    class Solution:
+        def findContentChildren(self, g: List[int], s: List[int]) -> int:
+            g.sort()
+            s.sort()
+            
+            i = j = result = 0
+            while i < len(g) and j < len(s):
+                if g[i] <= s[j]:
+                    result += 1
+                    i += 1
+                  
+                j += 1
+                
+            return result
+```   
+
+> 이진검색
+
+- solution  
+```python 
+    class Solution:
+        def findContentChildren(self, g: List[int], s: List[int]) -> int:
+            g.sort()
+            s.sort()
+            
+            result = 0
+            
+            for i in s:
+                index = bisect.bisect_right(g, i)
+                if index > result:
+                    result += 1
+                    
+            return result
+```
+
+## 22장. 분할 정복
+
+### 169. Majority Element
+
+- solution 1
+```python 
+    class Solution:
+        def majorityElement(self, nums: List[int]) -> int:
+            if not nums:
+                return None
+            
+            if len(nums) == 1:
+                return nums[0]
+            
+            half = len(nums) // 2
+            a = self.majorityElement(nums[:half])
+            b = self.majorityElement(nums[half:])
+            
+            return [b, a][nums.count(a) > half]     
+```
+
+> 해쉬테이블
+
+- solution 2
+```python 
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        nums = Counter(nums)
+        keymax = max(nums,key=nums.get)
+        return keymax
+```
+
+> sort
+
+- solution 3
+```python  
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        return sorted(nums)[len(nums) // 2]   
+```
+
+### 241. Different Ways to Add Parentheses
+
+> 분할정복
+
+- solution
+    1. 최고 말단일때는 숫자로 반환
+    2. 주어진 식을 0에서부터 끝까지 for문을 거쳐 모든 경우의 수를 추출함
+        - operation을 기준으로 왼쪽, 오른쪽을 나눔
+    3. 1,2번 반복  
+    ```python  
+        class Solution:
+            def diffWaysToCompute(self, expression: str) -> List[int]:
+                
+                #최종 리턴되는 값은 숫자
+                if expression.isdigit():
+                    return [int(expression)]
+                
+                res = []
+                #모든 경우의 수를 추출
+                for i, value in enumerate(expression):
+                    if value in "+-*":
+                        left = self.diffWaysToCompute(expression[:i])
+                        right = self.diffWaysToCompute(expression[i + 1:])
+                        for l in left:
+                            for r in right:
+                                if value == '+':
+                                    res.append(l + r)
+                                elif value == '*':
+                                    res.append(l * r)
+                                else:
+                                    res.append(l - r)
+                return res
+    ```
+  
+## 23장. 다이나믹 프로그래밍
+- What
+    - 다이나믹 프로그래밍
+- Why
+    - 최적 부분 구조, 중복된 하위 문제들
+- How
+    - 메모이제이션
+        - 이미 풀었는지 확인하여 내려가는 하향식 접근
+    - 타뷸레이션
+        - 하위문제부터 풀어가는 상향식 접근
+
+### 509. Fibonacci Number
+                                                                           m
+> 브루트포스, 재귀
+
+- 내풀이  
+```python 
+    class Solution:
+        def fib(self, n: int) -> int:
+            if n <= 1:
+                return n
+            
+            return self.fib(n - 1) + self.fib(n - 2)
+```
+
+> 메모이제이션
+
+- solution 1
+```python 
+    class Solution:
+        dp = collections.defaultdict(int)
+        def fib(self, n: int) -> int:
+            if n <= 1:
+                return n
+            #저장된 값 불러오기
+            if self.dp[n]:
+                return self.dp[n]
+            
+            self.dp[n] = self.fib(n - 1) + self.fib(n - 2)
+            return self.dp[n]
+```
+
+> 타뷸레이션, 리스트저장
+
+- solution 2  
+```python  
+    class Solution:
+        dp = collections.defaultdict(int)
+        def fib(self, n: int) -> int:
+            self.dp[1] = 1
+            
+            for i in range(2, n + 1):
+                self.dp[i] = self.dp[i - 1] + self.dp[i - 2]
+                
+            return self.dp[n]
+```
+
+> 타뷸레이션, 변수 두개
+
+- solution 3
+```python  
+    class Solution:
+        def fib(self, n: int) -> int:
+            x, y = 0, 1
+            for i in range(n):
+                x, y = y, x + y
+                
+            return x
+```
+
+### 53. Maximum Subarray
+> dp
+
+- solution 1  
+    - 지금까지 합이 0 이하인 것은 필요없다
+    - 양수인 값만 더해서 최대 값을 구하면 된다  
+```python 
+    class Solution:
+        def maxSubArray(self, nums: List[int]) -> int:
+            sums: List[int] = [nums[0]]
+            for i in range(1, len(nums)):
+                sums.append(nums[i] + (sums[i - 1] if sums[i - 1] > 0 else 0))
+            return max(sums)
+```
+
+### 70. Climbing Stairs
+> 타뷸레이션
+
+- 내풀이  
+```python 
+class Solution:
+    def climbStairs(self, n: int) -> int:
+        
+        #예외처리
+        if n <= 2:
+            return n
+        
+        stair = [0] * (n + 1)
+        stair[1], stair[2] = 1, 2
+        
+        for i in range(3, n + 1):
+            stair[i] = stair[i - 1] + stair[i - 2]
+            
+        return stair[-1]
+```
+
+> 메모이제이션
+
+- solution  
+```python  
+    class Solution:
+        
+        stair = collections.defaultdict(int)
+        def climbStairs(self, n: int) -> int:
+            
+            #예외처리
+            if n <= 2:
+                return n
+            
+            if self.stair[n]:
+                return self.stair[n]
+            
+            self.stair[n] = self.climbStairs(n - 1) + self.climbStairs(n - 2)
+            
+            return self.dp[n]
+```
+
+### 198. House Robber
+> 메모이제이션
+
+- 내풀이  
+```python 
+    class Solution:
+        def rob(self, nums: List[int]) -> int:
+            
+            #예외처리
+            if len(nums) <= 2:
+                return max(nums)
+            
+            money = [0] * len(nums) 
+            
+            money[0], money[1], money[2]  = nums[0], nums[1], nums[2] + nums[0]
+            
+            for i in range(3, len(nums)):
+                money[i] = nums[i] + max(money[i - 2], money[i - 3])
+                
+            return max(money)                                                          
+```
