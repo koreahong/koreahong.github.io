@@ -1,0 +1,427 @@
+---
+layout: post
+title: '0719~, 알고리즘 복숩'
+#subtitle: '구조화된 코드는 어떤 거인가'
+categories: algorithm
+#tags : software  
+comments: False
+---
+
+> 모든 알고리즘 복습
+
+
+
+# 요약의 목적
+- 도움이 될만한 독자 : 코딩-중하 이상
+- 해당 페이지의 중점은 다음과 같다
+    - '파이썬 알고리즘 인터뷰', leetcode 핵심문제 복습
+
+# 6장. 문자열 조작
+
+- 문자열에서 필요한 작업
+    - 전처리
+        - replace : 단어, 문자 등을 제거
+        - re.sub : 정규표현식을 사용하여 원하는 문자들의 조합 추출
+    - 문자순서정렬
+        - 슬라이싱 : [::-1] 등을 활용하여 역순정렬
+        - 리스트담기 : 반복문으로 리스트담고 비교
+        - 러너사용 : 빠른, 느린러너 사용하기
+
+## 125. Valid Palindrome / 팰린드롬 확인하기
+> 투포인터
+- 내풀이  
+```python 
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        #소문자로 변환
+        s = s.lower()
+        
+        #알파벳만 추출
+        s = re.sub("[^a-z0-9]", '', s)
+        
+        #투포인터 활용
+        start, end = 0, len(s) - 1
+        
+        while start < end:
+            if s[start] != s[end]:
+                return False
+            start += 1
+            end -= 1
+        return True
+```
+
+> deque 활용
+
+- deque는 연결리스트로 구현되어서 삽입, 삭제가 O(1)임  
+```python 
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        #소문자로 변환
+        s = s.lower()
+        
+        #알파벳만 추출
+        s = re.sub("[^a-z0-9]", '', s)
+        
+        #deque 활용
+        s = collections.deque(s)
+        
+        while len(s) > 1:
+            if s.popleft() != s.pop():
+                return False
+            
+        return True
+```
+> 슬라이싱 활용
+
+- 순서를 확인하는 문제에서는 슬라이싱 활용 고려  
+```python  
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        #소문자로 변환
+        s = s.lower()
+        
+        #알파벳만 추출
+        s = re.sub("[^a-z0-9]", '', s)
+        
+        #슬라이싱 활용
+        return s == s[::-1]
+```
+
+## 344. Reverse String / 문자열 뒤집기
+> 슬라이싱 활용
+
+```python 
+class Solution:
+    def reverseString(self, s: List[str]) -> None:
+        #슬라이싱 활용
+        s[:] = s[::-1]
+```
+
+> 투포인터 활용
+
+```python 
+class Solution:
+    def reverseString(self, s: List[str]) -> None:        
+        #투포인터 활용
+        start, end = 0, len(s) - 1
+        while start < end:
+            s[start], s[end] = s[end], s[start]
+            start += 1
+            end -= 1
+```
+
+> 파이썬 기능 활용
+
+```python 
+class Solution:
+    def reverseString(self, s: List[str]) -> None:        
+        #파이썬 기능 활용
+        s.reverse()
+```
+
+## 937. Reorder Log Files / 단어 정렬하기
+> isdigit 활용
+
+```python 
+class Solution:
+    def reorderLogFiles(self, logs: List[str]) -> List[str]:
+        #파이썬 기능과 리스트컴프리헨션
+        letter = [log for log in logs if not log.split()[1].isdigit()]
+        letter.sort(key = lambda x: (x.split()[1:], x.split()[0]))
+        
+        digit = [log for log in logs if log.split()[1].isdigit()] 
+        
+        return letter + digit
+```
+
+## 819. Most Common Word / 가장 많이 나오는 단어 찾기
+
+> 딕셔너리, 문자열처리
+
+```python 
+class Solution:
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+        #소문자로 변환
+        paragraph = paragraph.lower()
+        
+        #단어, 띄어쓰기 외에 제거
+        paragraph = re.sub('[^\w ]', ' ', paragraph)
+        
+        #banned에 있는 단어 제거
+        #리스트 컴프리헨션
+        paragraph = [word for word in paragraph.split() if word not in banned]
+        
+        #딕셔너리 활용
+        word_dic = {}
+        for word in paragraph:
+            if word not in word_dic:
+                word_dic[word] = 1
+            else:
+                word_dic[word] += 1
+                
+        #max key 활용
+        return max(word_dic, key = word_dic.get)
+```
+
+> Counter 활용
+
+```python 
+class Solution:
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+        #소문자로 변환
+        paragraph = paragraph.lower()
+        
+        #단어, 띄어쓰기 외에 제거
+        paragraph = re.sub('[^\w ]', ' ', paragraph)
+        
+        #banned에 있는 단어 제거
+        #리스트 컴프리헨션
+        paragraph = [word for word in paragraph.split() if word not in banned]
+        
+        #Counter 활용
+        result = collections.Counter(paragraph).most_common(1)[0][0]
+        
+        return result
+```
+
+## 49. Group Anagrams
+> 딕셔너리 활용, 정렬된 문자를 키로 잡기
+
+- `sorted(문자), list(문자)의 반환값은 단어가 아니라 리스팅된 문자열값임으로 join으로 반드시 묶어줘야 한다`    
+- 정렬된 키값을 넣는다는 아이디어, `넣어둬~`  
+```python 
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        #딕셔너리 활용, 키 값은 정렬된 단어
+        group = collections.defaultdict(list)
+        
+        for word in strs:
+            group[''.join(sorted(word))].append(word)
+            
+        return group.values()
+```
+
+## 5. Longest Palindromic Substring
+> 투포인터 활용
+
+- 예외처리의 효과
+    - or s == s[::-1]이 있으면 260ms, 없으면 988ms
+    - 예외처리 또한 중요한 시간단축 요소이다  
+```python 
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        #예외처리
+        if len(s) <= 1 or s == s[::-1]:
+            return s
+        
+        result = ''
+        
+        #투포인터 활용
+        def check(left, right):
+            while left >= 0 and right < len(s) and s[left] == s[right]:
+                    left -= 1
+                    right += 1
+            return s[left + 1:right]
+        
+        for i in range(len(s) - 1):
+            result = max(result, 
+                            check(i, i + 1),
+                            check(i, i + 2),
+                            key=len)
+        return result
+```
+
+# 7장. 배열
+
+## 1. Two Sum
+> 딕셔너리, index 활용
+
+```python 
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        num_dict = collections.defaultdict(list)
+        
+        for idx, num in enumerate(nums):
+            num_dict[num].append(idx)
+            
+        sorted_nums = sorted(nums)
+        
+        left, right = 0, len(nums) - 1
+        
+        while left < right:
+            if target - sorted_nums[left] < sorted_nums[right]:
+                right -= 1
+            elif target - sorted_nums[left] > sorted_nums[right]:
+                left += 1
+            else:
+                if sorted_nums[left] == sorted_nums[right]:
+                    return num_dict[sorted_nums[left]][:2]
+                else:
+                    return [num_dict[sorted_nums[left]][0], num_dict[sorted_nums[right]][0]]
+```
+
+> 딕셔너리 활용 / `recheck`
+
+```python 
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        num_dict = {}
+        
+        for idx, num in enumerate(nums):
+            if target - num in num_dict and idx != num_dict[target - num]:
+                return [idx, num_dict[target - num]]
+            num_dict[num] = idx
+```
+
+## 42. Trapping Rain Water
+> 브루트 포스
+
+```python 
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        
+        #예외처리
+        if len(height) <= 2:
+            return 0
+        
+        result = 0
+        for idx, h in enumerate(height):
+            if idx == 0 or idx == len(height) - 1:
+                continue
+            result += max(min(max(height[:idx]), max(height[idx + 1:])) - h, 0)
+                
+        return result
+```
+
+> 스택 활용
+
+```python 
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        
+        #예외처리
+        if len(height) <= 2:
+            return 0
+        
+        stack, result = [], 0
+        
+        #스택 활용
+        for i in range(len(height)):
+            while stack and height[i] > height[stack[-1]]:
+                top = stack.pop()
+                
+                if not stack:
+                    break
+                    
+                distance = i - stack[-1] - 1
+                waters = min(height[i], height[stack[-1]]) - height[top]
+                
+                result += distance * waters
+            
+            stack.append(i)
+        return result
+```
+
+> 투포인터 활용 / `recheck`
+
+```python 
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        
+        #예외처리
+        if len(height) <= 2:
+            return 0
+        
+        result = 0
+        
+        #투포인터 활용
+        left, right = 0, len(height) - 1
+        max_left, max_right = height[left], height[right]
+        
+        while left < right:
+            if max_left < max_right:
+                left += 1
+                max_left = max(max_left, height[left])
+                result += max_left - height[left]
+            else:
+                right -= 1
+                max_right = max(max_right, height[right])
+                result += max_right - height[right]
+                
+        return result
+```
+
+## 15. 3Sum
+> 투포인터 활용
+
+```python 
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        
+        #에외처리
+        if len(nums) <= 2:
+            return []
+        
+        nums.sort()
+        
+        result = []
+        #투포인터 활용
+        for i in range(len(nums) - 2):
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+                
+            left, right = i + 1, len(nums) - 1
+            
+            while left < right:
+                sum = nums[i] + nums[left] + nums[right]
+                if sum > 0:
+                    right -= 1
+                elif sum < 0:
+                    left += 1
+                else:
+                    result.append([nums[i], nums[left], nums[right]])
+                    
+                    while left < right and nums[left] == nums[left + 1]:
+                        left += 1
+                    while left < right and nums[right] == nums[right - 1]:
+                        right -= 1
+                        
+                    left += 1
+                    right -= 1
+                    
+        return result
+```
+
+> 투포인터 응용, 음수 양수 나누기 / `recheck`
+
+```python 
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        
+        #에외처리
+        if len(nums) <= 2:
+            return []
+        
+        vals = collections.Counter(nums)
+        
+        positive = [val for val in vals if val > 0]
+        negative = [val for val in vals if val < 0]
+        
+        result = set()
+        
+        if vals[0] >= 3:
+            result.add((0, 0, 0))  
+            
+        for p in positive:
+            for n in negative:
+                s = 0 - (p + n)
+                if s in vals and ((p != s and n != s) or vals[s] >= 2):
+                    result.add(tuple(sorted([s, n, p])))
+        
+        return result
+```
+
+
+
+
+
