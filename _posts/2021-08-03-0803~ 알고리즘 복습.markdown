@@ -421,6 +421,9 @@ class Solution:
             return result
 ```
 
+> 2021-08-03
+-----------------------
+
 ## 561. Array Partition I
 > 슬라이싱 활용
 
@@ -678,7 +681,7 @@ class Solution:
 ```
 
 ## 328. Odd Even Linked List
-> 반복순회
+> 반복순회 / `recheck`
 
 ```python 
 class Solution:
@@ -786,7 +789,7 @@ class Solution:
             return ''.join(stack)
 ```
 
-> 재귀
+> 재귀 / `recheck`
 
 1. 중복제거(set), 순서나열된 문자열(sorted)로 for순회
 2. 추출된문자열, parameter문자열이 공통요소를 가지고 있는지 확인
@@ -794,59 +797,59 @@ class Solution:
     - false : 해당문자가 앞에 오면 다른 문자가 문제가 생김, return ''
 3. 2반복  
 ```python  
-class Solution:
-    def removeDuplicateLetters(self, s: str) -> str:
-        for char in sorted(set(s)):
-            #해당문자부터 끝까지 추출
-            substring = s[s.index(char):]
-            
-            #추출한문자열이 기존 s문자열과 모든 요소를 공통으로 가지고 있으면
-            #추출한문자열의 앞에 문자열은 필요없다는 것
-            if set(s) == set(substring):
-                return char + self.removeDuplicateLetters(substring.replace(char, ''))
-            
-        return ''
+    class Solution:
+        def removeDuplicateLetters(self, s: str) -> str:
+            for char in sorted(set(s)):
+                #해당문자부터 끝까지 추출
+                substring = s[s.index(char):]
+                
+                #추출한문자열이 기존 s문자열과 모든 요소를 공통으로 가지고 있으면
+                #추출한문자열의 앞에 문자열은 필요없다는 것
+                if set(s) == set(substring):
+                    return char + self.removeDuplicateLetters(substring.replace(char, ''))
+                
+            return ''
 ```
 
 ##739. Daily Temperatures
 > 반복순회, stack
 
 ```python  
-class Solution:
-    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
-        
-        result, stack = [], []
-        for idx, temp in enumerate(temperatures):
-
-            while stack and stack[-1][1] < temp:
+    class Solution:
+        def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+            
+            result, stack = [], []
+            for idx, temp in enumerate(temperatures):
+    
+                while stack and stack[-1][1] < temp:
+                    order, _ = stack.pop()
+                    result.append([order, idx - order])
+                
+                stack.append([idx, temp])
+    
+            while stack:
                 order, _ = stack.pop()
-                result.append([order, idx - order])
-            
-            stack.append([idx, temp])
-
-        while stack:
-            order, _ = stack.pop()
-            result.append([order, 0])
-            
-        result.sort(key = lambda x: x[0])
-        return [day for _, day in result]
+                result.append([order, 0])
+                
+            result.sort(key = lambda x: x[0])
+            return [day for _, day in result]
 ```
 
 > stack, [0] * len() / `recheck`
 
 ```python 
-class Solution:
-    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
-        
-        answer = [0] * len(temperatures)
-        stack = []
-        
-        for idx, tem in enumerate(temperatures):
-            while stack and temperatures[stack[-1]] < tem:
-                last = stack.pop()
-                answer[last] = idx - last
-            stack.append(idx)
-        return answer
+    class Solution:
+        def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+            
+            answer = [0] * len(temperatures)
+            stack = []
+            
+            for idx, tem in enumerate(temperatures):
+                while stack and temperatures[stack[-1]] < tem:
+                    last = stack.pop()
+                    answer[last] = idx - last
+                stack.append(idx)
+            return answer
 ```
 
 # 10장. 데크, 우선순위 큐
@@ -861,48 +864,103 @@ class Solution:
 > 새로운 노드 생성
 
 ```python 
-class Solution:
-    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
-        
-        self.nodes = []
-        head = point = ListNode(None)
-        
-        for lst in lists:
-            while lst:
-                self.nodes.append(lst.val)
-                lst = lst.next
-        
-        for val in sorted(self.nodes):
-            point.next = ListNode(val)
-            point = point.next
-        
-        return head.next
+    class Solution:
+        def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+            
+            self.nodes = []
+            head = point = ListNode(None)
+            
+            for lst in lists:
+                while lst:
+                    self.nodes.append(lst.val)
+                    lst = lst.next
+            
+            for val in sorted(self.nodes):
+                point.next = ListNode(val)
+                point = point.next
+            
+            return head.next
 ```
 
 > heapq 모듈 사용
 
 ```python 
-class Solution:
-    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
-        
-        root = result = ListNode(None)
-        heap = []
-        
-        for i in range(len(lists)):
-            if lists[i]:
-                heapq.heappush(heap, (lists[i].val, i, lists[i]))
-                
-        while heap:
-            node = heapq.heappop(heap)
-            idx = node[1]
-            result.next = node[2]
+    class Solution:
+        def mergeKLists(self, lists: List[ListNode]) -> ListNode:
             
-            result = result.next
-            if result.next:
-                heapq.heappush(heap, (result.next.val, idx, result.next))
+            root = result = ListNode(None)
+            heap = []
+            
+            for i in range(len(lists)):
+                if lists[i]:
+                    heapq.heappush(heap, (lists[i].val, i, lists[i]))
+                    
+            while heap:
+                node = heapq.heappop(heap)
+                idx = node[1]
+                result.next = node[2]
                 
-        return root.next
+                result = result.next
+                if result.next:
+                    heapq.heappush(heap, (result.next.val, idx, result.next))
+                    
+            return root.next
 ```
 
+# 11장. 해시 테이블
 
+##
+> 해시 테이블 사용
+
+```python 
+    class Solution:
+        def numJewelsInStones(self, jewels: str, stones: str) -> int:
+            jewels_dict = {}
+            for jewel  in jewels:
+                if jewel not in jewels_dict:
+                    jewels_dict[jewel] = 0
+                    
+            for stone in stones:
+                if stone in jewels_dict:
+                    jewels_dict[jewel] += 1
+            
+            return sum(jewels_dict.values())
+```
+
+> re.sub 활용
+
+- 훨씬 느림  
+```python 
+    class Solution:
+        def numJewelsInStones(self, jewels: str, stones: str) -> int:
+            
+            result = len(stones)
+    
+            stones = re.sub('[' + jewels + ']', '', stones)
+                
+            return result - len(stones)
+```
+
+## 3. Longest Substring Without Repeating Characters
+> 포인터 이동
+
+```python 
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        
+        #예외처리
+        if len(s) <= 2:
+            return len(set(s))
+        
+        start, result = 0, 0
+        str_dict = {}
+        for idx, char in enumerate(s):
+            if char not in str_dict or str_dict[char] < start:
+                result = max(result, idx - start + 1)
+            else:
+                start = str_dict[char] + 1
+            str_dict[char] = idx
+
+        return result
+```
 

@@ -1,0 +1,48 @@
+---
+layout: post
+title: '알고리즘 유형정리'
+#subtitle: '구조화된 코드는 어떤 거인가'
+categories: algorithm
+#tags : software  
+comments: False
+---
+
+> 모든 알고리즘 복습
+
+
+
+# 배열
+> Tip
+
+- min, max를 사용하는 대신에 if-else문으로 풀어쓰면 훨씬 빠른 결과를 얻음
+    - 특히 list를 통채로 min, max하는 경우는 O(N)함
+    - max나 min을 None으로 설정해서 진행할 수 있음
+
+> 유형
+
+- 나빼고 나머지 곱하기  
+    - leetcode 238
+    - 첫번째 1 놓고 곱하기
+    - 반대쪽 1 놓고 곱하기
+    
+# 연결리스트
+
+> 유형
+
+- 연결리스트 중간 찾기
+    - leetcode 234
+    - 러너활용, slow, fast
+    - fast가 끝까지 갈때 slow는 중간까지 가는 것을 활용
+    
+# 스택, 큐
+
+> Tip
+
+- Counter 활용해서 문자별 개수 파악하여 진행해볼 것
+- 결과가 인덱스별 결과면 결과배열을 [0] * 개수해서 선언하여 진행할 것을 고려
+
+# 데크, 우선순위 큐
+
+> Tip
+
+- 우선순위 큐는 heap으로 주로 구현, heapq는 최소힙으로 구현되어 있음
