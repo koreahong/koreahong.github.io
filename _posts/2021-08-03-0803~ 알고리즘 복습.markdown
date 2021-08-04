@@ -901,7 +901,7 @@ class Solution:
             if result.next:
                 heapq.heappush(heap, (result.next.val, idx, result.next))
                 
-        return root.next bhyu76u
+        return root.next
 ```
 
 
