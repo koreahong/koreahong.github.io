@@ -355,73 +355,554 @@ class Solution:
 > 투포인터 활용
 
 ```python 
-class Solution:
-    def threeSum(self, nums: List[int]) -> List[List[int]]:
-        
-        #에외처리
-        if len(nums) <= 2:
-            return []
-        
-        nums.sort()
-        
-        result = []
-        #투포인터 활용
-        for i in range(len(nums) - 2):
-            if i > 0 and nums[i] == nums[i - 1]:
-                continue
-                
-            left, right = i + 1, len(nums) - 1
+    class Solution:
+        def threeSum(self, nums: List[int]) -> List[List[int]]:
             
-            while left < right:
-                sum = nums[i] + nums[left] + nums[right]
-                if sum > 0:
-                    right -= 1
-                elif sum < 0:
-                    left += 1
-                else:
-                    result.append([nums[i], nums[left], nums[right]])
+            #에외처리
+            if len(nums) <= 2:
+                return []
+            
+            nums.sort()
+            
+            result = []
+            #투포인터 활용
+            for i in range(len(nums) - 2):
+                if i > 0 and nums[i] == nums[i - 1]:
+                    continue
                     
-                    while left < right and nums[left] == nums[left + 1]:
+                left, right = i + 1, len(nums) - 1
+                
+                while left < right:
+                    sum = nums[i] + nums[left] + nums[right]
+                    if sum > 0:
+                        right -= 1
+                    elif sum < 0:
                         left += 1
-                    while left < right and nums[right] == nums[right - 1]:
+                    else:
+                        result.append([nums[i], nums[left], nums[right]])
+                        
+                        while left < right and nums[left] == nums[left + 1]:
+                            left += 1
+                        while left < right and nums[right] == nums[right - 1]:
+                            right -= 1
+                            
+                        left += 1
                         right -= 1
                         
-                    left += 1
-                    right -= 1
-                    
-        return result
+            return result
 ```
 
 > 투포인터 응용, 음수 양수 나누기 / `recheck`
 
 ```python 
-class Solution:
-    def threeSum(self, nums: List[int]) -> List[List[int]]:
-        
-        #에외처리
-        if len(nums) <= 2:
-            return []
-        
-        vals = collections.Counter(nums)
-        
-        positive = [val for val in vals if val > 0]
-        negative = [val for val in vals if val < 0]
-        
-        result = set()
-        
-        if vals[0] >= 3:
-            result.add((0, 0, 0))  
+    class Solution:
+        def threeSum(self, nums: List[int]) -> List[List[int]]:
             
-        for p in positive:
-            for n in negative:
-                s = 0 - (p + n)
-                if s in vals and ((p != s and n != s) or vals[s] >= 2):
-                    result.add(tuple(sorted([s, n, p])))
-        
-        return result
+            #에외처리
+            if len(nums) <= 2:
+                return []
+            
+            vals = collections.Counter(nums)
+            
+            positive = [val for val in vals if val > 0]
+            negative = [val for val in vals if val < 0]
+            
+            result = set()
+            
+            if vals[0] >= 3:
+                result.add((0, 0, 0))  
+                
+            for p in positive:
+                for n in negative:
+                    s = 0 - (p + n)
+                    if s in vals and ((p != s and n != s) or vals[s] >= 2):
+                        result.add(tuple(sorted([s, n, p])))
+            
+            return result
 ```
 
+## 561. Array Partition I
+> 슬라이싱 활용
 
+```python 
+    class Solution:
+        def arrayPairSum(self, nums: List[int]) -> int:
+            return sum(sorted(nums)[::2])
+```
+
+## 238. Product of Array Except Self
+> 인덱싱 활용
+
+```python 
+    class Solution:
+        def productExceptSelf(self, nums: List[int]) -> List[int]:
+            result = []
+            
+            p = 1
+            for i in range(len(nums)):
+                result.append(p)
+                p *= nums[i]
+                
+            p = 1
+            for i in range(len(nums) - 1, -1, -1):
+                result[i] *= p
+                p *= nums[i]
+                
+            return result
+```
+
+## 121. Best Time to Buy and Sell Stock
+> min, max 활용
+
+```python 
+    class Solution:
+        def maxProfit(self, prices: List[int]) -> int:
+            
+            result = 0
+            min_price = float('inf')
+            
+            for price in prices:
+                result = max(result, price - min_price)
+                min_price = min(min_price, price)
+                
+            return result
+```
+
+> min, max 풀어쓰기
+
+- min, max를 사용하는 대신에 if-else문으로 풀어쓰면 훨씬 빠른 결과를 얻음
+```python 
+    class Solution:
+        def maxProfit(self, prices: List[int]) -> int:
+            import sys
+            min_price = float('inf')
+            max_profit = 0
+            
+            for price in prices:
+                if price < min_price:
+                    min_price = price
+                elif price - min_price > max_profit:
+                    max_profit = price - min_price
+                    
+            return max_profit
+```
+
+> 초기 max값 None으로 설정
+
+```python 
+    class Solution:
+        def maxProfit(self, prices: List[int]) -> int:
+            min_price = None
+            max_price = None
+            max_profit = 0
+            for price in prices:
+                if min_price is None or price < min_price:
+                    min_price = max_price = price
+                if price > max_price:
+                    max_price = price
+                    max_profit = max(max_profit, max_price - min_price)
+    
+            return max_profit
+```
+
+# 8장. 연결리스트
+
+## 234. Palindrome Linked List
+> 러너활용
+
+```python 
+    class Solution:
+        def isPalindrome(self, head: ListNode) -> bool:
+            
+            root = None
+            #러너활용
+            slow = fast = head
+            
+            while fast and fast.next:
+                fast = fast.next.next
+                root, root.next, slow = slow, root, slow.next
+            
+            if fast:
+                slow = slow.next
+                
+            while root and root.val == slow.val:
+                slow, root = slow.next, root.next
+            
+            return not root
+```
+
+> 슬라이싱 활용
+
+```python 
+    class Solution:
+        def isPalindrome(self, head: ListNode) -> bool:
+            
+            vals = []
+            
+            while head:
+                vals.append(head.val)
+                head = head.next
+                
+            return vals == vals[::-1]
+```
+
+## 21. Merge Two Sorted Lists
+> 반복순회
+
+```python 
+    class Solution:
+        def mergeTwoLists(self, l1, l2):
+            root = ListNode()
+            head = root
+            while l1 and l2:
+                if l1.val < l2.val:
+                    root.next = l1
+                    l1 = l1.next
+                else:
+                    root.next = l2
+                    l2 = l2.next
+                root = root.next
+                
+            root.next = l1 or l2
+            return head.next
+```
+
+> 재귀 / `recheck`
+
+```python 
+    class Solution:
+        def mergeTwoLists(self, l1, l2):
+            if (not l1) or (l2 and l1.val > l2.val):
+                l1, l2 = l2, l1
+                
+            if l1:
+                l1.next = self.mergeTwoLists(l1.next, l2)
+                
+            return l1
+```
+
+## 206. Reverse Linked List
+> 반복순회
+
+```python 
+    class Solution:
+        def reverseList(self, head: ListNode) -> ListNode:
+            
+            node, root = head, None
+            while node:
+                root, root.next, node = node, root, node.next
+                
+            return root
+```
+
+> 재귀
+
+```python 
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        def revers(node: ListNode, prev: Listnode = None):
+            
+            if not node:
+                return prev
+            
+            next, node.next = node.next, prev
+            return reverse(next, node)
+        
+        return reverse(head)
+```
+
+## 2. Add Two Numbers
+> 반복순회 / `recheck`
+
+```python 
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        root = node = ListNode()
+        carry = 0
+        
+        while carry or l1 or l2:
+            sum = 0
+            
+            if l1:
+                sum += l1.val
+                l1 = l1.next
+            if l2:
+                sum += l2.val
+                l2 = l2.next
+            
+            carry, val = divmod(sum + carry, 10)
+            node.next = ListNode(val)
+            node = node.next
+        return root.next
+```
+
+## 24. Swap Nodes in Pairs / `recheck`
+> 반복순회
+
+```python 
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+        
+        root = prev = Listnode(None)
+        prev.next = head
+        
+        #바뀌는 구간의 전노드, 바뀌는 노드, 앞으로 바뀔 노드
+        while head and head.next:
+            #바뀌는 구간
+            b = head.next
+            head.next = b.next
+            b.next = head
+            
+            #바귀는 구간의 전노드
+            prev.next = b
+            
+            #앞으로 바뀔 노드
+            head = head.next
+            prev = prev.next.next
+        return root.next
+```
+
+> 재귀
+
+```python 
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+        if head and head.next:
+            p = head.next
+            
+            head.next = self.swapPairs(p.next)
+            
+            p.next = head
+            return p
+        return head
+```
+
+## 328. Odd Even Linked List
+> 반복순회
+
+```python 
+class Solution:
+    def oddEvenList(self, head: ListNode) -> ListNode:
+        if not head:
+            return None
+        
+        odd, even, even_head = head, head.next, head.next
+        
+        while even and even.next:
+            odd.next, even.next = odd.next.next, even.next.next
+            odd, even = odd.next, even.next
+            
+        odd.next = even_head
+        
+        return head
+```
+
+## 92. Reverse Linked List II
+> 반복순회 / `recheck`
+
+```python 
+class Solution:
+    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
+        
+        root = start = ListNode(None)
+        root.next = head
+        
+        #예외처리
+        if left == right:
+            return head
+        
+        #left전까지 가기
+        for _ in range(left - 1):
+            start = start.next
+        end = start.next
+        
+        #right까지 역순
+        for _ in range(right - left):
+            temp, start.next, end.next = start.next, end.next, end.next.next
+            #직전 start.next와 start.next.next를 역으로 연결해줌
+            start.next.next = temp
+            
+        return root.next
+```
+
+# 9장. 스택, 큐
+
+- 스택 
+    - FILO
+    - 파이썬 리스트, deque로 구현 가능
+- 큐
+    - FIFO
+    - deque로 구현 가능
+    
+## 20. Valid Parentheses
+> 딕셔너리, 스택
+
+```python 
+class Solution:
+    def isValid(self, s: str) -> bool:
+        
+        brakets = {
+            ']' : '[',
+            '}' : '{',
+            ')' : '(',
+        }
+        
+        stack = []
+        for braket in s:
+            if braket not in brakets:
+                stack.append(braket)
+            elif not stack or stack.pop() != brakets[braket]:
+                return False
+                    
+        return not stack
+```
+
+## 316. Remove Duplicate Letters / `recheck`
+> 반복순회
+
+1. 문자별 갯수 파악
+2. stack 마지막 문자추출
+    - 조건
+    1. stack not null
+    2. for문 iter가 stack의 마지막 문자보다 순서가 늦을때
+    3. stack 마지막 문자의 개수가 아직 여유 있을때  
+3. 2반복  
+```python 
+    class Solution:
+        def removeDuplicateLetters(self, s: str) -> str:
+            
+            stack, seen, count = [], set(), collections.Counter(s)
+            
+            for char in s:
+                count[char] -= 1
+                if char in seen:
+                    continue
+                    
+                while stack and stack[-1] > char and count[stack[-1]] > 0:
+                    seen.remove(stack.pop())
+                stack.append(char)
+                seen.add(char)
+                
+            return ''.join(stack)
+```
+
+> 재귀
+
+1. 중복제거(set), 순서나열된 문자열(sorted)로 for순회
+2. 추출된문자열, parameter문자열이 공통요소를 가지고 있는지 확인
+    - true : 해당문자가 앞에 와도 상관없음, return 해당문자 + 재귀
+    - false : 해당문자가 앞에 오면 다른 문자가 문제가 생김, return ''
+3. 2반복  
+```python  
+class Solution:
+    def removeDuplicateLetters(self, s: str) -> str:
+        for char in sorted(set(s)):
+            #해당문자부터 끝까지 추출
+            substring = s[s.index(char):]
+            
+            #추출한문자열이 기존 s문자열과 모든 요소를 공통으로 가지고 있으면
+            #추출한문자열의 앞에 문자열은 필요없다는 것
+            if set(s) == set(substring):
+                return char + self.removeDuplicateLetters(substring.replace(char, ''))
+            
+        return ''
+```
+
+##739. Daily Temperatures
+> 반복순회, stack
+
+```python  
+class Solution:
+    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        
+        result, stack = [], []
+        for idx, temp in enumerate(temperatures):
+
+            while stack and stack[-1][1] < temp:
+                order, _ = stack.pop()
+                result.append([order, idx - order])
+            
+            stack.append([idx, temp])
+
+        while stack:
+            order, _ = stack.pop()
+            result.append([order, 0])
+            
+        result.sort(key = lambda x: x[0])
+        return [day for _, day in result]
+```
+
+> stack, [0] * len() / `recheck`
+
+```python 
+class Solution:
+    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        
+        answer = [0] * len(temperatures)
+        stack = []
+        
+        for idx, tem in enumerate(temperatures):
+            while stack and temperatures[stack[-1]] < tem:
+                last = stack.pop()
+                answer[last] = idx - last
+            stack.append(idx)
+        return answer
+```
+
+# 10장. 데크, 우선순위 큐
+- deque
+    - 더블앤디드 큐의 줄임말
+    - 양쪽에서 삽입 삭제 가능
+- 우선순위 큐
+    - 우선순위가 정해져있는 큐
+    - 힙으로 구현
+    
+## 23. Merge k Sorted Lists / `recheck`
+> 새로운 노드 생성
+
+```python 
+class Solution:
+    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+        
+        self.nodes = []
+        head = point = ListNode(None)
+        
+        for lst in lists:
+            while lst:
+                self.nodes.append(lst.val)
+                lst = lst.next
+        
+        for val in sorted(self.nodes):
+            point.next = ListNode(val)
+            point = point.next
+        
+        return head.next
+```
+
+> heapq 모듈 사용
+
+```python 
+class Solution:
+    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+        
+        root = result = ListNode(None)
+        heap = []
+        
+        for i in range(len(lists)):
+            if lists[i]:
+                heapq.heappush(heap, (lists[i].val, i, lists[i]))
+                
+        while heap:
+            node = heapq.heappop(heap)
+            idx = node[1]
+            result.next = node[2]
+            
+            result = result.next
+            if result.next:
+                heapq.heappush(heap, (result.next.val, idx, result.next))
+                
+        return root.next bhyu76u
+```
 
 
 
