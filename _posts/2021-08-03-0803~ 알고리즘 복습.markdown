@@ -945,22 +945,424 @@ class Solution:
 > 포인터 이동
 
 ```python 
-class Solution:
-    def lengthOfLongestSubstring(self, s: str) -> int:
-        
-        #예외처리
-        if len(s) <= 2:
-            return len(set(s))
-        
-        start, result = 0, 0
-        str_dict = {}
-        for idx, char in enumerate(s):
-            if char not in str_dict or str_dict[char] < start:
-                result = max(result, idx - start + 1)
-            else:
-                start = str_dict[char] + 1
-            str_dict[char] = idx
-
-        return result
+    class Solution:
+        def lengthOfLongestSubstring(self, s: str) -> int:
+            
+            #예외처리
+            if len(s) <= 2:
+                return len(set(s))
+            
+            start, result = 0, 0
+            str_dict = {}
+            for idx, char in enumerate(s):
+                if char not in str_dict or str_dict[char] < start:
+                    result = max(result, idx - start + 1)
+                else:
+                    start = str_dict[char] + 1
+                str_dict[char] = idx
+    
+            return result
 ```
+
+# 12장. 그래프
+
+## 200. Number of Islands
+> dfs
+
+```python 
+    class Solution:
+        def numIslands(self, grid: List[List[str]]) -> int:
+            def dfs(x, y):
+                if 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] == '1':
+                    grid[x][y] = '0'
+                    dfs(x - 1, y)
+                    dfs(x + 1, y)
+                    dfs(x, y - 1)
+                    dfs(x, y + 1)
+                
+            
+            result = 0
+            for i in range(len(grid)):
+                for j in range(len(grid[0])):
+                    if grid[i][j] == '1':
+                        dfs(i , j)
+                        result += 1          
+            return result
+```
+
+> bfs
+
+- dfs보다 훨씬 느림  
+```python 
+    class Solution:
+        dx = [1, -1, 0, 0]
+        dy = [0 , 0, 1, -1]
+        def numIslands(self, grid: List[List[str]]) -> int:
+            def bfs(x, y):
+                queue = collections.deque([[x, y]])
+                while queue:
+                    loc = queue.popleft()
+                    x, y = loc[0], loc[1]
+                    if grid[x][y] == '1':
+                        grid[x][y] = '0'
+                        for i in range(4):
+                            new_x = self.dx[i] + x
+                            new_y = self.dy[i] + y
+                            if 0 <= new_x < len(grid) and 0 <= new_y < len(grid[0]):
+                                queue.append([new_x, new_y])
+                
+            count = 0
+            for i in range(len(grid)):
+                for j in range(len(grid[0])):
+                    if grid[i][j] == '1':
+                        bfs(i, j)
+                        count += 1
+    
+            return count
+```
+
+## 17. Letter Combinations of a Phone Number / `recheck`
+> dfs
+
+```python 
+    class Solution:
+        def letterCombinations(self, digits: str) -> List[str]:
+            def dfs(char, digits):
+                if not digits:
+                    result.append(char)
+                    return 
+                
+                for i in e[digits[0]]:
+                    dfs(char + i, digits[1:])
+                
+            #예외처리
+            if not digits:
+                return []
+            
+            e = {
+                '2': ['a', 'b', 'c'],
+                '3': ['d', 'e', 'f'],
+                '4': ['g', 'h', 'i'],
+                '5': ['j', 'k', 'l'],
+                '6': ['m', 'n', 'o'],
+                '7': ['p', 'q', 'r', 's'],
+                '8': ['t', 'u', 'v'],
+                '9': ['w', 'x', 'y', 'z'],
+            }
+            
+            result = []
+            dfs('', digits)
+    
+            return result
+```
+
+> dfs
+
+```python 
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        self.dfs(nums, [], res)
+        return res
+    
+    def dfs(self, nums: List[int], path: List[int], res: List[int]):
+        if not nums:
+            res.append(path)
+        for i in range(len(nums)):
+            self.dfs(nums[:i] + nums[i + 1:], path + [nums[i]], res)
+
+```
+
+> dfs, list 복사
+
+```python 
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        results = []
+        prev_elements = []
+        
+        def dfs(elements):
+            if len(elements) == 0:
+                results.append(prev_elements[:])
+                
+            for e in elements:
+                next_elements = elements[:]
+                next_elements.remove(e)
+
+                prev_elements.append(e)
+                dfs(next_elements)
+                prev_elements.pop()
+            
+        dfs(nums)
+        return results
+```
+
+## 77. Combinations
+> dfs
+
+```python 
+class Solution(object):
+    def combine(self, n, k):
+        
+        def dfs(nums, path):
+            if len(path) == k:
+                ret.append(path)
+                return 
+            for i in range(len(nums)):
+                dfs(nums[i+1:], path+[nums[i]])
+            
+        ret = []
+        dfs(list(range(1, n+1)), [])
+        return ret
+```
+
+> dfs
+
+```python 
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        results = []
+        
+        def dfs(elements, start: int, k: int):
+            if k == 0:
+                results.append(elements[:])
+                return
+            
+            for i in range(start, n + 1):
+                elements.append(i)
+                dfs(elements, i + 1, k - 1)
+                elements.pop()
+                
+        dfs([], 1, k)
+        return results
+```
+
+## 39. Combination Sum / `recheck`
+
+> dfs, 합계인자 전달, 76ms
+
+```python 
+    class Solution:
+        def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+            results = []
+            
+            def dfs(elements, idx, cur_sum):
+                if cur_sum < 0:
+                    return
+                
+                if cur_sum == 0:
+                    results.append(elements[:])
+                
+                for i in range(idx, len(candidates)):
+                    elements.append(candidates[i])
+                    dfs(elements, i, cur_sum - candidates[i])
+                    elements.pop()
+```
+
+> dfs, sum으로 비교, 90ms
+
+- 파라미터를 elements + 인자를 해도 속도는 똑같음  
+```python 
+            #위와 동일            
+            def dfs(elements, idx):
+                if sum(elements) > target:
+                    return
+                
+                if sum(elements) == target:
+                    results.append(elements[:])
+                
+                for i in range(idx, len(candidates)):
+                    elements.append(candidates[i])
+                    dfs(elements, i)
+                    elements.pop()
+```            
+> dfs, 배열정렬, 계산후 재귀, 50ms
+```python 
+            #위와동일
+            res = []
+            def dfs(elements, candidates, target):
+                for i, num in enumerate(candidates):
+                    cur_sum = target - num
+                    if cur_sum == 0:
+                        res.append(elements + [num])
+                    elif cur_sum > 0:
+                        dfs(elements + [num], candidates[i:], cur_sum)
+                    else:
+                        break
+            dfs([], sorted(candidates), target)
+            return res
+```
+
+## 78. Subsets
+> dfs
+
+```python 
+    class Solution:
+        def subsets(self, nums: List[int]) -> List[List[int]]:
+            
+            def dfs(idx: int, elements: List[int]):
+                results.append(elements[:])
+                
+                for i in range(idx, len(nums)):
+                    dfs(i + 1, elements + [nums[i]])
+                    
+            results = []
+            dfs(0, [])
+            
+            return results
+```
+
+## 332. Reconstruct Itinerary / 'recheck'
+> dfs
+
+- 정렬할일이 있으면 for문에서 sorted를 먼저 사용하자  
+- 입력값이 많으면 pop()과 pop(0)은 o(1), O(N)으로 차이가 심하니 반드시 주의할 것  
+```python 
+class Solution:
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        
+        graph = collections.defaultdict(list)
+        for depart, to in sorted(tickets, reverse=True):
+            graph[depart].append(to)
+            
+        route = []
+        
+        def dfs(a):
+            while graph[a]:
+                dfs(graph[a].pop())
+            route.append(a)
+            
+        dfs('JFK')
+        
+        return route[::-1]
+```
+
+> 스택
+
+- 중간에 끊어질 수 있기 때문에, 행선지가 다 빠질땔까지 반복  
+```python 
+class Solution:
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        
+        graph = collections.defaultdict(list)
+        for depart, to in sorted(tickets):
+            graph[depart].append(to)
+            
+        route, stack = [], ['JFK']
+        
+        while stack:
+            while graph[stack[-1]]:
+                stack.append(graph[stack[-1]].pop(0))
+            route.append(stack.pop())
+            
+        return route[::-1]
+```
+
+## 207. Course Schedule / `recheck`
+> dfs, 방문체크리스트
+
+```python 
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        
+        graph = collections.defaultdict(list)
+        for a, b in prerequisites:
+            graph[a].append(b)
+        
+        traced = set()
+        visited = set()
+        
+        def dfs(course):
+            #훑는 와중 훑어야 하는 것이 또 생기면 Fasle
+            if course in traced:
+                return False
+            #정상적으로 지난 것을 표기, 빠르게 진행하기 위해서
+            if course in visited:
+                return True
+            
+            #훑고 있어요
+            traced.add(course)
+            #앞으로 훑을 거에요
+            for nxt_course in graph[course]:
+                if not dfs(nxt_course):
+                    return False
+            #정상적으로 다 훑어서 훑는중에서 지울게요
+            traced.remove(course)
+            #정상적으로 끝났으니 방문리스트에 추가할게여
+            visited.add(course)
+            
+            return True
+        
+        for course in list(graph):
+            if not dfs(course):
+                return False
+            
+        return True
+```
+
+## 743. Network Delay Time / `recheck`
+>bfs, 다익스트라 알고리즘 변형, heapq 모듈사용
+
+```python 
+class Solution:
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        graph = collections.defaultdict(list)
+        for u, v, w in times:
+            graph[u].append((v, w))
+        
+        #queue 초기 설정
+        Q = [(0, k)]
+        #방문체크 및 소요시간을 저장할 딕셔너리
+        dist = collections.defaultdict(int)
+        
+        #제일 가까운 노드부터 방문한다
+        while Q:
+            #시간이 제일 적게 걸리는 노드 추출
+            time, node = heapq.heappop(Q)
+            #제일먼저 도착하는게 제일 빠른길임
+            #기존에 방문한 곳은 다시 방문하지 못하게함
+            if node not in dist:
+                dist[node] = time
+                for nxt_node, spended_time in graph[node]:
+                    sum_time = time + spended_time
+                    heapq.heappush(Q, (sum_time, nxt_node))
+        if len(dist) == n:
+            return max(dist.values())
+        return -1    
+```
+
+> bfs, 다익스트라 알고리즘
+- if visited[node] >= stop: 이부분이 이해가 잘안됨
+    - 앞으로 갈숫자보다 먼저 들렸다면(역으로 세고 있음) 그게 제일 최선이라는 것인가?
+    - 아 이게 최소힙으로 구현되서 숫자가 높으면 제일 적은 가격으로 먼저 들린데구나; 오케이  
+
+```python 
+#다익스트라 + BFS
+class Solution:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        graph = collections.defaultdict(list)
+        for u, v, w in flights:
+            graph[u].append((v, w))
+        
+        #queue 초기 설정
+        Q = [(0, src, k + 1)]
+        #방문체크 및 최소 가격 비교
+        visited = [0] * n
+        
+        #제일 가까운 노드부터 방문한다
+        while Q:
+            print(Q)
+            print(visited)
+            #가격이 제일 적은 노드 추출
+            price, node, stop = heapq.heappop(Q)
+            if node == dst:
+                return price
+            if visited[node] >= stop:
+                continue
+            visited[node] = stop
+            for v, w in graph[node]:
+                heapq.heappush(Q, (price + w, v, stop - 1))
+        return -1  
+```
+
 
