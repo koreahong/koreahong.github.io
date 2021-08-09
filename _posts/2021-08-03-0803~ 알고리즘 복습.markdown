@@ -1615,3 +1615,91 @@ class Solution:
                 index += 1
             return root
 ```
+
+## 110. Balanced Binary Tree / `recheck`
+> dfs, 균형 트리 확인
+
+```python 
+class Solution:
+    def isBalanced(self, root: TreeNode) -> bool:
+        #부모노드 기준으로 양쪽 자식이 2이상 차이나면 안됨
+        def dfs(node):
+            #말단 노드일 경우에는 0 반환
+            if not node:
+                return 0
+            #오른쪽 왼쪽 깊이값 받기
+            left = dfs(node.left)
+            right = dfs(node.right)
+            #왼쪽, 오른쪽이 -1이면, 왼쪽 오른쪽이 1초과로 차이가 나면 -1반환
+            if left == -1 or right == -1 or abs(left - right) > 1:
+                return -1
+            #깊이 반환하기
+            return max(left, right) + 1
+        return dfs(root) != -1
+```
+
+## 310. Minimum Height Trees / `recheck`
+
+```python 
+class Solution:
+    def findMinHeightTrees(self, n: int, edges: List[List[int]]) -> List[int]:
+        #예외처리
+        if n <= 1:
+            return [0]
+        #노드 연결
+        graph = collections.defaultdict(list)
+        for i, j in edges:
+            graph[i].append(j)
+            graph[j].append(i)
+        #리프노드제거
+        leaves = []
+        for i in range(n + 1):
+            if len(graph[i]) == 1:
+                leaves.append(i)
+        #루트노드만 남을때까지 반복
+        while n > 2:
+            n -= len(leaves)
+            new_leaves = []
+            for leaf in leaves:
+                #리프노드 제거
+                neighbor = graph[leaf].pop()
+                graph[neighbor].remove(leaf)
+                if len(graph[neighbor]) == 1:
+                    new_leaves.append(neighbor)
+            leaves = new_leaves
+            
+        return leaves
+```
+
+## 108. Convert Sorted Array to Binary Search Tree / `recheck`
+
+```python 
+class Solution:
+    def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+        #예외처리
+        if not nums:
+            return None
+        #분할정복
+        mid = len(nums) // 2
+        #노드생성
+        node = TreeNode(nums[mid])
+        node.left = self.sortedArrayToBST(nums[:mid])
+        node.right = self.sortedArrayToBST(nums[mid + 1:])
+        
+        return node
+```
+
+## 1038. Binary Search Tree to Greater Sum Tree
+> 재귀, 중위순회 
+
+```python  
+class Solution:
+    val: int = 0
+    def bstToGst(self, root: TreeNode) -> TreeNode:
+        self.bstToGst(root.right)
+        self.val += root.val
+        root.val = self.val
+        self.bstToGst(root.left)
+        
+        return root
+```
