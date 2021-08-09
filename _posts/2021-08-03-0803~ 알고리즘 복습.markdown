@@ -1792,3 +1792,123 @@ class Solution:
             return result
 ```
 
+## 105. Construct Binary Tree from Preorder and Inorder Traversal
+> 반복
+
+- 전,중,후위 중 2개만 알면 트리를 복원할 수 있다.
+```python 
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        if inorder:
+            index = inorder.index(preorder.pop(0))
+            
+            node = TreeNode(inorder[index])
+            node.left = self.buildTree(preorder, inorder[:index])
+            node.right = self.buildTree(preorder, inorder[index + 1:])
+            
+            return node
+```
+
+# 15장. 힙
+- 힙 : 부모와 자식간에는 서열이 확실하다
+- 이진트리와 차이점 : 이진트리는 좌우간에 서열이 확실하고, 힙은 상하간에 서열이 확실하다
+- 사용용도 : 우선순위 큐에 활용되며, 최소, 최대와 관련된 문제에 사용됨
+
+## 215. Kth Largest Element in an Array
+> heapq 모듈 사용  
+
+```python 
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        heap = []
+        for num in nums:
+            heapq.heappush(heap, -num)
+            
+        for _ in range(k - 1):
+            heapq.heappop(heap)
+        
+        return -heapq.heappop(heap)
+```
+
+# 17장. 정렬
+
+## 56. Merge Intervals  
+```python 
+    class Solution:
+        def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+            result = []
+            
+            intervals.sort(key = lambda x: (x[0]))
+            
+            for interval in intervals:
+                if not result:
+                    result.append(interval)
+                
+                if result[-1][1] >= interval[0]:
+                    result[-1][1] = max(interval[1], result[-1][1])
+                
+                else:
+                    result.append(interval)
+                    
+            return result
+```
+ 
+## 147. Insertion Sort List  
+ ㅡ>` 연결리스트, 삽입정렬
+
+```python 
+class Solution:
+    def insertionSortList(self, head: ListNode) -> ListNode:
+        #초기를 잡아줄 노드와, 초기노드에서 정렬된 노드를 연결해주는 노드 선언
+        cur = start = ListNode(0)
+        #주어진 노드끝까지
+        while head:
+            #현재 정렬된노드와 head노드보다 작을때까지
+            while cur.next and cur.next.val < head.val:
+                cur = cur.next
+            #현재노드의 다음노드는 head, head는 다음것, head next는 curnext
+            cur.next, head.next, head = head, cur.next, head.next
+            #cur 값이 해드보다 클경우, head가 존재할 경우
+            if head and cur.val > head.val:
+                cur = start
+                
+        return start.next
+```
+
+## 179. Largest Number
+> 숫자를 문자로 정렬
+
+```python 
+    class Solution:
+        def largestNumber(self, nums: List[int]) -> str:
+            nums = list(map(str, nums))
+            nums.sort(key = lambda x: x * 10, reverse=True)
+            return str(int(''.join(nums)))
+```
+
+## 75. Sort Colors / `recheck`
+> 3색정렬
+
+```python 
+    class Solution:
+        def sortColors(self, nums: List[int]) -> None:
+            #예외처리
+            if len(nums) <= 1:
+                return nums
+            
+            red, white, blue = 0, 0, len(nums)
+            
+            #1을 가르키는 white를 늘려가면서 blue와 만나지 않을땨까지 반복
+            while white < blue:
+                #0을 만나면 red와 white를 바꿈, red, white한칸씩 전진
+                if nums[white] == 0:
+                    nums[red], nums[white] = nums[white], nums[red]
+                    red += 1
+                    white += 1
+                #1을 만나면 white 앞으로 전진
+                elif nums[white] == 1:
+                    white += 1
+                else:
+                    blue -= 1
+                    nums[white], nums[blue] = nums[blue], nums[white]
+```
