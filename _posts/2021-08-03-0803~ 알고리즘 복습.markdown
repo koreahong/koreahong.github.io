@@ -909,7 +909,7 @@ class Solution:
 
 # 11장. 해시 테이블
 
-##
+## 771. Jewels and Stones
 > 해시 테이블 사용
 
 ```python 
@@ -1097,7 +1097,7 @@ class Solution:
         return results
 ```
 
-## 77. Combinations
+## 77. Combinations / `recheck`
 > dfs
 
 ```python 
@@ -1218,117 +1218,117 @@ class Solution:
 - 정렬할일이 있으면 for문에서 sorted를 먼저 사용하자  
 - 입력값이 많으면 pop()과 pop(0)은 o(1), O(N)으로 차이가 심하니 반드시 주의할 것  
 ```python 
-class Solution:
-    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
-        
-        graph = collections.defaultdict(list)
-        for depart, to in sorted(tickets, reverse=True):
-            graph[depart].append(to)
+    class Solution:
+        def findItinerary(self, tickets: List[List[str]]) -> List[str]:
             
-        route = []
-        
-        def dfs(a):
-            while graph[a]:
-                dfs(graph[a].pop())
-            route.append(a)
+            graph = collections.defaultdict(list)
+            for depart, to in sorted(tickets, reverse=True):
+                graph[depart].append(to)
+                
+            route = []
             
-        dfs('JFK')
-        
-        return route[::-1]
+            def dfs(a):
+                while graph[a]:
+                    dfs(graph[a].pop())
+                route.append(a)
+                
+            dfs('JFK')
+            
+            return route[::-1]
 ```
 
 > 스택
 
 - 중간에 끊어질 수 있기 때문에, 행선지가 다 빠질땔까지 반복  
 ```python 
-class Solution:
-    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
-        
-        graph = collections.defaultdict(list)
-        for depart, to in sorted(tickets):
-            graph[depart].append(to)
+    class Solution:
+        def findItinerary(self, tickets: List[List[str]]) -> List[str]:
             
-        route, stack = [], ['JFK']
-        
-        while stack:
-            while graph[stack[-1]]:
-                stack.append(graph[stack[-1]].pop(0))
-            route.append(stack.pop())
+            graph = collections.defaultdict(list)
+            for depart, to in sorted(tickets):
+                graph[depart].append(to)
+                
+            route, stack = [], ['JFK']
             
-        return route[::-1]
+            while stack:
+                while graph[stack[-1]]:
+                    stack.append(graph[stack[-1]].pop(0))
+                route.append(stack.pop())
+                
+            return route[::-1]
 ```
 
 ## 207. Course Schedule / `recheck`
 > dfs, 방문체크리스트
 
 ```python 
-class Solution:
-    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
-        
-        graph = collections.defaultdict(list)
-        for a, b in prerequisites:
-            graph[a].append(b)
-        
-        traced = set()
-        visited = set()
-        
-        def dfs(course):
-            #훑는 와중 훑어야 하는 것이 또 생기면 Fasle
-            if course in traced:
-                return False
-            #정상적으로 지난 것을 표기, 빠르게 진행하기 위해서
-            if course in visited:
+    class Solution:
+        def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+            
+            graph = collections.defaultdict(list)
+            for a, b in prerequisites:
+                graph[a].append(b)
+            
+            traced = set()
+            visited = set()
+            
+            def dfs(course):
+                #훑는 와중 훑어야 하는 것이 또 생기면 Fasle
+                if course in traced:
+                    return False
+                #정상적으로 지난 것을 표기, 빠르게 진행하기 위해서
+                if course in visited:
+                    return True
+                
+                #훑고 있어요
+                traced.add(course)
+                #앞으로 훑을 거에요
+                for nxt_course in graph[course]:
+                    if not dfs(nxt_course):
+                        return False
+                #정상적으로 다 훑어서 훑는중에서 지울게요
+                traced.remove(course)
+                #정상적으로 끝났으니 방문리스트에 추가할게여
+                visited.add(course)
+                
                 return True
             
-            #훑고 있어요
-            traced.add(course)
-            #앞으로 훑을 거에요
-            for nxt_course in graph[course]:
-                if not dfs(nxt_course):
+            for course in list(graph):
+                if not dfs(course):
                     return False
-            #정상적으로 다 훑어서 훑는중에서 지울게요
-            traced.remove(course)
-            #정상적으로 끝났으니 방문리스트에 추가할게여
-            visited.add(course)
-            
+                
             return True
-        
-        for course in list(graph):
-            if not dfs(course):
-                return False
-            
-        return True
 ```
 
 ## 743. Network Delay Time / `recheck`
 >bfs, 다익스트라 알고리즘 변형, heapq 모듈사용
 
 ```python 
-class Solution:
-    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
-        graph = collections.defaultdict(list)
-        for u, v, w in times:
-            graph[u].append((v, w))
-        
-        #queue 초기 설정
-        Q = [(0, k)]
-        #방문체크 및 소요시간을 저장할 딕셔너리
-        dist = collections.defaultdict(int)
-        
-        #제일 가까운 노드부터 방문한다
-        while Q:
-            #시간이 제일 적게 걸리는 노드 추출
-            time, node = heapq.heappop(Q)
-            #제일먼저 도착하는게 제일 빠른길임
-            #기존에 방문한 곳은 다시 방문하지 못하게함
-            if node not in dist:
-                dist[node] = time
-                for nxt_node, spended_time in graph[node]:
-                    sum_time = time + spended_time
-                    heapq.heappush(Q, (sum_time, nxt_node))
-        if len(dist) == n:
-            return max(dist.values())
-        return -1    
+    class Solution:
+        def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+            graph = collections.defaultdict(list)
+            for u, v, w in times:
+                graph[u].append((v, w))
+            
+            #queue 초기 설정
+            Q = [(0, k)]
+            #방문체크 및 소요시간을 저장할 딕셔너리
+            dist = collections.defaultdict(int)
+            
+            #제일 가까운 노드부터 방문한다
+            while Q:
+                #시간이 제일 적게 걸리는 노드 추출
+                time, node = heapq.heappop(Q)
+                #제일먼저 도착하는게 제일 빠른길임
+                #기존에 방문한 곳은 다시 방문하지 못하게함
+                if node not in dist:
+                    dist[node] = time
+                    for nxt_node, spended_time in graph[node]:
+                        sum_time = time + spended_time
+                        heapq.heappush(Q, (sum_time, nxt_node))
+            if len(dist) == n:
+                return max(dist.values())
+            return -1    
 ```
 
 > bfs, 다익스트라 알고리즘
@@ -1338,31 +1338,280 @@ class Solution:
 
 ```python 
 #다익스트라 + BFS
-class Solution:
-    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
-        graph = collections.defaultdict(list)
-        for u, v, w in flights:
-            graph[u].append((v, w))
-        
-        #queue 초기 설정
-        Q = [(0, src, k + 1)]
-        #방문체크 및 최소 가격 비교
-        visited = [0] * n
-        
-        #제일 가까운 노드부터 방문한다
-        while Q:
-            print(Q)
-            print(visited)
-            #가격이 제일 적은 노드 추출
-            price, node, stop = heapq.heappop(Q)
-            if node == dst:
-                return price
-            if visited[node] >= stop:
-                continue
-            visited[node] = stop
-            for v, w in graph[node]:
-                heapq.heappush(Q, (price + w, v, stop - 1))
-        return -1  
+    class Solution:
+        def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+            graph = collections.defaultdict(list)
+            for u, v, w in flights:
+                graph[u].append((v, w))
+            
+            #queue 초기 설정
+            Q = [(0, src, k + 1)]
+            #방문체크 및 최소 가격 비교
+            visited = [0] * n
+            
+            #제일 가까운 노드부터 방문한다
+            while Q:
+                print(Q)
+                print(visited)
+                #가격이 제일 적은 노드 추출
+                price, node, stop = heapq.heappop(Q)
+                if node == dst:
+                    return price
+                if visited[node] >= stop:
+                    continue
+                visited[node] = stop
+                for v, w in graph[node]:
+                    heapq.heappush(Q, (price + w, v, stop - 1))
+            return -1  
 ```
 
+# 14장. 트리
+- 트리는 순환 구조를 갖지 않는 그래프
 
+## 104. Maximum Depth of Binary Tree
+> DFS, max
+
+```python 
+    class Solution:
+        def maxDepth(self, root: TreeNode) -> int:
+            return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right)) if root else 0
+```
+
+> BFS
+
+- 한 loop에 한 세대를 모조리 빼고 모조리 넣는 방식  
+```python 
+    class Solution:
+        def maxDepth(self, root: TreeNode) -> int:
+            if not root:
+                return 0
+            
+            queue = collections.deque([root])
+            depth = 0
+            
+            #while을 한번 반목할때마다 한세대를 모조리 빼고 모조리 넣음
+            while queue:
+                #부모노드가 빠질때 깊이 + 1
+                depth += 1
+                #자시노드를 모조리 뺌
+                for _ in range(len(queue)):
+                    cur_root = queue.popleft()
+                    if cur_root.left:
+                        queue.append(cur_root.left)
+                    if cur_root.right:
+                        queue.append(cur_root.right)
+            return depth
+```
+
+## 543. Diameter of Binary Tree / `recheck`
+> DFS
+
+```python 
+    class Solution:
+        longest: int = 0
+        def diameterOfBinaryTree(self, root: TreeNode) -> int:
+            #해당노드는 해당노드의 이후의 자식노드들의 깊이를 받아서 + 2한 값이다
+            def dfs(root: TreeNode) -> int:
+                #말단 노드일 경우에는 -1
+                if not node: 
+                    return -1
+                #왼쪽 오른쪽 깊이 리턴받기
+                left = dfs(node.left)
+                right = dfs(node.right)
+                
+                #최대경로값 업데이트
+                self.longest = max(self.longest, left + right + 2)
+                #해당노드의 깊이값 리턴
+                return max(left, right) + 1
+            
+            dfs(root)
+            return self.longest
+```
+
+## / `recheck`
+> DFS
+
+- 부모노드와 자식노드의 값이 같은지 확인  
+```python  
+    class Solution:
+        def longestUnivaluePath(self, root: TreeNode) -> int:
+            self.result: int = 0
+            
+            def dfs(root):
+                #말단노드 도착시 리턴 0
+                if not root:
+                    return 0
+                
+                #해당노드의 자식노드의 경로값 받기
+                left = dfs(root.left)
+                right = dfs(root.right)
+                
+                #해당노드와 자식노드의 값이 같다면 + 1
+                if root.left and root.val == root.left.val:
+                    left += 1
+                else:
+                    left = 0
+                if root.right and root.val == root.right.val:
+                    right += 1
+                else:
+                    right = 0
+                    
+                #해당노드까지 경로 최대값 업데이트
+                self.result = max(self.result, left + right)
+                #왼쪽 오른쪽이 같은 노드값이라도 둘중 하나를 선택, 큰 쪽 선택
+                return max(left, right)
+            
+            dfs(root)
+            return self.result
+```
+> DFS, if문 제거 버전  
+
+```python 
+    class Solution:
+        def longestUnivaluePath(self, root: TreeNode) -> int:
+            self.longest = 0
+            def helper(node, parent):
+                if not node:
+                    return 0
+                left = helper(node.left, node.val)
+                right = helper(node.right, node.val)
+                self.longest = max(self.longest, left + right)
+                return max(left, right) + 1 if node.val == parent else 0
+            helper(root, None)
+            return self.longest
+```
+
+## / `recheck`
+> 재귀
+
+```python 
+    class Solution:
+        def invertTree(self, root: TreeNode) -> TreeNode:
+            if root:
+                root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
+                return root
+```
+
+> BFS, 전위순회
+
+```python 
+    class Solution:
+        def invertTree(self, root: TreeNode) -> TreeNode:
+            queue = collections.deque([root])
+            
+            while queue:
+                node = queue.popleft()
+                #노드가 None이 아니면 자식노드 스왑
+                if node:
+                    node.left, node.right = node.right, node.left
+                    
+                    #자식노드 큐에 추가
+                    queue.append(node.left)
+                    queue.append(node.right)
+            return root
+```
+
+## 617. Merge Two Binary Trees
+> 재귀
+```python 
+    class Solution:
+        def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+            #합병할 노드 모두 None이 아니면 합병진행
+            if root1 and root2:
+                #합친 값을 지닌 노드 생성
+                node = TreeNode(root1.val + root2.val)
+                #합친 값을 지닌 노드의 오른쪽 왼쪽 재귀로 생성
+                node.left = self.mergeTrees(root1.left, root2.left)
+                node.right = self.mergeTrees(root1.right, root2.right)
+                #마지막 리턴을 새로운 트리의 root를 하기위해서 해당 위치에 node리턴
+                return node
+            else:
+                #root1이나 root2둘중 혹은 nothing이면 그대로 반환
+                return root1 or root2  
+```
+
+> DFS
+
+```python 
+    class Solution:
+        def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+            #DFS, r1 값을 r2와 합친값으로 업데이트
+            
+            #r1값이 None이면 r2리턴
+            if not root1:
+                return root2
+            
+            stack = [(root1, root2)]
+            
+            while stack:
+                r1, r2 = stack.pop()
+                #r2가 None이면 loop pass
+                if not r2:
+                    continue
+                #r1값 = r1값 + r2값
+                r1.val += r2.val
+                #r1 left,right 유무확인
+                if not r1.left:
+                    r1.left = r2.left
+                else:
+                    stack.append([r1.left, r2.left])
+                if not r1.right:
+                    r1.right = r2.right
+                else:
+                    stack.append([r1.right, r2.right])
+                    
+            return root1
+```
+
+## 297. Serialize and Deserialize Binary Tree
+> BFS, 직렬화, 역질려화
+
+- 직렬화
+    - 논리적인 구조를 물리적인 구조로 변환
+- 역지렬화
+    - 물리적인 구조를 논리적인 구조로 변 
+
+```python 
+    class Codec:
+        def serialize(self, root: TreeNode) -> str:
+            #값이 none인 것은 '#'로 처리
+                
+            result = ['#']    
+            queue = collections.deque([root])
+            #BFS 직렬화
+            while queue:
+                node = queue.popleft()
+                #node값이 존재하면 값넣고, queue에 추가
+                if node:
+                    result.append(str(node.val))
+                    queue.extend([node.left, node.right])
+                else:
+                    result.append('#')
+            return ' '.join(result)
+            
+        def deserialize(self, data: str) -> TreeNode:
+            #예외처리
+            if data == '# #':
+                return None
+            
+            #nodes값 생성
+            nodes = data.split()
+            #root node 생성
+            root = TreeNode(nodes[1])
+            
+            queue = collections.deque([root])
+            index = 2
+            #역직렬화
+            while queue:
+                node = queue.popleft()
+                #nodes가 None이 아니면 값을 추가, left, right설정
+                if nodes[index] != '#':
+                    node.left = TreeNode(nodes[index])
+                    queue.append(node.left)
+                index += 1
+                if nodes[index] != '#':
+                    node.right = TreeNode(nodes[index])
+                    queue.append(node.right)
+                index += 1
+            return root
+```
