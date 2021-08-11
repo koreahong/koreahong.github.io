@@ -1912,3 +1912,228 @@ class Solution:
                     blue -= 1
                     nums[white], nums[blue] = nums[blue], nums[white]
 ```
+
+------------------------------------------------------
+이후 recheck해야하는 문제만 작성
+
+
+# 18장. 이진탐색
+- 이진트리 -> 자료구조
+- 이진탐색 -> 알고리즘
+- 이진탐색은 반드시 '정렬된' 상태에서 진행해야 함
+
+## 33. Search in Rotated Sorted Array
+> rotate array
+
+```python 
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        #1.이진탐색으로 최소값 위치 찾기
+        left, right = 0, len(nums) - 1
+        while left < right:
+            mid = left + (right - left) // 2
+            if nums[mid] > nums[right]:
+                left = mid + 1
+            else:
+                right = mid
+        pivot = left
+        
+        #2.mid + pivot으로 실제배열의 순서대로 값비교하기
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            #rotate가 고려되지 않은 mid
+            mid = left + (right - left) // 2
+            #rotate가 고려된 mid
+            rotate_mid = (mid + pivot) % len(nums)
+            if nums[rotate_mid] < target:
+                left = mid + 1
+            elif nums[rotate_mid] > target:
+                right = mid - 1
+            else:
+                return rotate_mid
+        return -1
+```
+
+# 19장. 비트연산
+> 개념
+
+- 논리연산 : & , | , ^ , ~등
+- 덧셈으로 뻴셈구현 -> 2의 보수
+- 2의 보수는 MASK(0x~~비트제한)을 통해 음수를 표현할 수 있음
+
+## 371. Sum of Two Integers
+
+```python 
+class Solution:
+    def getSum(self, a: int, b: int) -> int:
+        #32비트 2의 보수 만들기
+        MASK = 0xFFFFFFFF
+        #31비트 최대정수
+        INT_MAX = 0x7FFFFFFF
+        
+        while b != 0:
+            #음수이면 MASK를 통해 ob1~~~로 변환
+            a, b = (a ^ b) & MASK, ((a & b) << 1) & MASK
+        #32비트라면 31비트인 INT_MAX보다 크다는 것이고, 음수라는 뜻
+        if a > INT_MAX:
+            a = ~(a ^ MASK)
+            
+        return a
+```
+
+## 393. UTF-8 Validation
+> UTF-8 검증
+
+```python 
+class Solution:
+    def validUtf8(self, data: List[int]) -> bool:
+        def check(size):
+            for i in range(start + 1, start + size + 1):
+                if i >= len(data) or (data[i] >> 6) != 0b10:
+                    return False
+            return True
+        
+        start = 0
+        while start < len(data):
+            first = data[start]
+            if (first >> 3) == 0b11110 and check(3):
+                start += 4
+            elif (first >> 4) == 0b1110 and check(2):
+                start += 3
+            elif (first >> 5) == 0b110 and check(1):
+                start += 2
+            elif (first >> 7) == 0:
+                start += 1
+            else:
+                return False
+        return True
+```
+
+# 20장. 슬라이딩 윈도우
+> 개념
+
+- 투포인터는 정렬된 배열에서 사용 가능
+- 슬라이딩 윈도우는 정렬과 상관없이 고정된 박스를 옮기는 느낌
+
+## 76. Minimum Window Substring
+
+```python 
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        #필요한 문자들 개수 저장
+        need = collections.defaultdict(int)
+        for char in t:
+            need[char] += 1
+        #찾아야하는 문자개수
+        count = len(t)
+        #슬라이딩 윈도우
+        left = 0
+        #결과값 저장
+        start, end = 0, len(s) + 1
+        #문자탐색
+        for right, char in enumerate(s, 1):
+            #문자가 찾던 것이면 count - 1, 찾던 것이면 기존에 값을 저장했기 때문에 양수를 갖음
+            count -= need[char] > 0
+            #찾은 문자 - 1, 찾고 싶지 않은 문자들도 -1 해줌으로써 찾고싶은 것 - 양수, 찾고싶지 않은 것 - 음수로 나뉨
+            need[char] -= 1
+            #찾고싶은 문자들을 모두 찾았다면
+            if not count:
+                #줄일 수 있는 문자가 있는지 확인
+                #음수를 갖는 것들은 찾고 싶지 않은 문자들
+                while left < right and need[s[left]] < 0:
+                    need[s[left]] += 1
+                    left += 1
+                #결과값 업데이트
+                if left - right < end - start:
+                    start, end = left, right
+                #새로운 문자탐색
+                need[s[left]] += 1
+                count += 1
+                left += 1
+        return s[start:end] if end != len(s) + 1 else ''
+```
+
+## 424. Longest Repeating Character Replacement
+- 슬라이딩 대표 문제
+- `key problem`
+> counter 객체
+
+```python 
+class Solution:
+    def characterReplacement(self, s: str, k: int) -> int:
+        #슬라이딩 설정
+        left = right = 0
+        #counter 객체
+        counts = collections.Counter()
+        #오른쪽으로 이동
+        for right in range(1, len(s) + 1):
+            counts[s[right - 1]] += 1
+            max_char_n = counts.most_common(1)[0][1]
+            #교환할 수 있는 수를 넘기면
+            if right - left - max_char_n > k:
+                #왼쪽으로 이동
+                counts[s[left]] -= 1
+                left += 1
+                
+        return right - left
+```
+
+> 이게 슬라이딩 느낌임 완전 대박
+
+```python 
+class Solution:
+    def characterReplacement(self, s: str, k: int) -> int:
+        window = collections.defaultdict(int)
+        max_amount = 0
+        max_len = 0
+        
+        for i in range(len(s)):
+            window[s[i]] += 1
+            #현재 구간에서 가장 많은 빈도의 문자 개수 추출
+            if window[s[i]] > max_amount:
+                max_amount = window[s[i]]
+            #구간 + 변환할 수 있는 개수 > 최대길이 -> +1
+            if max_amount + k > max_len:
+                max_len += 1
+            else:
+                #여기가 핵심
+                #제일 긴 막대를 계속 이동한다는 느낌
+                window[s[i - max_len]] -= 1
+            
+        return max_len
+```
+
+# 21장. 그리디 알고리즘
+> 개념
+
+- 글로벌 최적해를 찾기 위해 각 로컬에서 최적해를 찾음
+- 잘 작동하는 분야는 최적 부분구조인 문제
+- 탐욕 선택 속성이란 앞 선택이 다른 선택에 영향을 주지 않는 것을 말함
+
+## 406. Queue Reconstruction by Height
+
+```python 
+class Solution:
+    def reconstructQueue(self, people: List[List[int]]) -> List[List[int]]:
+        people.sort(key = lambda x: (-x[0], x[1]))
+        
+        result = collections.deque()
+        for person in people:
+            result.insert(person[1], person)
+            
+        return result
+```
+
+## 621. Task Scheduler
+- A__A__ABC가 기본 구조, 무조건 최소 해당 문자열 개수임.
+- 하지만 주어진 문자열이 ABCDABCDABC와 같을 수 있음으로 len(주어진문자열)과 비교  
+```python 
+class Solution:
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        task_count = list(collections.Counter(tasks).values())
+        
+        c_max = max(task_count)
+        n_max = task_count.count(c_max)
+
+        return max(len(tasks), (c_max - 1) * (n + 1) + n_max)
+```
