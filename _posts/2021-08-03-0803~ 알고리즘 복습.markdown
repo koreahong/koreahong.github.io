@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '0719~, 알고리즘 복숩'
+title: '0803~, 알고리즘 복습'
 #subtitle: '구조화된 코드는 어떤 거인가'
 categories: algorithm
 #tags : software  
