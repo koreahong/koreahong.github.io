@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '21년 6월, (독후감) - 플랫폼경제와 공짜점심'
+title: '(독후감)플랫폼경제와 공짜점심'
 #subtitle: ''
 categories: book
 tags : IT

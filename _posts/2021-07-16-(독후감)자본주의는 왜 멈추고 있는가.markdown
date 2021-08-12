@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '21년 7월, (독후감) - 자본주의는 왜 멈추고 있는가'
+title: '(독후감)자본주의는 왜 멈추고 있는가'
 #subtitle: ''
 categories: book
 tags : Economy

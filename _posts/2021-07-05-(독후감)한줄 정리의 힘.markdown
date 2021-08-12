@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '21년 7월, (독후감) - 한 줄 정리의 힘'
+title: '(독후감)한 줄 정리의 힘'
 #subtitle: ''
 categories: book
 tags : Culture

@@ -1,0 +1,1956 @@
+---
+layout: post
+title: '(알고리즘) 0803~0812, 파이썬 알고리즘 인터뷰'
+#subtitle: '구조화된 코드는 어떤 거인가'
+categories: algorithm
+#tags : software  
+comments: False
+---
+
+> 모든 알고리즘 복습
+
+
+
+# 요약의 목적
+- 도움이 될만한 독자 : 코딩-중하 이상
+- 해당 페이지의 중점은 다음과 같다
+    - '파이썬 알고리즘 인터뷰', leetcode 핵심문제 복습
+
+# 6장. 문자열 조작
+
+- 문자열에서 필요한 작업
+    - 전처리
+        - replace : 단어, 문자 등을 제거
+        - re.sub : 정규표현식을 사용하여 원하는 문자들의 조합 추출
+    - 문자순서정렬
+        - 슬라이싱 : [::-1] 등을 활용하여 역순정렬
+        - 리스트담기 : 반복문으로 리스트담고 비교
+        - 러너사용 : 빠른, 느린러너 사용하기
+        
+## 937. Reorder Log Files / 단어 정렬하기
+> isdigit 활용
+
+```python 
+class Solution:
+    def reorderLogFiles(self, logs: List[str]) -> List[str]:
+        #파이썬 기능과 리스트컴프리헨션
+        letter = [log for log in logs if not log.split()[1].isdigit()]
+        letter.sort(key = lambda x: (x.split()[1:], x.split()[0]))
+        
+        digit = [log for log in logs if log.split()[1].isdigit()] 
+        
+        return letter + digit
+```
+
+## 819. Most Common Word / 가장 많이 나오는 단어 찾기
+
+> 딕셔너리, 문자열처리
+
+```python 
+class Solution:
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+        #소문자로 변환
+        paragraph = paragraph.lower()
+        
+        #단어, 띄어쓰기 외에 제거
+        paragraph = re.sub('[^\w ]', ' ', paragraph)
+        
+        #banned에 있는 단어 제거
+        #리스트 컴프리헨션
+        paragraph = [word for word in paragraph.split() if word not in banned]
+        
+        #딕셔너리 활용
+        word_dic = {}
+        for word in paragraph:
+            if word not in word_dic:
+                word_dic[word] = 1
+            else:
+                word_dic[word] += 1
+                
+        #max key 활용
+        return max(word_dic, key = word_dic.get)
+```
+
+> Counter 활용
+
+```python 
+class Solution:
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+        #소문자로 변환
+        paragraph = paragraph.lower()
+        
+        #단어, 띄어쓰기 외에 제거
+        paragraph = re.sub('[^\w ]', ' ', paragraph)
+        
+        #banned에 있는 단어 제거
+        #리스트 컴프리헨션
+        paragraph = [word for word in paragraph.split() if word not in banned]
+        
+        #Counter 활용
+        result = collections.Counter(paragraph).most_common(1)[0][0]
+        
+        return result
+```
+
+## 49. Group Anagrams
+> 딕셔너리 활용, 정렬된 문자를 키로 잡기
+
+- `sorted(문자), list(문자)의 반환값은 단어가 아니라 리스팅된 문자열값임으로 join으로 반드시 묶어줘야 한다`    
+- 정렬된 키값을 넣는다는 아이디어, `넣어둬~`  
+```python 
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        #딕셔너리 활용, 키 값은 정렬된 단어
+        group = collections.defaultdict(list)
+        
+        for word in strs:
+            group[''.join(sorted(word))].append(word)
+            
+        return group.values()
+```
+
+## 5. Longest Palindromic Substring
+> 투포인터 활용
+
+- 예외처리의 효과
+    - or s == s[::-1]이 있으면 260ms, 없으면 988ms
+    - 예외처리 또한 중요한 시간단축 요소이다  
+```python 
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        #예외처리
+        if len(s) <= 1 or s == s[::-1]:
+            return s
+        
+        result = ''
+        
+        #투포인터 활용
+        def check(left, right):
+            while left >= 0 and right < len(s) and s[left] == s[right]:
+                    left -= 1
+                    right += 1
+            return s[left + 1:right]
+        
+        for i in range(len(s) - 1):
+            result = max(result, 
+                            check(i, i + 1),
+                            check(i, i + 2),
+                            key=len)
+        return result
+```
+
+# 7장. 배열
+
+## 1. Two Sum
+> 딕셔너리, index 활용
+
+```python 
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        num_dict = collections.defaultdict(list)
+        
+        for idx, num in enumerate(nums):
+            num_dict[num].append(idx)
+            
+        sorted_nums = sorted(nums)
+        
+        left, right = 0, len(nums) - 1
+        
+        while left < right:
+            if target - sorted_nums[left] < sorted_nums[right]:
+                right -= 1
+            elif target - sorted_nums[left] > sorted_nums[right]:
+                left += 1
+            else:
+                if sorted_nums[left] == sorted_nums[right]:
+                    return num_dict[sorted_nums[left]][:2]
+                else:
+                    return [num_dict[sorted_nums[left]][0], num_dict[sorted_nums[right]][0]]
+```
+
+> 딕셔너리 활
+```python 
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        num_dict = {}
+        
+        for idx, num in enumerate(nums):
+            if target - num in num_dict and idx != num_dict[target - num]:
+                return [idx, num_dict[target - num]]
+            num_dict[num] = idx
+```
+
+## 42. Trapping Rain Water
+> 브루트 포스
+
+```python 
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        
+        #예외처리
+        if len(height) <= 2:
+            return 0
+        
+        result = 0
+        for idx, h in enumerate(height):
+            if idx == 0 or idx == len(height) - 1:
+                continue
+            result += max(min(max(height[:idx]), max(height[idx + 1:])) - h, 0)
+                
+        return result
+```
+
+> 스택 활용
+
+```python 
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        
+        #예외처리
+        if len(height) <= 2:
+            return 0
+        
+        stack, result = [], 0
+        
+        #스택 활용
+        for i in range(len(height)):
+            while stack and height[i] > height[stack[-1]]:
+                top = stack.pop()
+                
+                if not stack:
+                    break
+                    
+                distance = i - stack[-1] - 1
+                waters = min(height[i], height[stack[-1]]) - height[top]
+                
+                result += distance * waters
+            
+            stack.append(i)
+        return result
+```
+
+> 투포인터 활용 
+
+```python 
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        
+        #예외처리
+        if len(height) <= 2:
+            return 0
+        
+        result = 0
+        
+        #투포인터 활용
+        left, right = 0, len(height) - 1
+        max_left, max_right = height[left], height[right]
+        
+        while left < right:
+            if max_left < max_right:
+                left += 1
+                max_left = max(max_left, height[left])
+                result += max_left - height[left]
+            else:
+                right -= 1
+                max_right = max(max_right, height[right])
+                result += max_right - height[right]
+                
+        return result
+```
+
+## 15. 3Sum
+> 투포인터 활용
+
+```python 
+    class Solution:
+        def threeSum(self, nums: List[int]) -> List[List[int]]:
+            
+            #에외처리
+            if len(nums) <= 2:
+                return []
+            
+            nums.sort()
+            
+            result = []
+            #투포인터 활용
+            for i in range(len(nums) - 2):
+                if i > 0 and nums[i] == nums[i - 1]:
+                    continue
+                    
+                left, right = i + 1, len(nums) - 1
+                
+                while left < right:
+                    sum = nums[i] + nums[left] + nums[right]
+                    if sum > 0:
+                        right -= 1
+                    elif sum < 0:
+                        left += 1
+                    else:
+                        result.append([nums[i], nums[left], nums[right]])
+                        
+                        while left < right and nums[left] == nums[left + 1]:
+                            left += 1
+                        while left < right and nums[right] == nums[right - 1]:
+                            right -= 1
+                            
+                        left += 1
+                        right -= 1
+                        
+            return result
+```
+
+> 투포인터 응용, 음수 양수 나누기
+
+```python 
+    class Solution:
+        def threeSum(self, nums: List[int]) -> List[List[int]]:
+            
+            #에외처리
+            if len(nums) <= 2:
+                return []
+            
+            vals = collections.Counter(nums)
+            
+            positive = [val for val in vals if val > 0]
+            negative = [val for val in vals if val < 0]
+            
+            result = set()
+            
+            if vals[0] >= 3:
+                result.add((0, 0, 0))  
+                
+            for p in positive:
+                for n in negative:
+                    s = 0 - (p + n)
+                    if s in vals and ((p != s and n != s) or vals[s] >= 2):
+                        result.add(tuple(sorted([s, n, p])))
+            
+            return result
+```
+
+## 238. Product of Array Except Self
+> 인덱싱 활용
+
+```python 
+    class Solution:
+        def productExceptSelf(self, nums: List[int]) -> List[int]:
+            result = []
+            
+            p = 1
+            for i in range(len(nums)):
+                result.append(p)
+                p *= nums[i]
+                
+            p = 1
+            for i in range(len(nums) - 1, -1, -1):
+                result[i] *= p
+                p *= nums[i]
+                
+            return result
+```
+
+# 8장. 연결리스트
+
+## 234. Palindrome Linked List
+> 러너활용
+
+```python 
+    class Solution:
+        def isPalindrome(self, head: ListNode) -> bool:
+            
+            root = None
+            #러너활용
+            slow = fast = head
+            
+            while fast and fast.next:
+                fast = fast.next.next
+                root, root.next, slow = slow, root, slow.next
+            
+            if fast:
+                slow = slow.next
+                
+            while root and root.val == slow.val:
+                slow, root = slow.next, root.next
+            
+            return not root
+```
+
+> 슬라이싱 활용
+
+```python 
+    class Solution:
+        def isPalindrome(self, head: ListNode) -> bool:
+            
+            vals = []
+            
+            while head:
+                vals.append(head.val)
+                head = head.next
+                
+            return vals == vals[::-1]
+```
+
+## 21. Merge Two Sorted Lists
+> 반복순회
+
+```python 
+    class Solution:
+        def mergeTwoLists(self, l1, l2):
+            root = ListNode()
+            head = root
+            while l1 and l2:
+                if l1.val < l2.val:
+                    root.next = l1
+                    l1 = l1.next
+                else:
+                    root.next = l2
+                    l2 = l2.next
+                root = root.next
+                
+            root.next = l1 or l2
+            return head.next
+```
+
+> 재귀
+
+```python 
+    class Solution:
+        def mergeTwoLists(self, l1, l2):
+            if (not l1) or (l2 and l1.val > l2.val):
+                l1, l2 = l2, l1
+                
+            if l1:
+                l1.next = self.mergeTwoLists(l1.next, l2)
+                
+            return l1
+```
+
+## 206. Reverse Linked List
+> 반복순회
+
+```python 
+    class Solution:
+        def reverseList(self, head: ListNode) -> ListNode:
+            
+            node, root = head, None
+            while node:
+                root, root.next, node = node, root, node.next
+                
+            return root
+```
+
+> 재귀
+
+```python 
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        def revers(node: ListNode, prev: Listnode = None):
+            
+            if not node:
+                return prev
+            
+            next, node.next = node.next, prev
+            return reverse(next, node)
+        
+        return reverse(head)
+```
+
+## 2. Add Two Numbers
+> 반복순회
+
+```python 
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        root = node = ListNode()
+        carry = 0
+        
+        while carry or l1 or l2:
+            sum = 0
+            
+            if l1:
+                sum += l1.val
+                l1 = l1.next
+            if l2:
+                sum += l2.val
+                l2 = l2.next
+            
+            carry, val = divmod(sum + carry, 10)
+            node.next = ListNode(val)
+            node = node.next
+        return root.next
+```
+
+## 24. Swap Nodes in Pairs 
+> 반복순회
+
+```python 
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+        
+        root = prev = Listnode(None)
+        prev.next = head
+        
+        #바뀌는 구간의 전노드, 바뀌는 노드, 앞으로 바뀔 노드
+        while head and head.next:
+            #바뀌는 구간
+            b = head.next
+            head.next = b.next
+            b.next = head
+            
+            #바귀는 구간의 전노드
+            prev.next = b
+            
+            #앞으로 바뀔 노드
+            head = head.next
+            prev = prev.next.next
+        return root.next
+```
+
+> 재귀
+
+```python 
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+        if head and head.next:
+            p = head.next
+            
+            head.next = self.swapPairs(p.next)
+            
+            p.next = head
+            return p
+        return head
+```
+
+## 328. Odd Even Linked List
+> 반복순회 / `recheck`
+
+```python 
+class Solution:
+    def oddEvenList(self, head: ListNode) -> ListNode:
+        if not head:
+            return None
+        
+        odd, even, even_head = head, head.next, head.next
+        
+        while even and even.next:
+            odd.next, even.next = odd.next.next, even.next.next
+            odd, even = odd.next, even.next
+            
+        odd.next = even_head
+        
+        return head
+```
+
+## 92. Reverse Linked List II
+> 반복순회 / `recheck`
+
+```python 
+class Solution:
+    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
+        
+        root = start = ListNode(None)
+        root.next = head
+        
+        #예외처리
+        if left == right:
+            return head
+        
+        #left전까지 가기
+        for _ in range(left - 1):
+            start = start.next
+        end = start.next
+        
+        #right까지 역순
+        for _ in range(right - left):
+            temp, start.next, end.next = start.next, end.next, end.next.next
+            #직전 start.next와 start.next.next를 역으로 연결해줌
+            start.next.next = temp
+            
+        return root.next
+```
+
+# 9장. 스택, 큐
+
+- 스택 
+    - FILO
+    - 파이썬 리스트, deque로 구현 가능
+- 큐
+    - FIFO
+    - deque로 구현 가능
+    
+## 20. Valid Parentheses
+> 딕셔너리, 스택
+
+```python 
+class Solution:
+    def isValid(self, s: str) -> bool:
+        
+        brakets = {
+            ']' : '[',
+            '}' : '{',
+            ')' : '(',
+        }
+        
+        stack = []
+        for braket in s:
+            if braket not in brakets:
+                stack.append(braket)
+            elif not stack or stack.pop() != brakets[braket]:
+                return False
+                    
+        return not stack
+```
+
+## 316. Remove Duplicate Letters / 
+> 반복순회
+
+1. 문자별 갯수 파악
+2. stack 마지막 문자추출
+    - 조건
+    1. stack not null
+    2. for문 iter가 stack의 마지막 문자보다 순서가 늦을때
+    3. stack 마지막 문자의 개수가 아직 여유 있을때  
+3. 2반복  
+```python 
+    class Solution:
+        def removeDuplicateLetters(self, s: str) -> str:
+            
+            stack, seen, count = [], set(), collections.Counter(s)
+            
+            for char in s:
+                count[char] -= 1
+                if char in seen:
+                    continue
+                    
+                while stack and stack[-1] > char and count[stack[-1]] > 0:
+                    seen.remove(stack.pop())
+                stack.append(char)
+                seen.add(char)
+                
+            return ''.join(stack)
+```
+
+> 재귀 
+
+1. 중복제거(set), 순서나열된 문자열(sorted)로 for순회
+2. 추출된문자열, parameter문자열이 공통요소를 가지고 있는지 확인
+    - true : 해당문자가 앞에 와도 상관없음, return 해당문자 + 재귀
+    - false : 해당문자가 앞에 오면 다른 문자가 문제가 생김, return ''
+3. 2반복  
+```python  
+    class Solution:
+        def removeDuplicateLetters(self, s: str) -> str:
+            for char in sorted(set(s)):
+                #해당문자부터 끝까지 추출
+                substring = s[s.index(char):]
+                
+                #추출한문자열이 기존 s문자열과 모든 요소를 공통으로 가지고 있으면
+                #추출한문자열의 앞에 문자열은 필요없다는 것
+                if set(s) == set(substring):
+                    return char + self.removeDuplicateLetters(substring.replace(char, ''))
+                
+            return ''
+```
+
+##739. Daily Temperatures
+> 반복순회, stack
+
+```python  
+    class Solution:
+        def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+            
+            result, stack = [], []
+            for idx, temp in enumerate(temperatures):
+    
+                while stack and stack[-1][1] < temp:
+                    order, _ = stack.pop()
+                    result.append([order, idx - order])
+                
+                stack.append([idx, temp])
+    
+            while stack:
+                order, _ = stack.pop()
+                result.append([order, 0])
+                
+            result.sort(key = lambda x: x[0])
+            return [day for _, day in result]
+```
+
+> stack, [0] * len()
+
+```python 
+    class Solution:
+        def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+            
+            answer = [0] * len(temperatures)
+            stack = []
+            
+            for idx, tem in enumerate(temperatures):
+                while stack and temperatures[stack[-1]] < tem:
+                    last = stack.pop()
+                    answer[last] = idx - last
+                stack.append(idx)
+            return answer
+```
+
+# 10장. 데크, 우선순위 큐
+- deque
+    - 더블앤디드 큐의 줄임말
+    - 양쪽에서 삽입 삭제 가능
+- 우선순위 큐
+    - 우선순위가 정해져있는 큐
+    - 힙으로 구현
+    
+## 23. Merge k Sorted Lists
+> 새로운 노드 생성
+
+```python 
+    class Solution:
+        def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+            
+            self.nodes = []
+            head = point = ListNode(None)
+            
+            for lst in lists:
+                while lst:
+                    self.nodes.append(lst.val)
+                    lst = lst.next
+            
+            for val in sorted(self.nodes):
+                point.next = ListNode(val)
+                point = point.next
+            
+            return head.next
+```
+
+> heapq 모듈 사용
+
+```python 
+    class Solution:
+        def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+            
+            root = result = ListNode(None)
+            heap = []
+            
+            for i in range(len(lists)):
+                if lists[i]:
+                    heapq.heappush(heap, (lists[i].val, i, lists[i]))
+                    
+            while heap:
+                node = heapq.heappop(heap)
+                idx = node[1]
+                result.next = node[2]
+                
+                result = result.next
+                if result.next:
+                    heapq.heappush(heap, (result.next.val, idx, result.next))
+                    
+            return root.next
+```
+
+# 11장. 해시 테이블
+
+## 3. Longest Substring Without Repeating Characters
+> 포인터 이동
+
+```python 
+    class Solution:
+        def lengthOfLongestSubstring(self, s: str) -> int:
+            
+            #예외처리
+            if len(s) <= 2:
+                return len(set(s))
+            
+            start, result = 0, 0
+            str_dict = {}
+            for idx, char in enumerate(s):
+                if char not in str_dict or str_dict[char] < start:
+                    result = max(result, idx - start + 1)
+                else:
+                    start = str_dict[char] + 1
+                str_dict[char] = idx
+    
+            return result
+```
+
+# 12장. 그래프
+
+## 17. Letter Combinations of a Phone Number
+> dfs
+
+```python 
+    class Solution:
+        def letterCombinations(self, digits: str) -> List[str]:
+            def dfs(char, digits):
+                if not digits:
+                    result.append(char)
+                    return 
+                
+                for i in e[digits[0]]:
+                    dfs(char + i, digits[1:])
+                
+            #예외처리
+            if not digits:
+                return []
+            
+            e = {
+                '2': ['a', 'b', 'c'],
+                '3': ['d', 'e', 'f'],
+                '4': ['g', 'h', 'i'],
+                '5': ['j', 'k', 'l'],
+                '6': ['m', 'n', 'o'],
+                '7': ['p', 'q', 'r', 's'],
+                '8': ['t', 'u', 'v'],
+                '9': ['w', 'x', 'y', 'z'],
+            }
+            
+            result = []
+            dfs('', digits)
+    
+            return result
+```
+
+> dfs
+
+```python 
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        self.dfs(nums, [], res)
+        return res
+    
+    def dfs(self, nums: List[int], path: List[int], res: List[int]):
+        if not nums:
+            res.append(path)
+        for i in range(len(nums)):
+            self.dfs(nums[:i] + nums[i + 1:], path + [nums[i]], res)
+
+```
+
+> dfs, list 복사
+
+```python 
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        results = []
+        prev_elements = []
+        
+        def dfs(elements):
+            if len(elements) == 0:
+                results.append(prev_elements[:])
+                
+            for e in elements:
+                next_elements = elements[:]
+                next_elements.remove(e)
+
+                prev_elements.append(e)
+                dfs(next_elements)
+                prev_elements.pop()
+            
+        dfs(nums)
+        return results
+```
+
+## 77. Combinations
+> dfs
+
+```python 
+class Solution(object):
+    def combine(self, n, k):
+        
+        def dfs(nums, path):
+            if len(path) == k:
+                ret.append(path)
+                return 
+            for i in range(len(nums)):
+                dfs(nums[i+1:], path+[nums[i]])
+            
+        ret = []
+        dfs(list(range(1, n+1)), [])
+        return ret
+```
+
+> dfs
+
+```python 
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        results = []
+        
+        def dfs(elements, start: int, k: int):
+            if k == 0:
+                results.append(elements[:])
+                return
+            
+            for i in range(start, n + 1):
+                elements.append(i)
+                dfs(elements, i + 1, k - 1)
+                elements.pop()
+                
+        dfs([], 1, k)
+        return results
+```
+
+## 39. Combination Sum
+
+> dfs, 합계인자 전달, 76ms
+
+```python 
+    class Solution:
+        def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+            results = []
+            
+            def dfs(elements, idx, cur_sum):
+                if cur_sum < 0:
+                    return
+                
+                if cur_sum == 0:
+                    results.append(elements[:])
+                
+                for i in range(idx, len(candidates)):
+                    elements.append(candidates[i])
+                    dfs(elements, i, cur_sum - candidates[i])
+                    elements.pop()
+```
+
+> dfs, sum으로 비교, 90ms
+
+- 파라미터를 elements + 인자를 해도 속도는 똑같음  
+```python 
+            #위와 동일            
+            def dfs(elements, idx):
+                if sum(elements) > target:
+                    return
+                
+                if sum(elements) == target:
+                    results.append(elements[:])
+                
+                for i in range(idx, len(candidates)):
+                    elements.append(candidates[i])
+                    dfs(elements, i)
+                    elements.pop()
+```            
+> dfs, 배열정렬, 계산후 재귀, 50ms
+```python 
+            #위와동일
+            res = []
+            def dfs(elements, candidates, target):
+                for i, num in enumerate(candidates):
+                    cur_sum = target - num
+                    if cur_sum == 0:
+                        res.append(elements + [num])
+                    elif cur_sum > 0:
+                        dfs(elements + [num], candidates[i:], cur_sum)
+                    else:
+                        break
+            dfs([], sorted(candidates), target)
+            return res
+```
+
+## 78. Subsets
+> dfs
+
+```python 
+    class Solution:
+        def subsets(self, nums: List[int]) -> List[List[int]]:
+            
+            def dfs(idx: int, elements: List[int]):
+                results.append(elements[:])
+                
+                for i in range(idx, len(nums)):
+                    dfs(i + 1, elements + [nums[i]])
+                    
+            results = []
+            dfs(0, [])
+            
+            return results
+```
+
+## 332. Reconstruct Itinerary 
+> dfs
+
+- 정렬할일이 있으면 for문에서 sorted를 먼저 사용하자  
+- 입력값이 많으면 pop()과 pop(0)은 o(1), O(N)으로 차이가 심하니 반드시 주의할 것  
+```python 
+    class Solution:
+        def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+            
+            graph = collections.defaultdict(list)
+            for depart, to in sorted(tickets, reverse=True):
+                graph[depart].append(to)
+                
+            route = []
+            
+            def dfs(a):
+                while graph[a]:
+                    dfs(graph[a].pop())
+                route.append(a)
+                
+            dfs('JFK')
+            
+            return route[::-1]
+```
+
+> 스택
+
+- 중간에 끊어질 수 있기 때문에, 행선지가 다 빠질땔까지 반복  
+```python 
+    class Solution:
+        def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+            
+            graph = collections.defaultdict(list)
+            for depart, to in sorted(tickets):
+                graph[depart].append(to)
+                
+            route, stack = [], ['JFK']
+            
+            while stack:
+                while graph[stack[-1]]:
+                    stack.append(graph[stack[-1]].pop(0))
+                route.append(stack.pop())
+                
+            return route[::-1]
+```
+
+## 207. Course Schedule 
+> dfs, 방문체크리스트
+
+```python 
+    class Solution:
+        def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+            
+            graph = collections.defaultdict(list)
+            for a, b in prerequisites:
+                graph[a].append(b)
+            
+            traced = set()
+            visited = set()
+            
+            def dfs(course):
+                #훑는 와중 훑어야 하는 것이 또 생기면 Fasle
+                if course in traced:
+                    return False
+                #정상적으로 지난 것을 표기, 빠르게 진행하기 위해서
+                if course in visited:
+                    return True
+                
+                #훑고 있어요
+                traced.add(course)
+                #앞으로 훑을 거에요
+                for nxt_course in graph[course]:
+                    if not dfs(nxt_course):
+                        return False
+                #정상적으로 다 훑어서 훑는중에서 지울게요
+                traced.remove(course)
+                #정상적으로 끝났으니 방문리스트에 추가할게여
+                visited.add(course)
+                
+                return True
+            
+            for course in list(graph):
+                if not dfs(course):
+                    return False
+                
+            return True
+```
+
+## 743. Network Delay Time 
+>bfs, 다익스트라 알고리즘 변형, heapq 모듈사용
+
+```python 
+    class Solution:
+        def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+            graph = collections.defaultdict(list)
+            for u, v, w in times:
+                graph[u].append((v, w))
+            
+            #queue 초기 설정
+            Q = [(0, k)]
+            #방문체크 및 소요시간을 저장할 딕셔너리
+            dist = collections.defaultdict(int)
+            
+            #제일 가까운 노드부터 방문한다
+            while Q:
+                #시간이 제일 적게 걸리는 노드 추출
+                time, node = heapq.heappop(Q)
+                #제일먼저 도착하는게 제일 빠른길임
+                #기존에 방문한 곳은 다시 방문하지 못하게함
+                if node not in dist:
+                    dist[node] = time
+                    for nxt_node, spended_time in graph[node]:
+                        sum_time = time + spended_time
+                        heapq.heappush(Q, (sum_time, nxt_node))
+            if len(dist) == n:
+                return max(dist.values())
+            return -1    
+```
+
+> bfs, 다익스트라 알고리즘
+- if visited[node] >= stop: 이부분이 이해가 잘안됨
+    - 앞으로 갈숫자보다 먼저 들렸다면(역으로 세고 있음) 그게 제일 최선이라는 것인가?
+    - 아 이게 최소힙으로 구현되서 숫자가 높으면 제일 적은 가격으로 먼저 들린데구나; 오케이  
+
+```python 
+#다익스트라 + BFS
+    class Solution:
+        def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+            graph = collections.defaultdict(list)
+            for u, v, w in flights:
+                graph[u].append((v, w))
+            
+            #queue 초기 설정
+            Q = [(0, src, k + 1)]
+            #방문체크 및 최소 가격 비교
+            visited = [0] * n
+            
+            #제일 가까운 노드부터 방문한다
+            while Q:
+                print(Q)
+                print(visited)
+                #가격이 제일 적은 노드 추출
+                price, node, stop = heapq.heappop(Q)
+                if node == dst:
+                    return price
+                if visited[node] >= stop:
+                    continue
+                visited[node] = stop
+                for v, w in graph[node]:
+                    heapq.heappush(Q, (price + w, v, stop - 1))
+            return -1  
+```
+
+# 14장. 트리
+- 트리는 순환 구조를 갖지 않는 그래프
+
+## 104. Maximum Depth of Binary Tree
+> DFS, max
+
+```python 
+    class Solution:
+        def maxDepth(self, root: TreeNode) -> int:
+            return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right)) if root else 0
+```
+
+> BFS
+
+- 한 loop에 한 세대를 모조리 빼고 모조리 넣는 방식  
+```python 
+    class Solution:
+        def maxDepth(self, root: TreeNode) -> int:
+            if not root:
+                return 0
+            
+            queue = collections.deque([root])
+            depth = 0
+            
+            #while을 한번 반목할때마다 한세대를 모조리 빼고 모조리 넣음
+            while queue:
+                #부모노드가 빠질때 깊이 + 1
+                depth += 1
+                #자시노드를 모조리 뺌
+                for _ in range(len(queue)):
+                    cur_root = queue.popleft()
+                    if cur_root.left:
+                        queue.append(cur_root.left)
+                    if cur_root.right:
+                        queue.append(cur_root.right)
+            return depth
+```
+
+## 543. Diameter of Binary Tree 
+> DFS
+
+```python 
+    class Solution:
+        longest: int = 0
+        def diameterOfBinaryTree(self, root: TreeNode) -> int:
+            #해당노드는 해당노드의 이후의 자식노드들의 깊이를 받아서 + 2한 값이다
+            def dfs(root: TreeNode) -> int:
+                #말단 노드일 경우에는 -1
+                if not node: 
+                    return -1
+                #왼쪽 오른쪽 깊이 리턴받기
+                left = dfs(node.left)
+                right = dfs(node.right)
+                
+                #최대경로값 업데이트
+                self.longest = max(self.longest, left + right + 2)
+                #해당노드의 깊이값 리턴
+                return max(left, right) + 1
+            
+            dfs(root)
+            return self.longest
+```
+
+## / `recheck`
+> DFS
+
+- 부모노드와 자식노드의 값이 같은지 확인  
+```python  
+    class Solution:
+        def longestUnivaluePath(self, root: TreeNode) -> int:
+            self.result: int = 0
+            
+            def dfs(root):
+                #말단노드 도착시 리턴 0
+                if not root:
+                    return 0
+                
+                #해당노드의 자식노드의 경로값 받기
+                left = dfs(root.left)
+                right = dfs(root.right)
+                
+                #해당노드와 자식노드의 값이 같다면 + 1
+                if root.left and root.val == root.left.val:
+                    left += 1
+                else:
+                    left = 0
+                if root.right and root.val == root.right.val:
+                    right += 1
+                else:
+                    right = 0
+                    
+                #해당노드까지 경로 최대값 업데이트
+                self.result = max(self.result, left + right)
+                #왼쪽 오른쪽이 같은 노드값이라도 둘중 하나를 선택, 큰 쪽 선택
+                return max(left, right)
+            
+            dfs(root)
+            return self.result
+```
+> DFS, if문 제거 버전  
+
+```python 
+    class Solution:
+        def longestUnivaluePath(self, root: TreeNode) -> int:
+            self.longest = 0
+            def helper(node, parent):
+                if not node:
+                    return 0
+                left = helper(node.left, node.val)
+                right = helper(node.right, node.val)
+                self.longest = max(self.longest, left + right)
+                return max(left, right) + 1 if node.val == parent else 0
+            helper(root, None)
+            return self.longest
+```
+
+## / `recheck`
+> 재귀
+
+```python 
+    class Solution:
+        def invertTree(self, root: TreeNode) -> TreeNode:
+            if root:
+                root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
+                return root
+```
+
+> BFS, 전위순회
+
+```python 
+    class Solution:
+        def invertTree(self, root: TreeNode) -> TreeNode:
+            queue = collections.deque([root])
+            
+            while queue:
+                node = queue.popleft()
+                #노드가 None이 아니면 자식노드 스왑
+                if node:
+                    node.left, node.right = node.right, node.left
+                    
+                    #자식노드 큐에 추가
+                    queue.append(node.left)
+                    queue.append(node.right)
+            return root
+```
+
+## 617. Merge Two Binary Trees
+> 재귀
+```python 
+    class Solution:
+        def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+            #합병할 노드 모두 None이 아니면 합병진행
+            if root1 and root2:
+                #합친 값을 지닌 노드 생성
+                node = TreeNode(root1.val + root2.val)
+                #합친 값을 지닌 노드의 오른쪽 왼쪽 재귀로 생성
+                node.left = self.mergeTrees(root1.left, root2.left)
+                node.right = self.mergeTrees(root1.right, root2.right)
+                #마지막 리턴을 새로운 트리의 root를 하기위해서 해당 위치에 node리턴
+                return node
+            else:
+                #root1이나 root2둘중 혹은 nothing이면 그대로 반환
+                return root1 or root2  
+```
+
+> DFS
+
+```python 
+    class Solution:
+        def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+            #DFS, r1 값을 r2와 합친값으로 업데이트
+            
+            #r1값이 None이면 r2리턴
+            if not root1:
+                return root2
+            
+            stack = [(root1, root2)]
+            
+            while stack:
+                r1, r2 = stack.pop()
+                #r2가 None이면 loop pass
+                if not r2:
+                    continue
+                #r1값 = r1값 + r2값
+                r1.val += r2.val
+                #r1 left,right 유무확인
+                if not r1.left:
+                    r1.left = r2.left
+                else:
+                    stack.append([r1.left, r2.left])
+                if not r1.right:
+                    r1.right = r2.right
+                else:
+                    stack.append([r1.right, r2.right])
+                    
+            return root1
+```
+
+## 297. Serialize and Deserialize Binary Tree
+> BFS, 직렬화, 역질려화
+
+- 직렬화
+    - 논리적인 구조를 물리적인 구조로 변환
+- 역지렬화
+    - 물리적인 구조를 논리적인 구조로 변 
+
+```python 
+    class Codec:
+        def serialize(self, root: TreeNode) -> str:
+            #값이 none인 것은 '#'로 처리
+                
+            result = ['#']    
+            queue = collections.deque([root])
+            #BFS 직렬화
+            while queue:
+                node = queue.popleft()
+                #node값이 존재하면 값넣고, queue에 추가
+                if node:
+                    result.append(str(node.val))
+                    queue.extend([node.left, node.right])
+                else:
+                    result.append('#')
+            return ' '.join(result)
+            
+        def deserialize(self, data: str) -> TreeNode:
+            #예외처리
+            if data == '# #':
+                return None
+            
+            #nodes값 생성
+            nodes = data.split()
+            #root node 생성
+            root = TreeNode(nodes[1])
+            
+            queue = collections.deque([root])
+            index = 2
+            #역직렬화
+            while queue:
+                node = queue.popleft()
+                #nodes가 None이 아니면 값을 추가, left, right설정
+                if nodes[index] != '#':
+                    node.left = TreeNode(nodes[index])
+                    queue.append(node.left)
+                index += 1
+                if nodes[index] != '#':
+                    node.right = TreeNode(nodes[index])
+                    queue.append(node.right)
+                index += 1
+            return root
+```
+
+## 110. Balanced Binary Tree 
+> dfs, 균형 트리 확인
+
+```python 
+    class Solution:
+        def isBalanced(self, root: TreeNode) -> bool:
+            #부모노드 기준으로 양쪽 자식이 2이상 차이나면 안됨
+            def dfs(node):
+                #말단 노드일 경우에는 0 반환
+                if not node:
+                    return 0
+                #오른쪽 왼쪽 깊이값 받기
+                left = dfs(node.left)
+                right = dfs(node.right)
+                #왼쪽, 오른쪽이 -1이면, 왼쪽 오른쪽이 1초과로 차이가 나면 -1반환
+                if left == -1 or right == -1 or abs(left - right) > 1:
+                    return -1
+                #깊이 반환하기
+                return max(left, right) + 1
+            return dfs(root) != -1
+```
+
+## 310. Minimum Height Trees 
+
+```python 
+    class Solution:
+        def findMinHeightTrees(self, n: int, edges: List[List[int]]) -> List[int]:
+            #예외처리
+            if n <= 1:
+                return [0]
+            #노드 연결
+            graphㄱ = collections.defaultdict(list)
+            for i, j in edges:
+                graph[i].append(j)
+                graph[j].append(i)
+            #리프노드제거
+            leaves = []
+            for i in range(n + 1):
+                if len(graph[i]) == 1:
+                    leaves.append(i)
+            #루트노드만 남을때까지 반복
+            while n > 2:
+                n -= len(leaves)
+                new_leaves = []
+                for leaf in leaves:
+                    #리프노드 제거
+                    neighbor = graph[leaf].pop()
+                    graph[neighbor].remove(leaf)
+                    if len(graph[neighbor]) == 1:
+                        new_leaves.append(neighbor)
+                leaves = new_leaves
+                
+            return leaves
+```
+
+## 108. Convert Sorted Array to Binary Search Tree
+
+```python 
+    class Solution:
+        def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+            #예외처리
+            if not nums:
+                return None
+            #분할정복
+            mid = len(nums) // 2
+            #노드생성
+            node = TreeNode(nums[mid])
+            node.left = self.sortedArrayToBST(nums[:mid])
+            node.right = self.sortedArrayToBST(nums[mid + 1:])
+            
+            return node
+```
+
+## 1038. Binary Search Tree to Greater Sum Tree
+> 재귀, 중위순회 
+
+```python  
+    class Solution:
+        val: int = 0
+        def bstToGst(self, root: TreeNode) -> TreeNode:
+            self.bstToGst(root.right)
+            self.val += root.val
+            root.val = self.val
+            self.bstToGst(root.left)
+            
+            return root
+```
+
+## 938. Range Sum of BST
+> 재귀
+
+```python 
+    class Solution:
+        def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+            def dfs(root):
+                #리프노드이면 0반환
+                if not root:
+                    return 0
+                #값이 최대치보다 크면 왼쪽으로 탐색
+                if root.val > high:
+                    return dfs(root.left)
+                #값이 최소치보다 작으면 오른쪽으로 탐색
+                elif root.val < low:
+                    return dfs(root.right)
+                #최대치 최소치에 모두 들어가 있으면
+                return root.val + dfs(root.right) + dfs(root.left)
+            return dfs(root)
+```
+
+> 반복
+
+```python 
+    class Solution:
+        def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+            stack, sum = [root], 0
+            
+            while stack:
+                node = stack.pop()
+                if node:
+                    if node.val > low:
+                        stack.append(node.left)
+                    if node.val < high:
+                        stack.append(node.right)
+                    if low <= node.val <= high:
+                        sum += node.val
+            return sum
+```
+
+## 783. Minimum Distance Between BST Nodes 
+> 재귀
+
+```python 
+    class Solution:
+        prev: int = float('-inf')
+        result: int = float('inf')
+        def minDiffInBST(self, root: TreeNode) -> int:
+            #중위순회
+            #왼쪽이 존재하면 왼쪽값비교
+            if root.left:
+                self.minDiffInBST(root.left)
+            
+            #값 업데이터, 중위순회이기 때문에 현재노의 값이 prev값보다 큼
+            self.result = min(self.result, root.val - self.prev)
+            self.prev = root.val
+            
+            if root.right:
+                self.minDiffInBST(root.right)
+            
+            return self.result
+```
+
+> 반복
+```python 
+    class Solution:
+        def minDiffInBST(self, root: TreeNode) -> int:
+            #중위순회
+            prev: int = float('-inf')
+            result: int = float('inf')
+            
+            stack = []
+            node = root
+            #stack은 left만 계속보고 마지막에 node를 right로 틀어서 기울어진 n자 모양으로 반복탐색
+            while stack or node:
+                #왼쪽으로 탐색
+                while node:
+                    stack.append(node)
+                    node = node.left
+                node = stack.pop()
+                #값 업데이트
+                result = min(result, node.val - prev)
+                prev = node.val
+                #오른쪽 탐색
+                node = node.right
+            return result
+```
+
+## 105. Construct Binary Tree from Preorder and Inorder Traversal
+> 반복
+
+- 전,중,후위 중 2개만 알면 트리를 복원할 수 있다.
+```python 
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        if inorder:
+            index = inorder.index(preorder.pop(0))
+            
+            node = TreeNode(inorder[index])
+            node.left = self.buildTree(preorder, inorder[:index])
+            node.right = self.buildTree(preorder, inorder[index + 1:])
+            
+            return node
+```
+
+# 15장. 힙
+- 힙 : 부모와 자식간에는 서열이 확실하다
+- 이진트리와 차이점 : 이진트리는 좌우간에 서열이 확실하고, 힙은 상하간에 서열이 확실하다
+- 사용용도 : 우선순위 큐에 활용되며, 최소, 최대와 관련된 문제에 사용됨
+
+## 215. Kth Largest Element in an Array
+> heapq 모듈 사용  
+
+```python 
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        heap = []
+        for num in nums:
+            heapq.heappush(heap, -num)
+            
+        for _ in range(k - 1):
+            heapq.heappop(heap)
+        
+        return -heapq.heappop(heap)
+```
+
+# 17장. 정렬
+
+## 147. Insertion Sort List
+> 연결리스트, 삽입정렬
+
+```python 
+class Solution:
+    def insertionSortList(self, head: ListNode) -> ListNode:
+        #초기를 잡아줄 노드와, 초기노드에서 정렬된 노드를 연결해주는 노드 선언
+        cur = start = ListNode(0)
+        #주어진 노드끝까지
+        while head:
+            #현재 정렬된노드와 head노드보다 작을때까지
+            while cur.next and cur.next.val < head.val:
+                cur = cur.next
+            #현재노드의 다음노드는 head, head는 다음것, head next는 curnext
+            cur.next, head.next, head = head, cur.next, head.next
+            #cur 값이 해드보다 클경우, head가 존재할 경우
+            if head and cur.val > head.val:
+                cur = start
+                
+        return start.next
+```
+
+## 75. Sort Colors / `recheck`
+> 3색정렬
+
+```python 
+    class Solution:
+        def sortColors(self, nums: List[int]) -> None:
+            #예외처리
+            if len(nums) <= 1:
+                return nums
+            
+            red, white, blue = 0, 0, len(nums)
+            
+            #1을 가르키는 white를 늘려가면서 blue와 만나지 않을땨까지 반복
+            while white < blue:
+                #0을 만나면 red와 white를 바꿈, red, white한칸씩 전진
+                if nums[white] == 0:
+                    nums[red], nums[white] = nums[white], nums[red]
+                    red += 1
+                    white += 1
+                #1을 만나면 white 앞으로 전진
+                elif nums[white] == 1:
+                    white += 1
+                else:
+                    blue -= 1
+                    nums[white], nums[blue] = nums[blue], nums[white]
+```
+
+------------------------------------------------------
+이후 recheck해야하는 문제만 작성
+
+
+# 18장. 이진탐색
+- 이진트리 -> 자료구조
+- 이진탐색 -> 알고리즘
+- 이진탐색은 반드시 '정렬된' 상태에서 진행해야 함
+
+## 33. Search in Rotated Sorted Array
+> rotate array
+
+```python 
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        #1.이진탐색으로 최소값 위치 찾기
+        left, right = 0, len(nums) - 1
+        while left < right:
+            mid = left + (right - left) // 2
+            if nums[mid] > nums[right]:
+                left = mid + 1
+            else:
+                right = mid
+        pivot = left
+        
+        #2.mid + pivot으로 실제배열의 순서대로 값비교하기
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            #rotate가 고려되지 않은 mid
+            mid = left + (right - left) // 2
+            #rotate가 고려된 mid
+            rotate_mid = (mid + pivot) % len(nums)
+            if nums[rotate_mid] < target:
+                left = mid + 1
+            elif nums[rotate_mid] > target:
+                right = mid - 1
+            else:
+                return rotate_mid
+        return -1
+```
+
+# 19장. 비트연산
+> 개념
+
+- 논리연산 : & , \ , ^ , ~등
+- 덧셈으로 뻴셈구현 -> 2의 보수
+- 2의 보수는 MASK(0x~~비트제한)을 통해 음수를 표현할 수 있음
+
+## 371. Sum of Two Integers
+
+```python 
+    class Solution:
+        def getSum(self, a: int, b: int) -> int:
+            #32비트 2의 보수 만들기
+            MASK = 0xFFFFFFFF
+            #31비트 최대정수
+            INT_MAX = 0x7FFFFFFF
+            
+            while b != 0:
+                #음수이면 MASK를 통해 ob1~~~로 변환
+                a, b = (a ^ b) & MASK, ((a & b) << 1) & MASK
+            #32비트라면 31비트인 INT_MAX보다 크다는 것이고, 음수라는 뜻
+            if a > INT_MAX:
+                a = ~(a ^ MASK)
+                
+            return a
+```
+
+## 393. UTF-8 Validation
+> UTF-8 검증
+
+```python 
+    class Solution:
+        def validUtf8(self, data: List[int]) -> bool:
+            def check(size):
+                for i in range(start + 1, start + size + 1):
+                    if i >= len(data) or (data[i] >> 6) != 0b10:
+                        return False
+                return True
+            
+            start = 0
+            while start < len(data):
+                first = data[start]
+                if (first >> 3) == 0b11110 and check(3):
+                    start += 4
+                elif (first >> 4) == 0b1110 and check(2):
+                    start += 3
+                elif (first >> 5) == 0b110 and check(1):
+                    start += 2
+                elif (first >> 7) == 0:
+                    start += 1
+                else:
+                    return False
+            return True
+```
+
+# 20장. 슬라이딩 윈도우
+> 개념
+
+- 투포인터는 정렬된 배열에서 사용 가능
+- 슬라이딩 윈도우는 정렬과 상관없이 고정된 박스를 옮기는 느낌
+
+## 76. Minimum Window Substring
+
+```python 
+    class Solution:
+        def minWindow(self, s: str, t: str) -> str:
+            #필요한 문자들 개수 저장
+            need = collections.defaultdict(int)
+            for char in t:
+                need[char] += 1
+            #찾아야하는 문자개수
+            count = len(t)
+            #슬라이딩 윈도우
+            left = 0
+            #결과값 저장
+            start, end = 0, len(s) + 1
+            #문자탐색
+            for right, char in enumerate(s, 1):
+                #문자가 찾던 것이면 count - 1, 찾던 것이면 기존에 값을 저장했기 때문에 양수를 갖음
+                count -= need[char] > 0
+                #찾은 문자 - 1, 찾고 싶지 않은 문자들도 -1 해줌으로써 찾고싶은 것 - 양수, 찾고싶지 않은 것 - 음수로 나뉨
+                need[char] -= 1
+                #찾고싶은 문자들을 모두 찾았다면
+                if not count:
+                    #줄일 수 있는 문자가 있는지 확인
+                    #음수를 갖는 것들은 찾고 싶지 않은 문자들
+                    while left < right and need[s[left]] < 0:
+                        need[s[left]] += 1
+                        left += 1
+                    #결과값 업데이트
+                    if left - right < end - start:
+                        start, end = left, right
+                    #새로운 문자탐색
+                    need[s[left]] += 1
+                    count += 1
+                    left += 1
+            return s[start:end] if end != len(s) + 1 else ''
+```
+
+## 424. Longest Repeating Character Replacement
+- 슬라이딩 대표 문제
+- `key problem`
+> counter 객체
+
+```python 
+    class Solution:
+        def characterReplacement(self, s: str, k: int) -> int:
+            #슬라이딩 설정
+            left = right = 0
+            #counter 객체
+            counts = collections.Counter()
+            #오른쪽으로 이동
+            for right in range(1, len(s) + 1):
+                counts[s[right - 1]] += 1
+                max_char_n = counts.most_common(1)[0][1]
+                #교환할 수 있는 수를 넘기면
+                if right - left - max_char_n > k:
+                    #왼쪽으로 이동
+                    counts[s[left]] -= 1
+                    left += 1
+                    
+            return right - left
+```
+
+> 이게 슬라이딩 느낌임 완전 대박
+
+```python 
+    class Solution:
+        def characterReplacement(self, s: str, k: int) -> int:
+            window = collections.defaultdict(int)
+            max_amount = 0
+            max_len = 0
+            
+            for i in range(len(s)):
+                window[s[i]] += 1
+                #현재 구간에서 가장 많은 빈도의 문자 개수 추출
+                if window[s[i]] > max_amount:
+                    max_amount = window[s[i]]
+                #구간 + 변환할 수 있는 개수 > 최대길이 -> +1
+                if max_amount + k > max_len:
+                    max_len += 1
+                else:
+                    #여기가 핵심
+                    #제일 긴 막대를 계속 이동한다는 느낌
+                    window[s[i - max_len]] -= 1
+                
+            return max_len
+```
+
+# 21장. 그리디 알고리즘
+> 개념
+
+- 글로벌 최적해를 찾기 위해 각 로컬에서 최적해를 찾음
+- 잘 작동하는 분야는 최적 부분구조인 문제
+- 탐욕 선택 속성이란 앞 선택이 다른 선택에 영향을 주지 않는 것을 말함
+
+## 406. Queue Reconstruction by Height
+
+```python 
+    class Solution:
+        def reconstructQueue(self, people: List[List[int]]) -> List[List[int]]:
+            people.sort(key = lambda x: (-x[0], x[1]))
+            
+            result = collections.deque()
+            for person in people:
+                result.insert(person[1], person)
+                
+            return result
+```
+
+## 621. Task Scheduler
+- A__A__ABC가 기본 구조, 무조건 최소 해당 문자열 개수임.
+- 하지만 주어진 문자열이 ABCDABCDABC와 같을 수 있음으로 len(주어진문자열)과 비교  
+```python 
+    class Solution:
+        def leastInterval(self, tasks: List[str], n: int) -> int:
+            task_count = list(collections.Counter(tasks).values())
+            
+            c_max = max(task_count)
+            n_max = task_count.count(c_max)
+    
+            return max(len(tasks), (c_max - 1) * (n + 1) + n_max)
+```
+
+## 134. Gas Station  
+- 답이 한 개 아니면 없다고 문제에서 가정하였기 때문에, 배열 처음부터 해당지점에서 출발이 가능한지만 확인하면 된다.  
+```python 
+    class Solution:
+        def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+            #예외처리
+            if sum(cost) > sum(gas):
+                return -1
+            
+            start, fuel = 0, 0
+            for i in range(len(gas)):
+                #해당지점이 정상적으로 시작이 가능한지 확인
+                if gas[i] + fuel < cost[i]:
+                    start = i + 1
+                    fuel = 0
+                else:
+                    fuel += gas[i] - cost[i]
+            return start
+```
+
+# 22장. 분할 정복
+> 개념
+
+- 분할 -> 배열을 원소로 나눔
+- 정복 -> 원소들에 문제를 해결
+- 조합 -> 해결된 원소들을 조합
+
+## 169. Majority Element
+
+```python 
+    class Solution:
+        def majorityElement(self, nums: List[int]) -> int:
+            #분할
+            if not nums:
+                return None
+            if len(nums) == 1:
+                return nums[0]
+            
+            half = len(nums) // 2
+            a = self.majorityElement(nums[:half])
+            b = self.majorityElement(nums[half:])
+            #조합     정복
+            return [b, a][nums.count(a) > half]
+```
+
+## 241. Different Ways to Add Parentheses
+- `key problem` 
+
+```python 
+    class Solution:
+        def diffWaysToCompute(self, expression: str) -> List[int]:
+            #분할 -> 숫자 한개까지 / None까지
+                #return 값은 숫자이거나, None값이 어야 함
+            if not expression:
+                return None
+            if expression.isdigit():
+                return [int(expression)]
+            #정복 -> operation에 맞춰서 계산
+                #부분구간별로 여러 결과가 나옴, operation 연산 순서에 따라서
+            results = []
+            for index, operation in enumerate(expression):
+                if operation in "+-*":
+                    left = self.diffWaysToCompute(expression[:index])
+                    right = self.diffWaysToCompute(expression[index + 1:])
+                    #조합 -> 결과합치기
+                    for l in left:
+                        for r in right:
+                            if operation == "+":
+                                results.append(l + r)
+                            elif operation == "-":
+                                results.append(l - r)
+                            else:
+                                results.append(l * r)
+            return results
+```
+
+# 23장. 다이나믹 프로그래밍
+- 하향식 : 메모이제이션, 재귀풀이와 비슷한 방식
+- 
+- 상향식 : 타뷸레이션, 배열에 저장하면서 작은 문제에서 큰 문제를 푸는 방식
+
+## 53. Maximum Subarray
+
+```python 
+    class Solution:
+        def maxSubArray(self, nums: List[int]) -> int:
+            #해당 인덱스의 전까지 합계를 저장
+                #해당 인덱스의 전까지 합이 마이너스면 현재 그대로
+                #플러스면 해당 인덱와 합하기
+            for i in range(1, len(nums)):
+                nums[i] += nums[i - 1] if nums[i - 1] > 0 else 0
+            return max(nums)
+```
+

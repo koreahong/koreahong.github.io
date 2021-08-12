@@ -1,0 +1,118 @@
+---
+layout: post
+title: '(SQL)해커랭크 문제풀이 31~40'
+subtitle: '해커랭크'
+categories: sql
+tags: practice
+comments: True
+---
+
+> Top Earners 부터 ~ # Weather Observation Station 20까지 
+
+
+-------------------------------------------------------------------------------
+
+# Top Earners
+
+```sql
+select max(salary * months), count(salary * months) 
+from Employee
+group by salary * months
+order by (salary * months) desc
+limit 1
+```
+
+```sql
+select a.earnings, count(a.earnings)
+from (select months * salary as earnings from employee) as a
+group by a.earnings
+order by a.earnings desc limit 1
+```
+
+# Weather Observation Station 2
+```sql
+SELECT ROUND(SUM(LAT_N) ,2) , ROUND(SUM(LONG_W) , 2)
+FROM STATION
+```
+
+# Weather Observation Station 13
+```sql
+SELECT ROUND(SUM(LAT_N) , 4)
+FROM STATION
+WHERE LAT_N BETWEEN 38.7880 AND 137.2345
+```
+
+# Weather Observation Station 14
+```sql
+SELECT ROUND(MAX(LAT_N) ,4)
+FROM STATION
+WHERE LAT_N <= 137.2345
+```
+# Weather Observation Station 15
+
+```sql
+select round(long_w, 4)
+from station
+where Lat_n = (select max(lat_n)
+        from station
+       where lat_n <= 137.2345)
+```
+# Weather Observation Station 16
+
+```sql
+select round(MIN(LAT_N) ,4) 
+from STATION 
+where LAT_N > 38.7780
+```
+
+# Weather Observation Station 17
+
+```sql
+select round(LONG_W,4) 
+from STATION 
+where LAT_N = (select MIN(LAT_N) from STATION where LAT_N > 38.7780)
+```
+
+# Weather Observation Station 18
+
+```sql
+SELECT ROUND(ABS(A.MINN - A.MAXN) + ABS(A.MINW - A.MAXW) ,4)
+FROM
+(SELECT MIN(LAT_N) AS MINN , MIN(LONG_W) AS MINW , MAX(LAT_N) AS MAXN , MAX(LONG_W) AS MAXW
+FROM STATION) AS A
+```
+
+# Weather Observation Station 19
+
+```sql
+SELECT ROUND(SQRT(POWER(MIN(LONG_W)-MAX(LONG_W), 2)+POWER(MIN(LAT_N)-MAX(LAT_N), 2)), 4) 
+FROM STATION;
+```
+
+# Weather Observation Station 20
+
+```sql
+SELECT round(x.LAT_N,4) FROM Station x, Station y
+GROUP BY x.LAT_N
+HAVING SUM(SIGN(1-SIGN(y.LAT_N-x.LAT_N))) = (COUNT(*)+1)/2
+```
+- 아주 브릴리언트한 방법이다. 
+1. 카티션곱을 하여 각 x.lat_n에 y.lat_n이 대응하게 한다.
+2. group by로 x.lat_n으로 묶어준다
+3. 각 x.lat_n에 모든 y.lat_n를 빼주고 sign을 이용하여 0과 1로 변환한다
+4. 1의 합계가 (COUNT(*)+1)/2 만큼인 것을 뽑는다
+
+하지만 위 방법은 카티시안곱으로 많은 연산이 필요하다.  
+연산이 적은 방법으로도 풀어보자
+
+```sql
+SELECT CAST(LAT_N AS DECIMAL (7,4))
+FROM
+    (SELECT LAT_N, ROW_NUMBER() OVER (ORDER BY LAT_N) as ROWNU 
+     FROM STATION 
+     ) AS X
+WHERE ROWNU = ( SELECT ROUND((COUNT(LAT_N)+1)/2,0) 
+                FROM STATION
+               )
+```
+- row번호를 생성해서 중앙값 찾기

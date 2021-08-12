@@ -1,0 +1,65 @@
+---
+layout: post
+title: '(알고리즘)코드업 4024 호수의 수 구하기'
+#subtitle: 'bfs&dfs'
+categories: algorithm
+tags : bfs&dfs
+comments: False
+---
+> dfs&bfs
+
+1. 확인해볼 사항
+호수식별을 한루트에 다 끝내기
+- dfs가 적절
+
+2. 방법
+- 상하좌우 대각선 루프 만들어서 돌리기
+
+## 문제점
+- 해당 문제에서 11번 케이스에서 출력 케이스가 난다
+import sys ~limit(10000)부분을 추가하면 오류를 해결할 수 있다
+
+```python
+from collections import deque
+import copy
+import sys 
+sys.setrecursionlimit(10000)
+
+W, H = map(int,input().split())
+lst = [list(input().split()) for _ in range(H)]
+
+graph = copy.deepcopy(lst)
+
+dx = [0, 0, 1, -1,1,1,-1,-1]
+dy = [1, -1, 0, 0,-1,1,-1,1]
+
+#단 이거는 방향이 정해져 있어야함
+def dfs(x,y):
+  global cnt
+  if graph[x][y] == 'L':
+    graph[x][y] = '.'
+    for i in range(8):
+      nx, ny = x+dx[i], y+dy[i]
+      if 0<=nx<H and 0<=ny<W:
+        dfs(nx,ny)
+        
+
+
+cnt = 0
+for i in range(H):
+  for j in range(W):
+    if graph[i][j] == 'L':
+      dfs(i,j)
+      cnt+=1
+
+print(cnt)
+
+
+  ```
+
+
+
+
+
+
+

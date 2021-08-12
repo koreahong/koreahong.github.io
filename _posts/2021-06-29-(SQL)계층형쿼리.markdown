@@ -1,0 +1,59 @@
+---
+layout: post
+title: '(SQL)계층형쿼리'
+#subtitle: ''
+categories: sql
+tags: theory
+comments: True
+---
+
+> 계층형쿼리 조인???
+
+
+-------------------------------------------------------------------------------
+
+#변수로 계층형쿼리 만들기
+
+- 테이블 만들기 
+```sql
+CREATE table `practice`.`tree_test` (
+	`id` int NOT NULL,
+    `pid` int 
+engine = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin;
+)
+```
+- 데이터 넣기
+```sql
+INSERT INTO tree_test (id, pid)
+VALUES (1,0), (2,1), (3,1), (4,2), (5,4), (6,4), (7,6),
+		(8,3), (9,3), (10,9), (11,7), (12,8), (13,10), (14,10),
+        (15,10), (16,13), (17,13), (18,14), (19,15), (20,17), (21,4),
+        (22,21), (23,5), (24,11), (25,11), (26,12), (27,9), (28,25),
+        (29,22), (30,2);
+```
+
+- 데이터 확인
+```sql
+select *
+from tree_test;
+```
+<img width="80" alt="계층형쿼리1" src="https://user-images.githubusercontent.com/51938331/123787967-69a71e80-d916-11eb-8e8a-f21db7f7459f.png">
+
+- 계층형쿼리 재귀활용
+```sql
+SELECT @r                AS _ID,
+       (SELECT @r := pid
+        FROM   tree_test
+        WHERE  id = _id) AS _PARENT_ID,
+       ( @l := @l + 1 )  AS level
+FROM   (SELECT @r := @id) AS vars,
+       (SELECT *
+        FROM   tree_test) AS h 
+```
+
+<img width="154" alt="계층형쿼리2" src="https://user-images.githubusercontent.com/51938331/123787990-71ff5980-d916-11eb-8d8e-59896e1495c9.png">
+
+- 변수를 활용하면 재귀를 구현할 수 있다
+- @r에 @id 값 넣기 -> @r출력 -> @r값에 pid 값 넣기 -> 반복

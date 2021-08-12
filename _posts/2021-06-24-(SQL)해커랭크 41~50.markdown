@@ -1,0 +1,234 @@
+---
+layout: post
+title: '(SQL)해커랭크 문제풀이 41~50'
+subtitle: '해커랭크'
+categories: sql
+tags: practice
+comments: True
+---
+
+> Population Census 부터 ~ Weather Observation Station 5까지 
+
+
+-------------------------------------------------------------------------------
+
+# Population Census
+
+```sql
+select sum(city.population)
+from country INNER JOIN city on city.countrycode = country.code
+where continent = 'Asia'
+```
+# African Cities
+
+```sql
+select city.name
+from country INNER JOIN city on city.countrycode = country.code
+where continent = 'Africa'
+```
+
+# Average Population of Each Continent
+```sql
+SELECT COUNTRY.CONTINENT , FLOOR(AVG(CITY.POPULATION))
+FROM CITY , COUNTRY
+WHERE CITY.COUNTRYCODE = COUNTRY.CODE
+GROUP BY COUNTRY.CONTINENT;
+```
+
+# The Report
+```sql
+SELECT
+    Case when G.Grade < 8 THEN NULL ELSE S.Name END,
+    G.Grade,
+    S.Marks
+FROM
+    Students AS S
+    INNER JOIN
+    Grades As G
+    ON S.Marks BETWEEN G.Min_Mark and G.Max_Mark
+    
+ORDER BY
+    G.Grade DESC,
+    S.name
+```
+- select문에서 case 조건으로 null 처리 가능
+- `from문에서 범위로 조인가능, between으로 범위조인함  
+
+```sql
+select 
+      case when s.grade < 8 then null else s.name end,
+      s.grade,
+      s.marks
+
+from
+    (select name,
+           case 
+                when students.marks != 100 then floor(students.marks/10) + 1 else 10 end as grade,
+           marks
+    from 
+           students) s 
+order by
+    s.grade desc,
+    s.name
+```
+- 조인없이, 점수에서 10을 나눠서 grade계산
+
+# Top Competitors
+
+```sql
+-- sql who get full score on more then one challeange
+SELECT h.hacker_id, h.name
+FROM HACKERS as h
+    inner join submissions as s on h.hacker_id = s.hacker_id
+    inner join challenges as c on s.challenge_id = c.challenge_id
+    inner join difficulty as d on d.difficulty_level = c.difficulty_level
+WHERE d.score = s.score
+GROUP BY h.hacker_id , H.NAME
+HAVING COUNT(*) > 1
+ORDER BY COUNT(*) DESC ,h.hacker_id ASC
+```
+# Ollivander's Inventory
+
+```sql
+SELECT
+    Q.id,
+    Q.age,
+    Q.coins_needed,
+    Q.power
+FROM (
+        SELECT
+            ROW_NUMBER() OVER(PARTITION BY B.age, A.power order by A.coins_needed) rnum,
+            A.id,
+            B.age,
+            A.coins_needed,
+            A.power
+        FROM Wands A, Wands_Property B
+        WHERE A.code = B.code AND B.is_evil = 0
+     ) Q
+WHERE Q.rnum = 1
+ORDER BY Q.power DESC, Q.age DESC;
+
+```
+- `group by에 없는 컬럼은 order by에서 지정할 수 없다`
+
+```sql
+SELECT W.ID, P.AGE, W.COINS_NEEDED, W.POWER  
+FROM WANDS W JOIN WANDS_PROPERTY P ON W.CODE = P.CODE AND P.IS_EVIL = 0 
+WHERE W.COINS_NEEDED = (SELECT MIN(COINS_NEEDED) 
+                        FROM WANDS 
+                        WHERE POWER = W.POWER AND CODE = W.CODE) 
+ORDER BY W.POWER DESC, P.AGE DESC, W.COINS_NEEDED ASC
+```
+
+- code는 key값이 아니므로 중복이 존재함. 동일 코드,파워값 중 최저 코인을 찾아야함.
+- 해당문제는 좀더 고민이 필요한 문제이다
+- self join은 row끼리 무언가를 계산할때 유용하게 쓰임
+
+# Challenges
+
+```sql
+select h.hacker_id, h.name, count(h.name) as challenges_created
+from hackers h inner join challenges c on h.hacker_id = c.hacker_id
+group by h.hacker_id, h.name
+having challenges_created = (select count(*)
+                             from challenges
+                             group by hacker_id 
+                             order by count(*) desc limit 1)
+                             or 
+      challenges_created in (select cnt
+                              from (select count(*) as cnt
+                                   from challenges
+                                   group by hacker_id
+                                   ) as cc
+                             group by cc.cnt
+                             having count(cnt) = 1)
+order by challenges_created desc, h.hacker_id
+```
+- 상위하나만 뽑는 구간 challenges_created = ~
+- total number가 중복되지 않는 구간 challenges_created in ~, 특히 해당 개수의 개수를 세어 개수가 중복되는지 확인하는 방법이다.
+
+# Contest Leaderboard
+
+```sql
+select h.hacker_id, h.name, sum(max_tbl._max_score) as _sum_score
+-- choose max score each challenge_id
+from
+    (select hacker_id, challenge_id, max(score) as _max_score
+    from submissions
+    group by hacker_id, challenge_id) as max_tbl
+    inner join hackers h on max_tbl.hacker_id = h.hacker_id
+group by h.hacker_id, h.name
+having sum(max_tbl._max_score) != 0
+order by _sum_score desc, h.hacker_id
+```
+
+# SQL Project Planning
+
+```sql
+set @sdate = null;
+set @nextdate = null;
+
+select Sd,max(Ed) Ed2 
+from 
+    (select if(@nextdate = Start_Date,@sdate,@sdate:=Start_Date) Sd,@nextdate:=End_Date Ed 
+     from Projects 
+     order by Start_Date) A
+group by Sd
+order by datediff(max(Ed),Sd)
+```
+- 아주 그냥 브릴리언트한 방법이다... if(조건,참일때, 거짓일때).  
+    1.변수를 선언해서 시작날짜(sdate)와 마지막날짜(nextdate)를 저장한다  
+    2.마지막날짜가 시작날짜와 같으면 sdate는 그대로 nextdate는 해당 row의 enddate를 저장  
+    3.반복 후, 시작날짜를 그룹으로 묵어 마지막날짜가 큰거를 출력..... 키야ㅑㅑㅑ
+
+```sql
+SET @browno = 0;
+SET @erowno = 0;
+
+select beginnings.start_date, ends.end_Date from 
+(Select a.start_Date, @browno:=@browno+1 as p from Projects a
+LEFT JOIN Projects b on a.start_date=b.end_date where b.start_date is null order by start_date) as beginnings
+JOIN
+(Select x.end_date, @erowno:=@erowno+1 as p from Projects x
+LEFT JOIN Projects y on x.end_date=y.start_date where y.end_date is null order by end_date) as ends
+on beginnings.p=ends.p 
+
+order by datediff(ends.end_Date,beginnings.start_date), beginnings.start_Date;
+```
+- 위 방법이 더 빨리 진행된다
+- 위 방법의 아이디어는 아래와 같다
+    1. 시작날짜end컬럼과 동일한 start날짜를 붙인다, 그러면 end날짜가 붙지 않는 start발견, 변수로 카운트저장
+    2. 마지막날짜도 위와 동일하게 진행
+    3. 시작카운트와 마지막 카운트를 조인
+    4. 시작날짜, 마지막날짜만 출력
+    
+# Placements
+
+```sql
+select me.name
+from 
+    (select s.id, s.name, p.salary
+    from students s inner join packages p on s.id = p.id) as me
+    inner join 
+    (select f.id, f.friend_id, p.salary
+    from friends f inner join packages p on f.friend_id = p.id) as friend on me.id = friend.id
+where me.salary < friend.salary
+order by friend.salary 
+```
+- 깔끔해보이는거 같지만 select문에 이름을 일일히 작성을 해야하는 번거러움이 있음... 
+- 고려해봐야함
+
+```sql
+SELECT s.Name FROM
+Students s
+JOIN Friends f
+ON s.ID = f.ID
+JOIN Packages p
+ON s.ID = p.ID
+JOIN Packages p_friend
+ON f.Friend_ID = p_friend.ID
+WHERE p.Salary < p_friend.Salary
+ORDER By  p_friend.Salary
+```
+- 순차적으로 조인을 시도하여 최종적으로 비교를 하면 됨
+- 첫번째 방법보다는 편하지만 좋은 방법인지는 의문..
