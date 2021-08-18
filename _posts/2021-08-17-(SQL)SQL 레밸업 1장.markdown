@@ -28,7 +28,7 @@ comments: true
     - 우리가 관심을 갖어야 하는 부분은 '다양한처리'
     
 ### 아키텍쳐
-[그림]
+![KakaoTalk_20210818_232026573](https://user-images.githubusercontent.com/51938331/129915509-816e5df3-f0a7-4e5f-9b2b-f8a2aa6972a0.jpg)
 
 ### 기능설명
 - 쿼리평가엔진
@@ -59,7 +59,7 @@ comments: true
 ## 1-2 DBMS와 버퍼
 
 ### 트레이드오프 관계
-[그림]
+![KakaoTalk_20210818_232026573_01](https://user-images.githubusercontent.com/51938331/129915551-7c5212ee-4ce5-49d8-848c-6bd2e5d3f246.jpg)
 
 - 저장 <------> 속도 : 트레이드오프 관계
 - 메모리 : 적은공간, 빠른속도 / 디스크 : 많은 공간, 느린속도
@@ -77,7 +77,7 @@ comments: true
     - 내부 데이터를 모두 메모리에 올리는 것은 불가능
     
 - 버퍼/캐시
-[그림]  
+![KakaoTalk_20210818_232026573_02](https://user-images.githubusercontent.com/51938331/129915575-3ef72d11-5be0-407a-93bf-c80ab257f6f2.jpg)
     > 배경 : 메모리의 속도가 빠른 장점을 활용해 성능향상을 목적으로 데이터를 저장하는 메모리  
     - 해당 메모리를 관리하는 것이 버퍼매니저이고 데이터베이스의 성능에 중요한 역향을 끼침  
     
