@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "(SQL)SQL 레밸업 1장"
+title:  "(SQL)SQL DBMS 아키텍처"
 subtitle:   "요약정리"
 categories: SQL
 tags: theory
