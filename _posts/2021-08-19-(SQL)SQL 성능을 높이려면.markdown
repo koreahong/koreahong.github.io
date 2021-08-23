@@ -260,11 +260,6 @@ WHERE   diff BETWEEN 0 AND 2
 
 
 
-
-
-
-
-
         
         
 
