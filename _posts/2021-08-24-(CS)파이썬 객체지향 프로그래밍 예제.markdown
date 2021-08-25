@@ -1,0 +1,108 @@
+---
+layout: post
+title: '파이썬 객체지향 프로그래밍 예제 - stack, queue 구현'
+subtitle: ''
+categories: Computer_Science
+tags : software
+comments: False
+---
+
+> 파이썬 객체지향 프로그래밍 예제, Stack 구현
+> 해당내용은 인프런 파이썬 객체프로그래밍 출처입니다
+
+# 목적
+- 객체지향 프로그래밍을 실전 연습
+
+# 내용
+```python 
+from typing import Optional, List, Generic, TypeVar
+
+T = TypeVar("T")
+
+class MyTestCase(unittest.TestCase):
+    def test_something(self):
+        self.assertEqual(True, False)  # add assertion here
+
+class Node(Generic[T]):
+    __slots__ = ("item", "next")
+    def __init__(self, item: T, pointer: Optional["Node"] = None):
+        self.item = item
+        self.next: Optional["Node"] = pointer
+
+class linkedlist(Generic[T]):
+    def __init__(self):
+        self.head: Optional[Node[T]] = Node(item=None)
+
+    @property
+    def length(self) -> int:
+        node: Node = self.head.next
+        cnt: int = 0
+        while node:
+            cnt += 1
+            node = node.next
+        return cnt
+
+    def __str__(self) -> str:
+        node: Node = self.head.next
+        result: str = ''
+        while node.next:
+            result += str(node.item) + ", "
+            node = node.next
+        return result + str(node.item)
+
+class Stack(Generic[T], linkedlist[T]):
+    def push(self, item: T) -> None:
+        new_node: Node[T] = Node[T](item=item)
+        node: Node = self.head
+        while node.next:
+            node = node.next
+        node.next = new_node
+        return
+
+    def pop(self) -> T:
+        node = self.head
+        if not node.next:
+            raise ValueError("stack is empty")
+
+        while node.next.next:
+            node = node.next
+        temp = node.next
+        node.next = node.next.next
+        return temp.item
+
+class Queue(Generic[T], linkedlist[T]):
+    def append(self, item: T) -> None:
+        new_node: Node[T] = Node[T](item=item)
+        node = self.head
+        while node.next:
+            node = node.next
+        node.next = new_node
+        return
+
+    def popleft(self) -> T:
+        node = self.head
+        if not node.next:
+            raise ValueError(" is empty")
+        else:
+            temp = node.next
+            node.next = node.next.next
+            return temp.item
+
+if __name__ == '__main__':
+    stack = Stack[int]()
+    stack.push(12)
+    stack.push("15")
+    stack.push(18)
+
+    print(stack.length)
+    print(stack.pop())
+    print(stack)
+
+    queue = Queue[int]()
+    queue.append(12)
+    queue.append(15)
+    print(queue.popleft())
+    print(queue.popleft())
+    print(queue.length)
+
+```

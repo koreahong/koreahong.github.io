@@ -44,3 +44,30 @@ comments: False
 
 - mypy 명령어 : mypy 이름.py && python 이름.py
 
+### Generic Type
+1. What?
+   - Generic Type
+   - 하나의 값이 여러 다른 데이터 타입을 가질 수 있는 기술
+2. How?
+   - 받는 데이터에 따라서 타입변수를 다르게함. 인스턴스를 선언할때 타입변수와 같이 선언함
+3. Why?
+   - 데이터 형식에 의존하지 않기 위함.
+   - 암호화를 시켜 정보를 맞추지 않게 하기 위함
+
+```python 
+#어떤 타입이 올 수 있는지 설정하기
+ARM = TypeVar("ARM", int, float, str)
+HEAD = TypeVar("HEAD", int, float, str)
+class Robot(Generic[ARM]):
+   def __init__(self, arm: ARM, head: HEAD)"
+      self.arm = arm
+      self.head = head
+      
+   def decode(self)"
+      bbb: Optional[ARM] = None
+      pass
+
+#인스턴스를 선언할때 타입을 지정해서 보냄
+robot1 = Robot[int, int](123456, 12355123)
+robot2 = Robot[str, int]("12345523", 4341251234)
+```
