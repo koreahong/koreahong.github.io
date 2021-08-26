@@ -2,7 +2,7 @@
 layout: post
 title:  "(SQL)SQLD 요약"
 subtitle:   "sql명령분 부터 최적화 까지"
-categories: SQL
+categories: sql
 tags: certification
 comments: true
 ---
