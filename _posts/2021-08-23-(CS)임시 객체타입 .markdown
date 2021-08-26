@@ -1,9 +1,0 @@
----
-layout: post
-title: '파이썬 객체지향 프로그래밍'
-subtitle: '(CS)구조화된 코드는 어떤 거인가'
-categories: Computer_Science
-tags : software
-comments: False
----
-
