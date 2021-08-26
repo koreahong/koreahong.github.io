@@ -71,3 +71,45 @@ class Robot(Generic[ARM]):
 robot1 = Robot[int, int](123456, 12355123)
 robot2 = Robot[str, int]("12345523", 4341251234)
 ```
+
+### Class Type
+1. What?
+    - Uninon Type
+2. How
+    - 변수이름 : Union[int, str], from typing Union
+3. Why?
+    - 한 객체에 여러 타입을 적용하고 싶을 경우 사용
+
+### Uninon Type
+1. What?
+    - Uninon Type
+2. How
+    - 변수이름 : Union[int, str], from typing Union
+3. Why?
+    - 한 객체에 여러 타입을 적용하고 싶을 경우 사용
+
+### Optional Type
+1. What?
+    - Optional Type
+2. How
+    - 변수이름 : Optional[int] / Union 타입으로 대체가능
+3. Why?
+    - 한 객체가 선언된 이외의 타입을 가질 수 있는 경우
+    - 처음 선언할때 자기 자신을 타입으로 선언해야할 때, Node같은 경우 node를 선언해야할때가 있음.
+
+### Final Type 
+1. What?
+    - Final Type
+2. How
+    - 변수이름 : Final
+3. Why?
+    - 한번 정한것을 바꾸지 않기 위함임
+    - 대문자로 사용하였는데 개발자가 임의로 변경할 수 있어서 시스템상으로 고정하기 위함
+
+###  Type Alias
+1. What?
+    - Type Alias
+2. How
+    - type이름 : Final, Optional[str], - 변수이름 : type이름
+3. Why?
+    - type도 변수처럼 사용하기 위함
