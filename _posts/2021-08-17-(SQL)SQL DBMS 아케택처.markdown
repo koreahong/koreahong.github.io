@@ -2,7 +2,7 @@
 layout: post
 title:  "(SQL)SQL DBMS 아키텍처"
 subtitle:   "요약정리"
-categories: SQL
+categories: sql
 tags: theory
 comments: true
 ---
