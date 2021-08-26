@@ -164,6 +164,8 @@ comments: true
 		- SORT JOIN : 정렬 후 병합
 		- HASH JOIN : 주소 계산 후 조인, CPU 연산 많음
 
+# NoSQL 참고
+[참고](https://devuna.tistory.com/25)
 
 
 
