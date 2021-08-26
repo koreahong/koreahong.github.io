@@ -28,7 +28,7 @@ Thumbs.db
 nbproject
 *.sublime-project
 *.sublime-workspace
-.idea
+../.idea
 
 # Komodo
 *.komodoproject
@@ -44,4 +44,20 @@ node_modules
 .jekyll-metadata
 *.gem
 
-./myvenv
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.myvenv
+pip-selfcheck.json
+Lib.
+myvenv/
+
+

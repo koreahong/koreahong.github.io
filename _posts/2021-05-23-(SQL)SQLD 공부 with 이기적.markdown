@@ -2,7 +2,7 @@
 layout: post
 title:  "(SQL)SQLD 요약"
 subtitle:   "sql명령분 부터 최적화 까지"
-categories: SQL
+categories: sql
 tags: certification
 comments: true
 ---
@@ -18,10 +18,11 @@ comments: true
 	-물리 : DB 구축
 
 ## 1-2. 3층 스키마
-	-DB 독립성 확보를 위함
-	-외부스키마 : 사용자 관점
-	-개념스키마 : 설계자 관점
-	-내부스키마 : 물리적저장구조
+	- DB 독립성 확보를 위함
+	- 외부스키마 : 사용자 관점
+	- 개념스키마 : 설계자 관점
+	- 내부스키마 : 물리적저장구조
+    - [참고](https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=k97b1114&logNo=140153781324)
 
 	-각 스키마가 변경되어도 다른 스키마에 영향을 끼치지 않음
 
@@ -36,7 +37,7 @@ comments: true
 ## 1-5. 관계 - 앤티티간의 참여하는 수
 	-1대1, 1대다, 다대다
 
-##1-6. 식별자(기본키)
+## 1-6. 식별자(기본키)
 	-기본키 : 후보키 중 대표할 수 있는 것
 	-후보키 : 유일성 o, 최소성 o
 	-슈퍼키 : 유일성 O, 최소성 x
@@ -45,7 +46,7 @@ comments: true
 
 # 2. 데이터 모델과 성능
 
-## 2-1. 정규화
+## 2-1. 정규화 / [참고](https://asfirstalways.tistory.com/341)
 	- 데이터 중복제거, 모델의 독립성 확보
 	- 5정규화까지 있으나 실질적으로 3정규화까지 진행
 
@@ -142,11 +143,11 @@ comments: true
 ## 4-3. 스칼라
 	- 반드시 한 행, 한 컬럼만 반환
 
-## 4-4. 그룹함수
+## 4-4. 그룹함수 / [참고1](https://blog.naver.com/theswice/221320978949), [참고2](https://devmango.tistory.com/23)
 	- ROLLUP : subtotal을 만들어 줌
 		- GROUP BY ROLLUP(컬럼명)
 	- GROUPING : 소계값인지 아닌지 확인 해주는 함수, 0 or 1 반환
-	- GROUP Sets : 칼럼에 상관없이 개별처리
+	- GROUPING Sets : 동시에 원하는 조합들을 집계할 수 있음
 	- CUBE : 결합 가능한 모든 집계
 
 # 5. SQL 최적화의 원리
@@ -163,6 +164,8 @@ comments: true
 		- SORT JOIN : 정렬 후 병합
 		- HASH JOIN : 주소 계산 후 조인, CPU 연산 많음
 
+# NoSQL 참고
+[참고](https://devuna.tistory.com/25)
 
 
 

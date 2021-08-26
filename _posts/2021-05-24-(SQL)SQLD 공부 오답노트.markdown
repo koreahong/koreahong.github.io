@@ -2,7 +2,7 @@
 layout: post
 title:  "(SQL)SQLD 오답노트"
 subtitle:   "1~150문제 오답노트"
-categories: SQL
+categories: sql
 tags: certification
 comments: true
 ---
