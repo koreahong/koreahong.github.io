@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '파이썬 객체지향 프로그래밍 예제 - stack, queue 구현'
+title: '파이썬 객체지향 프로그래밍 예제 - stack, queue, heap(min) 구현'
 subtitle: ''
 categories: Computer_Science
 tags : software
@@ -87,6 +87,54 @@ class Queue(Generic[T], linkedlist[T]):
             temp = node.next
             node.next = node.next.next
             return temp.item
+            
+class bheap(Generic[T]):
+    def __init__(self, a: List[T]):
+        self.a = a
+        self.N = len(a) - 1
+
+    def create_heap(self) -> None:
+        for i in range(self.N//2, 0, -1):
+            self.downheap(i)
+
+    def insert(self, key_value: T) -> None:
+        self.N += 1
+        self.a.append(key_value)
+        self.upheap(self.N)
+
+    def delete_min(self) -> T:
+        if self.N == 0:
+            raise ValueError
+        minnum = self.a[1]
+        self.a[1], self.a[-1] = self.a[-1], self.a[1]
+        del self.a[-1]
+        self.N -= 1
+        self.downheap(1)
+        return minnum
+
+    def downheap(self, i: int) -> None:
+        """
+        자식끼리 비교 후 부모와 비교
+        :param i:
+        :return:
+        """
+        while 2 * i <= self.N:
+            k = 2 * i
+            if k < self.N and self.a[k] > self.a[k + 1]:
+                k += 1
+            if self.a[i] < self.a[k]:
+                break
+            self.a[i], self.a[k] = self.a[k], self.a[i]
+            i = k
+
+    def upheap(self, j: int) -> None:
+        while j > 1 and self.a[j // 2] > self.a[j]:
+            self.a[j], self.a[j // 2] = self.a[j // 2], self.a[j]
+            j //= 2
+
+    def print_heap(self) -> None:
+        for i in range(1, self.N+1):
+            print(f"{self.a[i]} ", end='')
 
 if __name__ == '__main__':
     stack = Stack[int]()
@@ -104,5 +152,9 @@ if __name__ == '__main__':
     print(queue.popleft())
     print(queue.popleft())
     print(queue.length)
-
+    
+    a = [None]
+    a.extend([11,13,15,2,6,16,12])
+    b = bheap[int](a)
+    b.create_heap()
 ```
