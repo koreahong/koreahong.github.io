@@ -3,15 +3,19 @@ from typing import Optional, List, Generic, TypeVar
 
 T = TypeVar("T")
 
+
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         self.assertEqual(True, False)  # add assertion here
 
+
 class Node(Generic[T]):
     __slots__ = ("item", "next")
+
     def __init__(self, item: T, pointer: Optional["Node"] = None):
         self.item = item
         self.next: Optional["Node"] = pointer
+
 
 class linkedlist(Generic[T]):
     def __init__(self):
@@ -26,7 +30,6 @@ class linkedlist(Generic[T]):
             node = node.next
         return cnt
 
-
     def __str__(self) -> str:
         node: Node = self.head.next
         result: str = ''
@@ -34,6 +37,7 @@ class linkedlist(Generic[T]):
             result += str(node.item) + ", "
             node = node.next
         return result + str(node.item)
+
 
 class Stack(Generic[T], linkedlist[T]):
     def push(self, item: T) -> None:
@@ -55,6 +59,7 @@ class Stack(Generic[T], linkedlist[T]):
         node.next = node.next.next
         return temp.item
 
+
 class Queue(Generic[T], linkedlist[T]):
     def append(self, item: T) -> None:
         new_node: Node[T] = Node[T](item=item)
@@ -73,6 +78,7 @@ class Queue(Generic[T], linkedlist[T]):
             node.next = node.next.next
             return temp.item
 
+
 class bheap(Generic[T]):
     def __init__(self, lst: List[T]):
         self.lst = lst
@@ -85,7 +91,7 @@ class bheap(Generic[T]):
     def downheap(self, i: int) -> None:
         while i * 2 <= self.N:
             k = i * 2
-            #자식끼리 비교
+            # 자식끼리 비교
             if k < self.N and self.lst[k] > self.lst[k + 1]:
                 k += 1
             if self.lst[k] > self.lst[i]:
@@ -117,30 +123,23 @@ class bheap(Generic[T]):
         return " ".join(map(str, self.lst))
 
 
-
-
-
-
-
-
-
-
-
 class Node(Generic[T]):
     """
     tree node
     """
+
     def __init__(self, key: T, value: T, left: Optional["Node"] = None, right: Optional["Node"] = None):
         self.key = key
         self.value = value
         self.left = left
         self.right = right
 
+
 class BST(Generic[T]):
     def __init__(self):
         self.root = None
 
-    #탐색연산
+    # 탐색연산
     def get(self, k: T) -> Optional[T]:
         return self.get_item(self.root, k)
 
@@ -154,7 +153,7 @@ class BST(Generic[T]):
         else:
             return n.value
 
-    #삽입연산
+    # 삽입연산
     def put(self, key: T, value: T) -> None:
         self.root = self.put_item(self.root, key, value)
 
@@ -166,12 +165,11 @@ class BST(Generic[T]):
         elif n.key < key:
             n.right = self.put_item(n.right, key, value)
         else:
-            #이미 키가 있으면 값만 갱신
+            # 이미 키가 있으면 값만 갱신
             n.value = value
         return n
 
-
-    #최솟값 찾기
+    # 최솟값 찾기
     def min(self) -> Optional[T]:
         if self.root == None:
             return None
@@ -182,7 +180,7 @@ class BST(Generic[T]):
             return n
         return self.minnum(n.left)
 
-    #최솟값 삭제
+    # 최솟값 삭제
     def delete_min(self) -> None:
         if self.root == None:
             raise ValueError
@@ -216,10 +214,92 @@ class BST(Generic[T]):
             return new_n
 
 
+###정렬
+
+## 선택정렬
+class sortType(Generic[T]):
+    def __init__(self, lst: List) -> None:
+        self.lst = copy.deepcopy(lst)
+
+    def sort(self):
+        pass
+
+
+class selection_sort(sortType[T]):
+    def __init__(self):
+        super().__init__()
+
+    def sort(self):
+        copy: List = self.lst.copy()
+        for i in range(len(copy) - 1):
+            minnum: int = i
+            for j in range(i, len(copy)):
+                if copy[i] > copy[j]:
+                    minnum = j
+            copy[j], copy[minnum] = copy[minnum], copy[j]
+
+
+# class insertion_sort(sortType(Generic[T])):
+#     def sort(self) -> copy[T]:
+#         super().__init__()
+#         copy: List = self.lst.copy()
+#         for i in range(1, len(copy)):
+#             for j in range(i, 0, -1):
+#                 if copy[i - 1] > copy[j]:
+#                     copy[j], copy[j - 1] = copy[j - 1], copy[j]
+#         return copy
+import copy
+class heap_sort(sortType[T]):
+    def __init__(self, lst: List):
+        super().__init__(lst)
+        self.create_heap()
+
+    def sort(self) -> List[T]:
+        N = len(self.lst) - 1
+        for i in range(N):
+            self.lst[1], self.lst[N] = self.lst[N], self.lst[1]
+            self.downheap(i, N - 1)
+            N -= 1
+
+    def create_heap(self) -> None:
+        hsize: int = len(self.lst) - 1
+        for i in reversed(range(1, hsize // 2 + 1)):
+            self.downheap(i, hsize)
+
+    def downheap(self, i: int, size: int):
+        while i * 2 <= size:
+            k = i * 2
+            if k < size and self.lst[k] < self.lst[k + 1]:
+                k += 1
+            if self.lst[i] >= self.lst[k]:
+                break
+            self.lst[i], self.lst[k] = self.lst[k], self.lst[i]
+            i = k
+
+# def downheap(i, size):
+#     while 2 * i <= size:
+#         k = 2 * i
+#         if k < size and a[k] < a[k + 1]:
+#             k += 1
+#         if a[i] >= a[k]:
+#             break
+#         a[k], a[i] = a[i], a[k]
+#         i = k
+#
+# def create_heap(a):
+#     hsize = len(a) - 1
+#     for i in reversed(range(1, hsize // 2 + 1)):
+#         downheap(i, hsize)
+#
+# def heap_sort(a):
+#     N = len(a) - 1
+#     for i in range(N):
+#         a[1], a[N] = a[N], a[1]
+#         downheap(1, N - 1)
+#         N -= 1
+
 if __name__ == '__main__':
-    a = [12,15,67,87,14,19,20,21]
-    h = bheap[int](a)
-    h.heapify()
-    print(h)
-
-
+    a = [-1, 12, 15, 67, 87, 14, 19, 20, 21]
+    h = heap_sort(a)
+    print(id(a))tRFdeswq    Q
+    print(id(h.lst))
