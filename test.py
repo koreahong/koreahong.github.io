@@ -251,14 +251,15 @@ class selection_sort(sortType[T]):
 import copy
 class heap_sort(sortType[T]):
     def __init__(self, lst: List):
-        super().__init__(lst)
+        super().__init__(copy.deepcopy(lst))
         self.create_heap()
+        self.sort()
 
     def sort(self) -> List[T]:
         N = len(self.lst) - 1
         for i in range(N):
             self.lst[1], self.lst[N] = self.lst[N], self.lst[1]
-            self.downheap(i, N - 1)
+            self.downheap(1, N - 1)
             N -= 1
 
     def create_heap(self) -> None:
@@ -276,30 +277,81 @@ class heap_sort(sortType[T]):
             self.lst[i], self.lst[k] = self.lst[k], self.lst[i]
             i = k
 
-# def downheap(i, size):
-#     while 2 * i <= size:
-#         k = 2 * i
-#         if k < size and a[k] < a[k + 1]:
-#             k += 1
-#         if a[i] >= a[k]:
-#             break
-#         a[k], a[i] = a[i], a[k]
-#         i = k
-#
-# def create_heap(a):
-#     hsize = len(a) - 1
-#     for i in reversed(range(1, hsize // 2 + 1)):
-#         downheap(i, hsize)
-#
-# def heap_sort(a):
-#     N = len(a) - 1
-#     for i in range(N):
-#         a[1], a[N] = a[N], a[1]
-#         downheap(1, N - 1)
-#         N -= 1
+#병합정렬 -nlogn
+class merge_sort(sortType[T]):
+    def __init__(self, lst):
+        self.lst = self.sort(copy.deepcopy(lst))
 
+
+    def sort(self, lst):
+        if len(lst) < 2:
+            return lst
+
+        #분할
+        mid = len(lst) // 2
+        low = self.sort(lst[:mid])
+        high = self.sort(lst[mid:])
+        #해결
+        merged_lst = []
+        l = h = 0
+        while l < len(low) and h < len(high):
+            if low[l] < high[h]:
+                merged_lst.append(low[l])
+                l += 1
+            else:
+                merged_lst.append(high[h])
+                h += 1
+        merged_lst += low[l:]
+        merged_lst += high[h:]
+        #정복
+        return merged_lst
+
+#퀵정렬 / [참고](https://mong9data.tistory.com/48)
+class quick_sort(sortType[T]):
+    def __init__(self, lst):
+        self.lst = self.sort(copy.deepcopy(lst), 0, len(lst) - 1)
+
+    def sort(self, lst, low, high):
+        if low < high:
+            pivot = self.partition(lst, low, high)
+            self.sort(lst, low, pivot - 1)
+            self.sort(lst, pivot + 1, high)
+        return lst
+
+    def partition(self, lst, pivot, high):
+        left = pivot + 1
+        right = high
+        while True:
+            while left < high and lst[left] < lst[pivot]:
+                left += 1
+            while right > pivot and lst[right] > lst[pivot]:
+                right -= 1
+            if right <= left:
+                break
+            lst[left], lst[right] = lst[right], lst[left]
+            left += 1
+            right -= 1
+        lst[pivot], lst[right] = lst[right], lst[pivot]
+        return right
+
+### 크루스칼
+class kruskal:
+    def __init__(self, lst: List):
+        self.lst = lst
+
+    def result(self) -> List:
+        mst = []
+        p = []
+        N = len(set(num[1] for num in self.lst])) - 1
+        for i in range(N):
+            p.append(i)
+        tree_edges = 0
+        mst_cost = 0
+        while True:
+            if tree_edges == N - 1:
+                break
+            u, v
 if __name__ == '__main__':
-    a = [-1, 12, 15, 67, 87, 14, 19, 20, 21]
-    h = heap_sort(a)
-    print(id(a))tRFdeswq    Q
-    print(id(h.lst))
+    a = [12, 15, 67, 87, 14, 19, 20, 21]
+    h = quick_sort(a)
+    print(h.lst)
