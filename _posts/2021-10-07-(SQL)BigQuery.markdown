@@ -6,7 +6,7 @@ categories: sql
 tags: theory
 comments: true
 ---
-> 해당내용을 모든 출처는 '구글빅쿼리 완벽가이드'
+> 해당내용을 모든 출처는 '구글빅쿼리 완벽가이드'입니다
 
 목차
 
@@ -59,7 +59,7 @@ GROUP BY gender
 
 > STRUCT
 
-- 상황: 배열 풀기\
+- 상황: 배열 풀기  
 ```SQL
 SELECT * FROM UNNEST(
   [
