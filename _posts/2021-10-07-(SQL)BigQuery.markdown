@@ -99,6 +99,7 @@ SELECT * FROM UNNEST(
     1번 같은 경우 협업시에 key보관에 대한 이슈 발생 가능성이 농후함
 
 - 조회하는 경우  
+
 ```python
 from google.colab import auth
 auth.authenticate_user()
@@ -106,7 +107,7 @@ auth.authenticate_user()
 %load_ext google.colab.data_table ### bigquery 형식으로 출력
 %unload_ext google.colab.data_table ### 기존 df 형식으로 출력
 
-### 쿼리 구문
+### 쿼리 구문  
 %%bigquery --project yourprojectname
 SELECT 
   gender
@@ -126,6 +127,7 @@ GROUP BY gender
 ```
 
 - 데이터를 메모리에 저장하는 경우  
+
 ```python
 from google.cloud import bigquery
 project_id = 'yourprojectname'
