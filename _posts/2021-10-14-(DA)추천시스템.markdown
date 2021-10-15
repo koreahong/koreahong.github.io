@@ -62,7 +62,7 @@ memory based는 Content based 아이탬-유저의 관계를 통해 점수를 예
 여기서 위 공식을 자세하게 파악하면 다음과 같습니다
 
 공식의 각 요소는 아래와 같다  
-![img.png](../assets/rs_6/img.png)  
+![img.png](../assets/img/rs_6.png)  
 
 R(m, u): 유저별 영화평점점수  
 S(m, j): 영화간의 유사도  
