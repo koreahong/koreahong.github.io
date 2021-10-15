@@ -4,8 +4,7 @@ title:  "(DA)추천시스템"
 subtitle:   추천시스템 알아보자
 categories: Data_Analysis
 tags: theory
-comments: true  
-use_math: true
+comments: true
 ---
 
 # 목적
