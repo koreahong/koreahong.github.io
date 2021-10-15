@@ -61,8 +61,9 @@ memory based는 Content based 아이탬-유저의 관계를 통해 점수를 예
 
 여기서 위 공식을 자세하게 파악하면 다음과 같다    
 
-$ \alpha $
+$\alpha$
 
+sadfsdf
 
 
 --- 작성중 ----

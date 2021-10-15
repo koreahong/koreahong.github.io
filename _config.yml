@@ -110,12 +110,6 @@ exclude:
   - Gemfile
   - Gemfile.lock
 
-# Conversion
-markdown: kramdown
-highlighter: rouge
-lsi: false
-excerpt_separator: "\n\n"
-incremental: false
 
 compress_html:
   comments:          ["<!-- ", " -->"]
@@ -126,3 +120,9 @@ compress_html:
 
 sass:
   style:             compressed
+
+markdown: kramdown
+highlighter: rouge
+lsi: false
+excerpt_separator: "\n\n"
+incremental: false
