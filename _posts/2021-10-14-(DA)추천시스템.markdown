@@ -23,13 +23,13 @@ use_math: true
 ## Content based filtering  
 간단하게 말하면, 특정 아이템에 기초하여 비슷한 아이템을 추천해준다는 것입니다. 
 
-![rs_1.png](rs_1.png)
+![rs_1.png](../assets/img/rs_1.png)
 
 위와 같이 데이터가 있다고 했을때 '?'(missing value)의 대한 값을 예측하는 것입니다. 
 어떻게 예측할 수 있을까요. 방법은 각 영화에 대한 장르점수를 매겨 linear regression방법으로 푸는 방법이 있습니다.
 
 
-![rs_2.png](rs_2.png)
+![rs_2.png](../assets/img/rs_2.png)
 
 위와 같이 영화의 장르별 점수를 정해서 사람별로 regression하여 점수를 예측할 수 있습니다.
 
@@ -38,7 +38,7 @@ use_math: true
 다크나이트는 액션, 스릴러....    
 위의 장르를 사용하여 코사인 유사도를 구하는 것이지요.  
 
-[코사이유사도 실습]()
+[코사이유사도 실습](https://towardsdatascience.com/using-cosine-similarity-to-build-a-movie-recommendation-system-ae7f20842599)
 
 위 두 방법에는 단점이 있습니다. 각 영화의 장르를 객관적 기준에 맞게 정확히 구분할 수 있을까요? 로맨스의 정확한 기준은 무엇일까요? 
 이처럼 각 영화를 판단하는 기준에 따라서 추천의 레밸이 갈립니다.
@@ -46,36 +46,66 @@ use_math: true
 ## Collaborative Filtering
 
 Collaborative Filtering는 다시 memory based와 model based로 나뉜다.
-먼저 memory based의 item base, user base를 살펴보자.  
+먼저 memory based의 item base, user base를 살펴보겠습니다.  
 memory based는 Content based 아이탬-유저의 관계를 통해 점수를 예측하는 방법입니다.   
-아래의 도표는 user base 사용자가 각 아이템에 대한 평가를 한 것이다. 
-아래 도표를 활용해서 특정유저가 아직 평가하지 아이템에 대한 평가를 예측하는 방법이 user based CF이다  
-![rs_3.png](rs_3.png)  
+아래의 도표는 user base 사용자가 각 아이템에 대한 평가를 한 것입니다.   
+아래 도표를 활용해서 특정유저가 아직 평가하지 아이템에 대한 평가를 예측하는 방법이 user based CF입니다 
+![rs_3.png](../assets/img/rs_3.png)  
 
-예측하는 순서는 다음과 같다
+예측하는 순서는 다음과 같습니다
 
 |순서|내용|방법|
 |:---|:---|:---| 
 |1|예측하려는 유저와 비슷한 유저들의 n명을 선정|코사인 유사도, 유클리드거리 등|
-|2|개인성향을 반영한 식을 통해서 점수 예측|![rs_4.png](rs_4.png)|  
+|2|개인성향을 반영한 식을 통해서 점수 예측|![img.png](../assets/img/rs_4.png)|  
 
-여기서 위 공식을 자세하게 파악하면 다음과 같다    
+여기서 위 공식을 자세하게 파악하면 다음과 같습니다
 
-$\alpha$
+공식의 각 요소는 아래와 같다  
+![img.png](../assets/rs_6/img.png)  
 
-sadfsdf
+R(m, u): 유저별 영화평점점수  
+S(m, j): 영화간의 유사도  
+j는 m과 유사한 영화
 
+코사인 유사도를 구할때 고려해야할 사항이 있습니다. 
+사용자a 1,1,1,1 이고  
+사용자b 5,5,5,5 있때 둘의 영화의 선호도는 분명히 차이가 있으나, 코사인 유사도는 1로 계산됩니다.   
+이처럼 개인의 성향을 반영하는 유사도를 구해야할 필요가 있습니다.  
+따라서 아래처럼 평균을 빼서 반영을 한니다.   
+![img.png](../assets/rs_5/img.png)   
+이러한 오점을 방지하기 위해서 평균값을 빼줌으로써 두 사용자 모두 평균이 0이 되므로 평균이상의 item이나 평균이하의 item을 더 잘 측정할 수 있다. 
+이러한 방법을 centered cosine 혹은 Pearson correlation coefficient이라고 불립니다.  
 
---- 작성중 ----
-- update content  
-1. 유저베이스, 아이템베이스, 등등 작성하기 / 실습 / cold start 문제점 작성
+자 그럼 Ru를 구하면 되는데 문제는 n개의 영화를 기준으로 평점을 예측한다고 했을때 소수의 영화만 유사하고 나머지는 유사하지 않는 경우가 생길 수 있다.  
+이를 대비해서 weighted average를 적용합니다.  
+그냥 Ru를 n으로 나누게 된다면 참고한 다른 사용자들을 모두 같다고 보는 것과 같습니다.  
+코사인 거리를 활용해서 유사하면 유사할수록 더 높은 점수를 반영할 수 있도록 weighted average를 적용시키는 것입니다.
+
+[실습코드](https://colab.research.google.com/drive/16U1FJcYjs4wWdclbWOc6ayfsRDFzkoUh#scrollTo=KU0rJIAE4edh)
+
+위 방법에는 coldstart라는 문제가 있습니다. 말 그대로 데이터가 없을 경우에는 부정확할 뿐더러 추천을 할 수 없다는 것이죠. 
+이 경우에는 content base를 사용하거나, 많이 구매한 것 혹은 인기가 많은 것으로 대체하여 추천하는 방법으로 추천할 수 있습니다.  
+
+--- 작성예정 ----
 
 2. model base 작성
 MF 메트릭스 작성 / 실습 / SVD분해 
 
 3. Implicit 추천 / 실습 
 
+# Reference
+- datasets  
+[datasets](https://www.kaggle.com/sengzhaotoo/movielens-small)
 
 
+- content base  
+[Using Cosine Similarity to Build a Movie Recommendation System](https://towardsdatascience.com/using-cosine-similarity-to-build-a-movie-recommendation-system-ae7f20842599)
 
+
+- CF - memory based  
+[Item-Based Collaborative Filtering in Python](https://towardsdatascience.com/item-based-collaborative-filtering-in-python-91f747200fab)  
+[User-Based Collaborative Filtering](https://www.geeksforgeeks.org/user-based-collaborative-filtering/)  
+[CF 이론1](https://simonezz.tistory.com/22)  
+[CF 이론2](https://velog.io/@vvakki_/%EC%B6%94%EC%B2%9C-%EC%8B%9C%EC%8A%A4%ED%85%9CRecommendation-System-%EA%B0%9C%EC%9A%94)  
 
