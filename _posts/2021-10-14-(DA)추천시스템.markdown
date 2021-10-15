@@ -4,7 +4,8 @@ title:  "(DA)추천시스템"
 subtitle:   추천시스템 알아보자
 categories: Data_Analysis
 tags: theory
-comments: true
+comments: true  
+use_math: true
 ---
 
 # 목적
@@ -60,7 +61,7 @@ memory based는 Content based 아이탬-유저의 관계를 통해 점수를 예
 
 여기서 위 공식을 자세하게 파악하면 다음과 같다    
 
-$ \displaystyle\sum_{i=1}^{10} t_i $
+$ \alpha $
 
 
 
